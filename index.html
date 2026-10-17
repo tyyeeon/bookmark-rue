@@ -1,7 +1,5 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="책갈피 루에">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>책갈피 루에</title>
@@ -1530,7 +1528,8 @@ applyTheme();
 render();
 (async () => {
   await Store.init();
-  if (!OA.key() || !OA.model()) await OA.setup();
+  render();
+  if (!OA.key() || !OA.model()) { await new Promise(r => setTimeout(r, 300)); await OA.setup(); }
   S.sample = OA.key() && OA.model() ? OA.sampler() : false;
   S.assets = null;
   render();
