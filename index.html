@@ -1224,6 +1224,8 @@ function chooser() {
 function transferBox() {
   const out = h("textarea", { class: "story", rows: "4", readonly: true, placeholder: "아래 버튼을 누르면 여기에 책 내용이 나와요." });
   const inp = h("textarea", { class: "story", rows: "4", placeholder: "다른 책갈피에서 복사한 내용을 여기에 붙여 넣으세요." });
+  const file = h("input", { type: "file", accept: ".json,application/json,text/plain", style: "display:none",
+    onchange: async e => { const f = e.target.files && e.target.files[0]; if (f) await importAll(await f.text()); e.target.value = ""; } });
   const exportAll = async () => {
     const books = [];
     for (const c of Object.values(S.chars)) {
@@ -1235,8 +1237,9 @@ function transferBox() {
     try { await navigator.clipboard.writeText(out.value); toast(`책 ${books.length}권을 복사했어요.`); }
     catch { out.select(); toast("글자를 길게 눌러 전체 복사해 주세요."); }
   };
-  const importAll = async () => {
-    let data; try { data = JSON.parse(inp.value.trim()); } catch { toast("내용이 올바르지 않아요. 전체를 다시 복사해 주세요."); return; }
+  const importAll = async (text) => {
+    if (typeof text !== "string") text = inp.value;
+    let data; try { data = JSON.parse(text.trim()); } catch { toast("내용이 올바르지 않아요. 전체를 다시 복사해 주세요."); return; }
     if (!data || data.app !== "bookmark" || !Array.isArray(data.books)) { toast("책갈피에서 복사한 내용이 아니에요."); return; }
     let n = 0;
     for (const b of data.books) {
@@ -1253,7 +1256,8 @@ function transferBox() {
     h("strong", { text: "책 옮기기" }),
     h("p", { style: "margin:0;font-size:13px;opacity:.75", text: "다른 책갈피로 이야기를 옮길 때 써요. 대화, 기억 노트, 감정까지 그대로 옮겨져요. 같은 책을 두 번 가져오면 덮어써요." }),
     h("button", { type: "button", class: "btn", onclick: exportAll }, "이 책갈피의 책 전부 복사하기"), out,
-    inp, h("button", { type: "button", class: "btn", onclick: importAll }, "붙여 넣은 책 가져오기"));
+    inp, h("button", { type: "button", class: "btn", onclick: importAll }, "붙여 넣은 책 가져오기"),
+    h("button", { type: "button", class: "btn", onclick: () => file.click() }, "파일에서 책 가져오기"), file);
 }
 function viewAdd() {
   return h("div", { style: "display:contents" },
