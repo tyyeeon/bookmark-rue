@@ -874,6 +874,12 @@ const OA = {
     try { localStorage.setItem("oa.key", key); localStorage.setItem("oa.model", pick); } catch {}
     return true;
   },
+  // 사용량 추정: 앱이 보낸 대화량을 이 기기에서만 센다. 단가는 추정치.
+  PRICE: { in: 2, out: 10, krw: 1400 },
+  usage() { try { const u = JSON.parse(localStorage.getItem("oa.usage") || "{}"); const m = new Date().toISOString().slice(0, 7); return u.m === m ? u : { m, in: 0, out: 0, n: 0 }; } catch { return { m: "", in: 0, out: 0, n: 0 }; } },
+  track(u) { if (!u) return; const x = this.usage(); x.in += u.prompt_tokens || 0; x.out += u.completion_tokens || 0; x.n += 1; try { localStorage.setItem("oa.usage", JSON.stringify(x)); } catch {} },
+  usageText() { const u = this.usage(), P = this.PRICE; const won = Math.round((u.in * P.in + u.out * P.out) / 1e6 * P.krw);
+    return "이번 달 약 " + won.toLocaleString() + "원 · 답장 " + u.n + "번 (추정)"; },
   toMsgs(input) { return typeof input === "string" ? [{ role: "user", content: input }] : input.map(m => ({ role: m.role, content: m.content })); },
   err(status, body) {
     const e = new Error(body || ("HTTP " + status));
@@ -882,6 +888,7 @@ const OA = {
   },
   async call(input, opts = {}, json = false) {
     const body = { model: this.model(), messages: this.toMsgs(input), stream: !json };
+    if (!json) body.stream_options = { include_usage: true };
     if (json) body.response_format = { type: "json_object" };
     let r;
     try {
@@ -892,7 +899,7 @@ const OA = {
       });
     } catch (e) { if (e.name === "AbortError") { const x = new Error("cancelled"); x.code = "cancelled"; throw x; } throw this.err(0, String(e)); }
     if (!r.ok) throw this.err(r.status, await r.text());
-    if (json) { const j = await r.json(); return { text: j.choices[0].message.content || "", truncated: j.choices[0].finish_reason === "length" }; }
+    if (json) { const j = await r.json(); this.track(j.usage); return { text: j.choices[0].message.content || "", truncated: j.choices[0].finish_reason === "length" }; }
     const rd = r.body.getReader(), dec = new TextDecoder();
     let buf = "", text = "", fin = null;
     try {
@@ -904,7 +911,7 @@ const OA = {
           const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
           if (!line.startsWith("data:")) continue;
           const d = line.slice(5).trim(); if (d === "[DONE]") continue;
-          try { const j = JSON.parse(d); const ch = j.choices && j.choices[0]; if (!ch) continue; if (ch.delta && ch.delta.content) { text += ch.delta.content; opts.onText && opts.onText({ text, delta: ch.delta.content }); } if (ch.finish_reason) fin = ch.finish_reason; } catch {}
+          try { const j = JSON.parse(d); if (j.usage) this.track(j.usage); const ch = j.choices && j.choices[0]; if (!ch) continue; if (ch.delta && ch.delta.content) { text += ch.delta.content; opts.onText && opts.onText({ text, delta: ch.delta.content }); } if (ch.finish_reason) fin = ch.finish_reason; } catch {}
         }
       }
     } catch (e) { if (e.name === "AbortError") { const x = new Error("cancelled"); x.code = "cancelled"; x.text = text; throw x; } throw e; }
@@ -1495,6 +1502,8 @@ function viewChat() {
     h("button", { onclick: () => { cycleTheme(); } }, "안쪽 화면: " + THEMES[S.theme] + " (눌러서 바꾸기)"),
     h("div", { class: "mlabel", text: "답변: 루에 · " + (OA.model() || "키 없음") }),
     h("button", { onclick: async () => { S.menu = false; render(); if (await OA.setup()) { S.sample = OA.sampler(); toast("루에 키를 저장했어요."); } render(); } }, "루에 키·모델 설정"),
+    S.showUsage ? h("div", { class: "mlabel", text: OA.usageText() + " · 정확한 금액은 OpenAI 사용량 페이지" })
+      : h("button", { onclick: () => { S.showUsage = true; render(); } }, "사용량 보기"),
     h("div", { class: "sep" }),
     S.confirmReset
       ? h("div", { style: "padding:6px 10px;display:grid;gap:6px;font-size:13px" }, "대화, 감정, 기억 노트를 처음 상태로 되돌릴까요?",
@@ -1507,7 +1516,7 @@ function viewChat() {
       avatar(c, "av"),
       h("div", { style: "flex:1;min-width:0" }, h("h1", { text: c.name })),
       h("button", { class: "icon-btn aa", "aria-label": "글씨 설정", "aria-expanded": S.typo ? "true" : "false", title: "글자 크기", onclick: () => { S.typo = !S.typo; S.menu = false; render(); } }, "Aa"),
-      h("button", { class: "icon-btn", "aria-label": "메뉴", "aria-expanded": S.menu ? "true" : "false", onclick: () => { S.menu = !S.menu; S.typo = false; S.confirmReset = false; render(); } }, "⋯"),
+      h("button", { class: "icon-btn", "aria-label": "메뉴", "aria-expanded": S.menu ? "true" : "false", onclick: () => { S.menu = !S.menu; S.typo = false; S.confirmReset = false; S.showUsage = false; render(); } }, "⋯"),
       menu, typoPanel()),
     h("div", { class: "scroll", id: "chatScroll" }, backendBanner() ? h("div", { class: "wrap" }, backendBanner()) : null, logEl),
     composer,
