@@ -1,4 +1,10 @@
-<title>책갈피 (루에)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="책갈피 루에">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>책갈피 루에</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Noto+Sans+KR:wght@300;400;700&display=swap">
@@ -1209,7 +1215,7 @@ function render() {
 }
 
 function backendBanner() {
-  if (S.backend === "local") return h("div", { class: "banner" }, "루에 테스트판이에요. 이야기는 이 기기의 이 브라우저에만 저장되고, 원래 책갈피와는 따로예요.");
+  if (S.backend === "local") return h("div", { class: "banner" }, "루에가 답을 쓰는 책갈피예요. 이야기는 이 기기에만 저장돼요.");
   return null;
 }
 
