@@ -7,7 +7,7 @@
   const get=k=>{try{return localStorage.getItem(k);}catch(_){return null;}}, set=(k,v)=>{try{localStorage.setItem(k,v);}catch(_){}};
   const saved=get('haru-theme');
   if(saved&&saved!==me&&names[saved]){go(saved);return;}
-  const st=document.createElement('style');st.textContent='.hide-filters #filters{display:none!important}';document.head.appendChild(st);
+  const st=document.createElement('style');st.textContent='.hide-filters #filters{display:none!important}html{background:#72845a}body{position:fixed!important;inset:0!important;height:auto!important;padding-top:max(10px,env(safe-area-inset-top))!important}#haru-v4{height:100%!important}';document.head.appendChild(st);
   document.addEventListener('DOMContentLoaded',()=>{
     const app=document.getElementById('haru-v4')||document.body;
     const rows=[...document.querySelectorAll('#settings .settings-row')];
