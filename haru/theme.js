@@ -23,5 +23,16 @@
     const apply=()=>{const hide=get('haru-hide-filters')==='1';app.classList.toggle('hide-filters',hide);groupRow.lastElementChild.textContent=hide?'숨김 · 보이기':'보임 · 숨기기';};
     tap(groupRow,()=>{const hide=get('haru-hide-filters')!=='1';set('haru-hide-filters',hide?'1':'0');if(hide){const all=document.querySelector('#filters [data-group="전체"]');if(all&&!all.classList.contains('active'))all.click();}apply();});
     apply();
+    const linkRow=themeRow.cloneNode(true);
+    const li=linkRow.querySelector('.setting-symbol');if(li)li.innerHTML='<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+    const ll=linkRow.querySelector('.setting-label');if(ll){[...ll.childNodes].filter(n=>n.nodeType===3).forEach(n=>n.remove());ll.append('홈 화면용 링크');}
+    groupRow.after(linkRow);linkRow.lastElementChild.textContent='복사하기';
+    const copy=t=>navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject();
+    const fallback=t=>{const ta=document.createElement('textarea');ta.value=t;ta.setAttribute('readonly','');ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);const ok=document.execCommand('copy');ta.remove();return ok;};
+    tap(linkRow,()=>{let c=null;try{c=JSON.parse(get('haru-conn')||'null');}catch(_){}
+      if(!c||!c.api||!c.k){linkRow.lastElementChild.textContent='연결 정보 없음';return;}
+      const url=base+paths['1']+'#api='+c.api+'&k='+encodeURIComponent(c.k);
+      const done=()=>{linkRow.lastElementChild.textContent='복사했어요';setTimeout(()=>{linkRow.lastElementChild.textContent='복사하기';},3000);};
+      copy(url).then(done,()=>{fallback(url)?done():linkRow.lastElementChild.textContent='복사 실패';});});
   });
 })();
