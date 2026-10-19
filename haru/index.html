@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
+<script src="theme.js" data-theme="1"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#dae7d1">
   <title>하루</title>
@@ -36,7 +37,7 @@
       <section class="view active" id="monthly" aria-label="월간 달력">
         <div class="calendar">
           <div class="cal-head"><button class="arrow" id="prev" type="button" aria-label="이전 달">‹</button><div class="month-title" id="month-label">월간</div><div class="cal-controls"><button class="tiny" id="today-btn" type="button">오늘</button><button class="arrow" id="next" type="button" aria-label="다음 달">›</button></div></div>
-          <div class="weekdays" aria-hidden="true"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+          <div class="weekdays" aria-hidden="true"><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div><div>일</div></div>
           <div class="days" id="days" aria-label="날짜"></div>
           <div class="cal-bottom"><span></span><button class="toggle" id="calendar-only" type="button" aria-pressed="false">달력만 보기<span class="switch" aria-hidden="true"></span></button></div>
         </div>
@@ -47,7 +48,7 @@
       <section class="view" id="settings" aria-label="설정"><h2 class="settings-heading">설정</h2><div class="settings-list">
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1-4c-1-1 0-3 2-3h2a3 3 0 0 0 3-3c0-5-4-8-9-8Z"/><circle cx="7" cy="11" r=".7"/><circle cx="9" cy="7" r=".7"/><circle cx="14" cy="7" r=".7"/><circle cx="17" cy="10" r=".7"/></svg></span>테마</span><span>숲빛 유리</span></div>
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg></span>시간대</span><span>대한민국 · KST</span></div>
-        <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></span>한 주의 시작</span><span>일요일</span></div>
+        <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></span>한 주의 시작</span><span>월요일</span></div>
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6Z"/><path d="M14 3v5h5M9 12h7m-7 4h7"/></svg></span>저장 방식</span><span>구글 시트 「일정표」</span></div>
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21v-3a7 7 0 0 1 14 0v3Zm14-17a4 4 0 0 1 0 8m3 9h3v-3a7 7 0 0 0-4-6"/></svg></span>함께 쓰는 사람</span><span>규연 · 루에 · 이음</span></div>
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Zm5 3h4M12 2v2"/></svg></span>알림</span><span>구글 캘린더<small>이음 등록</small></span></div>
