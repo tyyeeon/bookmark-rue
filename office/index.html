@@ -142,6 +142,7 @@
   @keyframes cheer { 50% { transform: translateY(-5px); } }
   .queue { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 9000; cursor: pointer; }
   .queue .stack { display: flex; gap: 3px; }
+  .side-head { font-size: 11px; font-weight: 700; color: var(--muted); padding: 10px 0 2px; border-top: 1px solid var(--line); }
   .pop { position: absolute; left: 50%; top: 92px; transform: translateX(-50%); width: min(340px, calc(100% - 28px)); z-index: 9500; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px #4a5d7026; padding: 12px 14px; font-size: 12.5px; }
   .pop h3 { margin: 0 26px 4px 0; font-size: 14px; }
   .pop .x { position: absolute; right: 8px; top: 6px; border: 0; background: none; font-size: 18px; cursor: pointer; color: var(--muted); }
@@ -774,6 +775,8 @@ function renderSide(visible) {
   const boss = (floor === '*' || floor === '2F') && !proj ? `
     <div class="person-row boss-row"><div class="ava" style="background:#E8A07E">규</div>
       <div class="meta"><b>규연 총괄</b><div class="sub">2F · 일을 맡기는 사람</div></div></div>` : '';
+  const sideRank = s => rank(s) < 2 ? -1 : /^rue/.test(s.id) ? 1 : /^codex/.test(s.id) ? 2 : 0;
+  visible = [...visible].sort((a, b) => rank(a) - rank(b) || sideRank(a) - sideRank(b));
   const rows = visible.map(s => `
     <div class="person-row" data-id="${esc(s.id)}">
       <div class="ava" style="background:${s.color || colorOf(s.project)}">${esc((roleName(s) || '?')[0])}</div>
@@ -783,6 +786,12 @@ function renderSide(visible) {
       <span class="chip ${s.state}">${STATE_KO[s.state]}</span></div>`);
   const nBoss = visible.filter(s => rank(s) < 2).length;
   rows.splice(nBoss, 0, boss);
+  // 1층 작업 창은 누구 쪽인지로 묶어서: 이음 쪽(Claude 스레드) / 루에 쪽 / Codex
+  const side = s => /^rue/.test(s.id) ? '루에 쪽' : /^codex/.test(s.id) ? 'Codex' : '이음 쪽';
+  let last = '';
+  const out = rows.slice(0, nBoss + 1);
+  visible.slice(nBoss).map((s, i) => { const g = side(s); if (g !== last) { out.push(`<div class="side-head">${g}</div>`); last = g; } out.push(rows[nBoss + 1 + i]); });
+  rows.length = 0; rows.push(...out);
   document.getElementById('list').innerHTML = visible.length || boss ? rows.join('')
     : `<div class="empty">이 층엔 아무도 없어요.</div>`;
   document.querySelectorAll('.person-row:not(.boss-row)').forEach(el => el.onclick = () => { selected = el.dataset.id; render(); showPerson(el.dataset.id); });
