@@ -384,10 +384,15 @@ let view = { x: 0, y: 0, k: 1 };
 const apply = () => world.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.k})`;
 function fit() {
   const top = floor === '*' ? 0 : floorDy(floor), h = floor === '*' ? WORLD_H : SLAB_H;
-  // 폰: 무대 높이를 층 비율에 맞춰 빈 공간 없이
-  stage.style.height = matchMedia('(max-width: 900px)').matches ? Math.round(stage.clientWidth * h / WORLD_W + 56) + 'px' : '';
+  // 폰: 첫 화면을 사무실로 채우고 '사무실 사람들' 제목까지만 보이게. 양옆은 끌어서 보기
+  const phone = matchMedia('(max-width: 900px)').matches;
+  if (phone) {
+    const avail = Math.max(320, innerHeight - document.getElementById('floors').offsetHeight - 96);
+    const k = Math.min((avail - 56) / h, 1.6 * stage.clientWidth / WORLD_W);
+    stage.style.height = Math.round(Math.min(avail, h * k + 64)) + 'px';
+  } else stage.style.height = '';
   const r = stage.getBoundingClientRect();
-  view.k = Math.min(r.width / WORLD_W, (r.height - 48) / h);
+  view.k = phone ? Math.min((r.height - 56) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 48) / h);
   view.x = (r.width - WORLD_W * view.k) / 2; view.y = 44 + (r.height - 48 - h * view.k) / 2 - top * view.k;
   apply();
 }
