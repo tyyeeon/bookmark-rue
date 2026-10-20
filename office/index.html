@@ -773,13 +773,13 @@ function renderSide(visible) {
   const rank = s => s.room === 'tower' ? 0 : s.room === 'rue' ? 1 : 2;
   visible = [...visible].sort((a, b) => rank(a) - rank(b));
   const boss = (floor === '*' || floor === '2F') && !proj ? `
-    <div class="person-row boss-row"><div class="ava" style="background:#E8A07E">규</div>
+    <div class="person-row boss-row"><div class="ava" style="background:#A9784F">규</div>
       <div class="meta"><b>규연 총괄</b><div class="sub">2F · 일을 맡기는 사람</div></div></div>` : '';
   const sideRank = s => rank(s) < 2 ? -1 : /^rue/.test(s.id) ? 1 : /^codex/.test(s.id) ? 2 : 0;
   visible = [...visible].sort((a, b) => rank(a) - rank(b) || sideRank(a) - sideRank(b));
   const rows = visible.map(s => `
     <div class="person-row" data-id="${esc(s.id)}">
-      <div class="ava" style="background:${s.color || colorOf(s.project)}">${esc((roleName(s) || '?')[0])}</div>
+      <div class="ava" style="background:${rank(s) === 0 ? '#E9846F' : rank(s) === 1 ? '#5DB8E6' : s.color || colorOf(s.project)}">${esc((roleName(s) || '?')[0])}</div>
       <div class="meta"><b>${s.isSubagent ? '↳ ' : ''}${esc(roleName(s))}</b>
         <div class="sub">${esc(room[s.room])}${s.bubble ? ' · ' + esc(s.bubble) : ''}</div>
         <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div></div>
