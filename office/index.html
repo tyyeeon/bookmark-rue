@@ -4,7 +4,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="관제탑">
 <meta name="robots" content="noindex"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=1"><link rel="icon" href="icon-512.png">
-</head><body>
+<link rel="stylesheet" href="gyuyeon.css"></head><body>
 <title>관제탑</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -183,8 +183,8 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 
 .floor-art{pointer-events:none}.floor-art.loaded ~ .floor-vector{visibility:hidden}#map.artwork-off .floor-art{display:none}#map.artwork-off .floor-vector{visibility:visible}#zart[hidden]{display:none}
 /* 생성 배경의 가구 원근 차이만 보정. 데이터 좌표/선택 대상은 그대로입니다. */
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="tower"]{translate:20px 64px}
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="rue"]{translate:0 65px}
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="tower"]{translate:-75px 30px}
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="rue"]{translate:5px 55px}
 .snapshot-note{font-size:11px;color:var(--muted);line-height:1.65;margin:0 0 10px;padding:8px;background:var(--bg);border-radius:8px}
 #map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="desk"]{translate:18px 38px}
 #map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="dev"]{translate:0 40px}
@@ -229,8 +229,8 @@ const FLOORS = [
 ];
 const ROOMS = [
   { id: 'huddle',   floor: '2F', name: '소회의실',    x: 0,  y: 0, w: 3,  h: 7, color: '#F4F0F8', what: '짧은 논의 · 둘이 맞춰 보기' },
-  { id: 'tower',    floor: '2F', name: '관제탑실',    x: 3,  y: 0, w: 10, h: 7, color: '#F0EEF6', what: '관제탑(이음) 전용 · 전체 현황' },
-  { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13, y: 0, w: 11, h: 7, color: '#ECF7FC', what: '루에(ChatGPT) 대표 자리' },
+  { id: 'tower',    floor: '2F', name: '관제탑실',    x: 3,  y: 0, w: 10.5, h: 7, color: '#F0EEF6', what: '이음 전용 · 루에실과 동일 면적' },
+  { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 전용 · 관제탑실과 동일 면적' },
   { id: 'lounge',   floor: '2F', name: '라운지',      x: 0,  y: 7, w: 13, h: 6, color: '#FFF7F2', what: '쉬는 중' },
   { id: 'meeting',  floor: '2F', name: '회의실',      x: 13, y: 7, w: 11, h: 6, color: '#EEF7F2', what: '계획 · 할 일 · 연결 도구' },
   { id: 'desk',     floor: '1F', name: '내 자리',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '답변 · 다음 요청 대기' },
@@ -483,7 +483,7 @@ function furniture(r) {
   return s + finishingTouches(r);
 }
 // 층 배경은 SVG와 동일한 좌표계(1084×650). 준비된 PNG 경로만 이 표에 추가합니다.
-const FLOOR_BACKGROUNDS = { '2F': 'floor-2f.png', '1F': 'floor-1f.png' }; // 예: '2F': 'floor-2f.png'
+const FLOOR_BACKGROUNDS = { '2F': 'floor-2f.png?v=gyuyeon-1', '1F': 'floor-1f.png' }; // 예: '2F': 'floor-2f.png?v=gyuyeon-1'
 function drawFloor(f) {
   let s = `<g data-floor="${f.id}" transform="translate(0 ${floorDy(f.id)})">`;
   let labels='';
@@ -829,4 +829,4 @@ drawMap(); setWide(store.get('vs-wide') === '1'); startData();
 setInterval(stamp, 30000);
 </script>
 
-</body></html>
+<script type="module" src="gyuyeon.js"></script></body></html>
