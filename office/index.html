@@ -160,6 +160,35 @@
   @media (prefers-reduced-motion: reduce) { .led { animation: none; }
   }
   @media (prefers-reduced-motion: reduce) { .av, .av .person { transition: none; animation: none; } }
+
+/* 공유 관제탑: 기존 사람·층·상태 위에 공간의 온기만 더합니다. */
+:root { --bg:#f8f5f3; --panel:#fffdfb; --line:#e5e5e9; --stage:#edf3f9; --accent:#d58e7b; }
+main { background:radial-gradient(ellipse at 85% 12%,#fff0dd88,transparent 55%),linear-gradient(155deg,#edf3fb,#f7eff4 65%,#edf5f7); }
+aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
+.card { border-radius:16px; box-shadow:0 4px 16px #667f9906; }
+.floor { border-radius:13px; padding:12px 10px; transition:background .2s; }
+.floor.on { padding:11px 9px; background:#e9f5fc; }
+.pill { box-shadow:0 5px 18px #5d7a9310; border-radius:14px; }
+.pj { box-shadow:0 2px 7px #687d8a08; }
+.room-label { fill:#67758b; font-size:11px; letter-spacing:.6px; }
+.floor-label { fill:#4e6d8b; }.floor-sub { fill:#8895a5; }
+.av .bubble { box-shadow:0 4px 12px #566f8520; }
+.av .tag { box-shadow:0 2px 8px #566f8512; }
+#world #map { filter:drop-shadow(0 14px 15px #7490ab1e); }
+.zoom { border-radius:13px; box-shadow:0 4px 20px #5a70851a; }
+.taskbar { border-radius:16px; box-shadow:0 6px 24px #5c70851a; }
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--panel:#1e2128;--bg:#16181d;--line:#2e323b;--stage:#111317} :root:not([data-theme="light"]) main{background:radial-gradient(ellipse at top right,#2e2935,#182330 70%)} :root:not([data-theme="light"]) .floor.on{background:#253f52}}
+:root[data-theme="dark"] main{background:radial-gradient(ellipse at top right,#2e2935,#182330 70%)}
+:root[data-theme="dark"] .floor.on{background:#253f52}
+
+.floor-art{pointer-events:none}.floor-art.loaded ~ .floor-vector{visibility:hidden}#map.artwork-off .floor-art{display:none}#map.artwork-off .floor-vector{visibility:visible}#zart[hidden]{display:none}
+/* 생성 배경의 가구 원근 차이만 보정. 데이터 좌표/선택 대상은 그대로입니다. */
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="tower"]{translate:20px 64px}
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="rue"]{translate:0 65px}
+.snapshot-note{font-size:11px;color:var(--muted);line-height:1.65;margin:0 0 10px;padding:8px;background:var(--bg);border-radius:8px}
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="desk"]{translate:18px 38px}
+#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="dev"]{translate:0 40px}
+.app[data-floor="1F"] #world [data-floor="2F"],.app[data-floor="1F"] #world [data-floor="2F"] *,.app[data-floor="2F"] #world [data-floor="1F"],.app[data-floor="2F"] #world [data-floor="1F"] *{visibility:hidden}
 </style>
 <div class="app">
   <aside class="left" id="floors"></aside>
@@ -170,7 +199,7 @@
     </div>
     <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
-    <div class="zoom"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="맞춤">⟲</button><button id="zwide" title="넓게 보기">⤢</button></div>
+    <div class="zoom"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="맞춤">⟲</button><button id="zwide" title="넓게 보기">⤢</button><button id="zart" title="그림 배경 전환" aria-pressed="true" hidden>◈</button></div>
     <div class="notice" id="notice" hidden><p></p></div>
     <div class="hint">"사무실 갱신"이라고 말하면 새로 채워요 · 드래그로 이동</div>
     <div class="taskbar" id="taskbar">
@@ -181,7 +210,7 @@
     </div>
   </main>
   <aside class="right">
-    <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><div id="list"></div></div>
+    <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><p class="snapshot-note">저장된 현황 · 실시간 상태와 다를 수 있어요.<br>상단의 마지막 갱신 시각을 확인해 주세요.</p><div id="list"></div></div>
     <div class="card" id="rq-card"><h2>맡긴 일 <small id="rq-count"></small></h2><div id="rq-list"></div></div>
     <div class="card"><h2>활동 로그</h2><ul class="log" id="log"></ul></div>
     <div class="card"><h2>어디서 무엇을 하나</h2><div class="legend" id="legend"></div></div>
@@ -251,8 +280,23 @@ function wallPanel(along, fixed, from, to, z0, z1, color, stroke = '#00000014') 
   return `<polygon points="${pts([up(P(from), z0), up(P(to), z0), up(P(to), z1), up(P(from), z1)])}" fill="${color}" stroke="${stroke}"/>`;
 }
 function windowOn(along, fixed, from, to) {
-  const mid = (from + to) / 2;
-  return wallPanel(along, fixed, from, to, 18, 52, C.white, '#c9d6de') + wallPanel(along, fixed, from + .08, mid - .05, 21, 49, C.glass, 'none') + wallPanel(along, fixed, mid + .05, to - .08, 21, 49, C.glass, 'none');
+  const id = `coast-${along}-${fixed}-${from}`.replaceAll('.', '_');
+  const P = (t,z) => up(along === 'x' ? iso(t,fixed) : iso(fixed,t),z);
+  const q = (u,z) => P(from+(to-from)*u,z);
+  const pathPts = arr => arr.map(([u,z])=>q(u,z).join(',')).join(' ');
+  const a=P(from,18), b=P(to,18), c=P(to,48), d=P(from,48), peak=P((from+to)/2,75);
+  const arch=`M${a} L${b} L${c} Q${peak} ${d} Z`;
+  let out=`<defs><clipPath id="${id}"><path d="${arch}"/></clipPath><linearGradient id="${id}-sky" x2="0" y2="1"><stop stop-color="#f8d9bf"/><stop offset=".5" stop-color="#d6e7f4"/><stop offset="1" stop-color="#a9d7ed"/></linearGradient></defs>`;
+  out+=`<path d="${arch}" fill="url(#${id}-sky)" stroke="#fffaf5" stroke-width="4"/><g clip-path="url(#${id})">`;
+  out+=`<polygon points="${pathPts([[0,18],[1,18],[1,33],[.85,36],[.65,32],[.48,42],[.3,36],[.12,41],[0,34]])}" fill="#a6b7c3"/>`;
+  out+=`<polygon points="${pathPts([[0,18],[1,18],[1,27],[.8,29],[.6,26],[.35,32],[.1,28],[0,30]])}" fill="#8faaa9" opacity=".7"/>`;
+  out+=`<polygon points="${pathPts([[0,18],[1,18],[1,25],[0,25]])}" fill="#b3def0"/>`;
+  for(let i=0;i<7;i++) { const u=.08+i*.14, h=27+(i%3)*2;out+=`<polygon points="${pathPts([[u,25],[u+.045,25],[u+.045,h],[u,h]])}" fill="#eaf0ef"/>`; }
+  const sun=q(.82,49);out+=`<circle cx="${sun[0]}" cy="${sun[1]}" r="4" fill="#fff9df"/>`;
+  out+=`<polyline points="${pathPts([[.04,23],[.22,24],[.46,23],[.72,24],[.96,23]])}" fill="none" stroke="#fff9ec" stroke-width="1"/>`;
+  out+=`</g><path d="${arch}" fill="none" stroke="#fefcf8" stroke-width="2"/>`;
+  const mid=(from+to)/2;out+=wallPanel(along,fixed,mid-.035,mid+.035,18,57,C.white,'none');
+  return out;
 }
 function plant(x, y, k = 1, z = 0) {
   const [px, py] = iso(x, y);
@@ -271,7 +315,12 @@ function monitor(x, y, w = .55, z = 18.5) {
   return box(x + w / 2 - .04, y + .02, .08, .08, 3, C.ink, z) + `<polygon points="${pts([a, b, c, d])}" fill="${C.ink}"/>`;
 }
 function chair(x, y, color = C.white) { return box(x, y, .45, .45, 9, color) + box(x, y + .38, .45, .07, 20, color); }
-function sofa(x, y, w, color = C.coral, accent) { return box(x, y, w, .9, 9, color) + box(x, y + .7, w, .2, 22, shade(color, .95)) + box(x + .1, y + .1, w / 2 - .15, .6, 4, accent || shade(color, 1.06), 9) + box(x + w / 2 + .05, y + .1, w / 2 - .15, .6, 4, shade(color, 1.06), 9); }
+function sofa(x, y, w, color = C.coral, accent) {
+  return box(x,y,w,.9,9,color)+box(x,y+.7,w,.2,22,shade(color,.95))+
+    box(x+.1,y+.1,w/2-.15,.6,4,accent||shade(color,1.06),9)+box(x+w/2+.05,y+.1,w/2-.15,.6,4,shade(color,1.06),9)+
+    box(x+.12,y+.15,.4,.42,9,C.glass,13)+box(x+w-.6,y+.2,.38,.38,8,C.lav,13)+
+    flat(x+w*.4,y+.02,.46,.72,14,'#f8e4d8',1.5);
+}
 function shelf(x, y, w, h) {
   let s = box(x, y, w, .4, h, C.wood);
   const cols = [C.glass, C.coral, C.lav, C.white, C.butter];
@@ -313,6 +362,37 @@ function workDesk(x, y, dual, chairColor = C.white, mat) {
     monitor(x - (dual ? .6 : .3), y - 1.02) + (dual ? monitor(x + .02, y - 1.02) : '') + chair(x - .2, y - .35, chairColor);
 }
 
+function manuscript(x,y,z) {
+  let out=flat(x,y,.58,.44,z,C.white,.7);
+  for(let i=0;i<3;i++)out+=flat(x+.08,y+.08+i*.09,.39,.012,z+1,'#aebed0',.15);
+  return out;
+}
+function dayCalendar(x,y,z) {
+  const a=up(iso(x,y),z),b=up(iso(x+.46,y),z),c=up(iso(x+.46,y),z+12),d=up(iso(x,y),z+12);
+  return `<polygon points="${pts([a,b,c,d])}" fill="#fffaf2" stroke="#b9d2d6" stroke-width=".7"/>`+wallPanel('x',y,x,x+.46,z+9,z+12,C.mint,'none')+wallPanel('x',y,x+.13,x+.33,z+3,z+6,C.coral,'none');
+}
+function finishingTouches(r) {
+  const X=r.x,Y=r.y,W=r.w,H=r.h;let out='';
+  if(r.id==='rue') {
+    out+=manuscript(X+1.9,Y+1.9,18.5)+dayCalendar(X+5.9,Y+.25,12);
+    out+=floorLamp(X+6.25,Y+2.4)+books(X+8.3,Y+.1,0,5,.85);
+    out+=plant(X+5.75,Y+.25,.48,12)+plant(X+9.6,Y+.12,.55,0);
+  }
+  if(r.id==='tower')out+=manuscript(X+3.9,Y+1.95,18.5)+cookieJar(X+6.2,Y+1.7,12)+dayCalendar(X+5,Y+1.6,18.5);
+  if(r.id==='lounge')out+=windowOn('y',X,Y+3.7,Y+5.6)+plant(X+.25,Y+3.4,.7)+ottoman(X+3.8,Y+2.5,C.lav);
+  if(r.id==='desk'||r.id==='dev') {
+    const S=slots(r);out+=manuscript(S[0][0]-.45,S[0][1]-.65,18.5);
+    out+=books(X+W-1.1,Y+.15,0,5,.7);
+  }
+  if(r.id==='library')out+=manuscript(X+2.4,Y+3.5,8)+plant(X+3.9,Y+.15,.45,50);
+  if(r.id==='search')out+=pinboard(Y,X+1.2,X+3.3);
+  if(r.floor==='2F') {
+    // Low border plants leave the existing activity slots clear.
+    if(r.id==='meeting')out+=plant(X+W-.35,Y+H-1.9,.55)+plant(X+W-.35,Y+H-3,.65);
+    if(r.id==='lounge')out+=plant(X+.3,Y+H-.3,.6)+plant(X+1.1,Y+H-.3,.5);
+  }
+  return `<g class="workroom-details" aria-hidden="true">${out}</g>`;
+}
 function furniture(r) {
   let s = '';
   const S = slots(r), X = r.x, Y = r.y, W = r.w, H = r.h;
@@ -325,7 +405,7 @@ function furniture(r) {
     s += plant(X + .6, Y + .7, .9) + plant(X + W - .6, Y + H - .7, .9);
   }
   if (r.id === 'rue') {
-    s += windowOn('x', Y, X + 1, X + 3) + windowOn('x', Y, X + 3.4, X + 5.4) + windowOn('x', Y, X + 8.4, X + 10.4);
+    s += windowOn('x', Y, X + 1, X + 5.4) + windowOn('x', Y, X + 8.4, X + 10.4);
     s += table(X + 1.8, Y + 1.6, 1.8, .8, 16, C.white) + monitor(X + 2.4, Y + 1.7, .65) + chair(X + 2.5, Y + 2.6, C.sky);
     s += flat(X + 3.0, Y + 1.95, .5, .35, 18.5, C.glass, 1.5); // 스케치북
     s += box(X + 3.8, Y + 1.8, .5, .5, 12, C.white) + cookieJar(X + 4.05, Y + 2.05, 12); // 낮은 수납 위 과자통
@@ -333,7 +413,7 @@ function furniture(r) {
     const a = up(iso(X + 7, Y + .6), 10), b = up(iso(X + 7.9, Y + .6), 10), c = up(iso(X + 7.9, Y + .6), 44), d = up(iso(X + 7, Y + .6), 44);
     s += legs(X + 7, Y + .5, .9, .2, 10) + `<polygon points="${pts([a, b, c, d])}" fill="${C.white}" stroke="${C.wood}" stroke-width="2"/>` +
       `<rect x="${(a[0] + c[0]) / 2 - 8}" y="${(a[1] + c[1]) / 2 - 6}" width="7" height="5" fill="${C.glass}" transform="skewY(26.6)" transform-origin="${(a[0] + c[0]) / 2} ${(a[1] + c[1]) / 2}"/><rect x="${(a[0] + c[0]) / 2 + 1}" y="${(a[1] + c[1]) / 2 - 6}" width="7" height="5" fill="${C.butter}" transform="skewY(26.6)" transform-origin="${(a[0] + c[0]) / 2} ${(a[1] + c[1]) / 2}"/>`; // 이젤 + 작은 스토리보드
-    s += roundRug(X + 7.9, Y + 3.5, 78, 34, '#E6DDF2') + sofa(X + 6.6, Y + 2.2, 2.4, C.glass, C.lav) + roundTable(X + 7.9, Y + 4.1, 11, 9) + flat(X + 7.75, Y + 3.95, .3, .22, 9, C.coral, 2) + plant(X + 8.15, Y + 4.05, .3, 9);
+    s += roundRug(X + 7.9, Y + 3.5, 78, 34, '#E6DDF2') + sofa(X + 6.6, Y + 2.2, 2.4, C.coral, C.coral) + roundTable(X + 7.9, Y + 4.1, 11, 9) + flat(X + 7.75, Y + 3.95, .3, .22, 9, C.coral, 2) + plant(X + 8.15, Y + 4.05, .3, 9);
     s += cabinet(X + W - 1.4, Y + 4.4, 1, .5, 11, C.wood, 3) + plant(X + W - .6, Y + .8) + plant(X + W - .6, Y + H - .7, .85);
   }
   if (r.id === 'lounge') {
@@ -400,10 +480,16 @@ function furniture(r) {
     s += `<polygon points="${pts([up(iso(X + 1.49, Y + .41), 0), up(iso(X + 1.51, Y + .41), 0), up(iso(X + 1.51, Y + .41), 54), up(iso(X + 1.49, Y + .41), 54)])}" fill="${C.ink}"/>`;
     s += rug(X + .9, Y + .8, 1.2, .7, C.glass);
   }
-  return s;
+  return s + finishingTouches(r);
 }
+// 층 배경은 SVG와 동일한 좌표계(1084×650). 준비된 PNG 경로만 이 표에 추가합니다.
+const FLOOR_BACKGROUNDS = { '2F': 'floor-2f.png', '1F': 'floor-1f.png' }; // 예: '2F': 'floor-2f.png'
 function drawFloor(f) {
-  let s = `<g transform="translate(0 ${floorDy(f.id)})">`;
+  let s = `<g data-floor="${f.id}" transform="translate(0 ${floorDy(f.id)})">`;
+  let labels='';
+  const art=FLOOR_BACKGROUNDS[f.id];
+  if(art) s+=`<image class="floor-art" href="${art}" x="0" y="0" width="${SLAB_W}" height="${SLAB_H}" preserveAspectRatio="none" onload="this.classList.add('loaded')" onerror="this.remove()"/>`;
+  s+='<g class="floor-vector">';
   const A = iso(0, 0), B = iso(COLS, 0), Cc = iso(COLS, ROWS), D = iso(0, ROWS), dn = p => [p[0], p[1] + 12];
   s += `<polygon points="${pts([D, Cc, dn(Cc), dn(D)])}" fill="#dbe4ea"/><polygon points="${pts([Cc, B, dn(B), dn(Cc)])}" fill="#ccd7df"/>`;
   s += `<polygon points="${pts([A, B, Cc, D])}" fill="#eef3f6" stroke="#dbe3e9"/>`;
@@ -418,15 +504,18 @@ function drawFloor(f) {
     if (r.x > 0) s += `<polygon points="${pts([a, d, up(d, 10), up(a, 10)])}" fill="${shade(C.wall, .95)}" stroke="#dbe3e9"/>`;
     s += furniture(r);
     const [lx, ly] = iso(r.x + r.w / 2, r.y + r.h - .45);
-    s += `<text class="room-label" x="${lx}" y="${ly}" text-anchor="middle">${r.name}</text>`;
+    labels += `<text class="room-label" x="${lx}" y="${ly}" text-anchor="middle">${r.name}</text>`;
   }
-  s += `<text class="floor-label" x="${PAD}" y="${PAD + 6}">${f.id}</text><text class="floor-sub" x="${PAD + 40}" y="${PAD + 4}">${f.name}</text>`;
-  return s + '</g>';
+  labels += `<text class="floor-label" x="${PAD}" y="${PAD + 6}">${f.id}</text><text class="floor-sub" x="${PAD + 40}" y="${PAD + 4}">${f.name}</text>`;
+  return s + '</g>' + labels + '</g>';
 }
 function drawMap() {
   const svg = document.getElementById('map');
   svg.setAttribute('width', WORLD_W); svg.setAttribute('height', WORLD_H);
   svg.innerHTML = FLOORS.map(drawFloor).join('');
+  const toggle=document.getElementById('zart');
+  toggle.hidden=!Object.keys(FLOOR_BACKGROUNDS).length;
+  toggle.onclick=()=>{const off=svg.classList.toggle('artwork-off');toggle.setAttribute('aria-pressed',String(!off));};
 }
 
 // ---------- 시점(이동·확대) ----------
@@ -499,6 +588,7 @@ function renderFloors() {
   const box = document.getElementById('floors');
   box.innerHTML = html;
   box.querySelectorAll('.floor').forEach(el => el.onclick = () => { floor = el.dataset.f; store.set('vs-cloud-floor2', floor); render(); fit(); });
+  document.querySelector('.app').dataset.floor = floor;
   const f = FLOORS.find(x => x.id === floor);
   document.getElementById('title').innerHTML = `<span class="fl">${f ? f.id : 'ALL'}</span><b>${f ? `${f.name} · ${f.sub}` : 'LUMINODE 가상스튜디오'}</b>`;
 }
@@ -523,6 +613,8 @@ function renderPeople(visible) {
       }
       const who = s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : ''; // 관제탑 = 이음, 루에 = 흰 고양이
       const desk = deskOf(s), cheer = desk.done.length > 0;
+      el.dataset.room = r.id;
+      el.dataset.floor = r.floor;
       el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who} ${cheer ? 'cheer' : ''} ${proj && projOf(s) !== proj ? 'dim' : ''}`;
       const pp = el.querySelector('.paper'); pp.hidden = !desk.open; pp.textContent = desk.open > 1 ? desk.open : ''; pp.title = desk.open ? `맡긴 일 ${desk.open}건` : '';
       el.querySelectorAll('.arm').forEach(a => a.style.background = s.color || colorOf(s.project));
