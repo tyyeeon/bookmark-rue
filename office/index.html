@@ -142,6 +142,15 @@
   @keyframes cheer { 50% { transform: translateY(-5px); } }
   .queue { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 9000; cursor: pointer; }
   .queue .stack { display: flex; gap: 3px; }
+  .pop { position: absolute; left: 50%; top: 92px; transform: translateX(-50%); width: min(340px, calc(100% - 28px)); z-index: 9500; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px #4a5d7026; padding: 12px 14px; font-size: 12.5px; }
+  .pop h3 { margin: 0 26px 4px 0; font-size: 14px; }
+  .pop .x { position: absolute; right: 8px; top: 6px; border: 0; background: none; font-size: 18px; cursor: pointer; color: var(--muted); }
+  .pop .sub { color: var(--muted); font-size: 11px; margin-bottom: 8px; }
+  .pop .what { background: var(--bg); border-radius: 8px; padding: 7px 9px; margin-bottom: 8px; line-height: 1.45; }
+  .pop ul { list-style: none; margin: 0; padding: 0; } .pop li { padding: 6px 0; border-top: 1px solid var(--line); display: flex; gap: 6px; align-items: center; justify-content: space-between; }
+  .pop li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .pop button.ok, .pop button.no, .pop a.go { flex: none; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 4px 9px; font: inherit; font-size: 11.5px; cursor: pointer; color: var(--text); text-decoration: none; }
+  .pop button.ok { background: #3FB37F; border-color: #3FB37F; color: #fff; font-weight: 700; }
   .queue .stack i { width: 11px; height: 14px; background: #fff; border: 1px solid #E8C25A; border-radius: 2px; }
   .queue span { background: #FFF6DA; border: 1px solid #E8C25A; color: #7a5b0e; border-radius: 7px; padding: 1px 7px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
   .rq { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
@@ -200,6 +209,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
     <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
     <div class="zoom"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="맞춤">⟲</button><button id="zwide" title="넓게 보기">⤢</button><button id="zart" title="그림 배경 전환" aria-pressed="true" hidden>◈</button></div>
+    <div class="pop" id="pop" hidden></div>
     <div class="notice" id="notice" hidden><p></p></div>
     <div class="hint">"사무실 갱신"이라고 말하면 새로 채워요 · 드래그로 이동</div>
     <div class="taskbar" id="taskbar">
@@ -612,7 +622,7 @@ function renderPeople(visible) {
       if (!el) {
         el = document.createElement('div'); el.className = 'av';
         el.innerHTML = `<div class="bubble"></div><img class="sprite" alt=""><div class="person"><div class="shadow"></div><i class="arm l"></i><i class="arm r"></i><div class="body"></div><div class="head"></div></div><div class="paper" hidden></div><div class="tag"><span class="dot"></span><span class="nm"></span></div>`;
-        el.onclick = () => { selected = s.id; seeDone(s.id); render(); };
+        el.onclick = () => { selected = s.id; seeDone(s.id); render(); showPerson(s.id); };
         el.style.left = px + 'px'; el.style.top = py + 'px';
         host.appendChild(el); els.set(s.id, el);
       }
@@ -640,7 +650,7 @@ function renderPeople(visible) {
   // 확인 대기 줄: 2층 대표실 앞
   let q = document.getElementById('queue');
   const hold = reqs.filter(r => r.status === 'hold');
-  if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.onclick = () => document.getElementById('rq-card').scrollIntoView({ behavior: 'smooth' }); host.appendChild(q); }
+  if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
   q.hidden = !hold.length;
   if (hold.length) {
     const [qx, qy] = iso(15.2, 6.7); q.style.left = qx + 'px'; q.style.top = (qy + floorDy('2F')) + 'px';
@@ -711,6 +721,38 @@ async function submit(kind, text) {
   if (hold) { say('설치·삭제·돈·밖으로 보내기가 들어 있어서 대표실 앞에 세워 뒀어요. "맡긴 일"에서 확인하면 맡겨요.'); return; }
   say(await notifyBoss(r) ? `${t.name}에게 맡겼어요. 이음이 읽고 나눠 줄게요.` : '기록해 뒀어요. 이음이 다음에 확인할 때 나눠 줘요.');
 }
+// ---------- 눌러서 보기: 하는 일 카드, 승인 줄 ----------
+const pop = document.getElementById('pop');
+let popFor = null;
+function closePop() { pop.hidden = true; popFor = null; }
+function openPop(html, key) {
+  pop.innerHTML = '<button class="x" type="button" aria-label="닫기">×</button>' + html; pop.hidden = false; popFor = key;
+  pop.querySelector('.x').onclick = closePop;
+  pop.onpointerdown = e => e.stopPropagation();
+}
+function showPerson(id) {
+  const s = state?.sessions.find(x => x.id === id); if (!s) return;
+  const room = (ROOMS.find(r => r.id === s.room) || {}).name || '';
+  const mine = reqs.filter(r => (r.to === s.id || (r.to === 'boss' && s.room === 'tower')) && r.status !== 'done');
+  const KO = { hold: '확인 대기', new: '접수', assigned: '하는 중' };
+  const what = s.bubble || (window.claude ? STATE_KO[s.state] : '자세한 내용은 claude.ai 사무실에서 보여요.');
+  openPop(`<h3>${esc(roleName(s))}</h3>
+    <div class="sub"><span class="chip ${s.state}">${STATE_KO[s.state]}</span> ${esc(room)} · ${ago(s.lastAt, state.now)}</div>
+    <div class="what">${esc(what)}</div>
+    ${mine.length ? `<b style="font-size:11.5px">맡긴 일 ${mine.length}</b><ul>${mine.map(r => `<li><span>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</span><span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></li>`).join('')}</ul>` : ''}
+    ${dbRef ? '<div class="sub" style="margin:8px 0 0">아래 칸에 쓰면 이 사람에게 맡겨져요.</div>' : ''}`, 'p:' + id);
+}
+function showQueue() {
+  const hold = reqs.filter(r => r.status === 'hold');
+  if (!hold.length) return closePop();
+  openPop(`<h3>확인 대기 ${hold.length}</h3><div class="sub">설치·삭제·돈·밖으로 보내기가 들어간 일이에요. 승인하면 이음에게 넘어가요.</div>
+    <ul>${hold.map(r => `<li data-id="${esc(r.id)}"><span>${esc(r.text || '맡긴 일')}<br><small style="color:var(--muted)">${esc(r.toName || '이음 대표')}</small></span>
+      ${dbRef ? '<span style="display:flex;gap:4px"><button class="ok" type="button">승인</button><button class="no" type="button">취소</button></span>' : '<a class="go" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">승인하러 가기</a>'}</li>`).join('')}</ul>`, 'q');
+  pop.querySelectorAll('li[data-id] button').forEach(b => b.onclick = async () => { await holdAnswer(b.closest('li').dataset.id, b.classList.contains('ok'), b); });
+}
+function refreshPop() { if (pop.hidden) return; if (popFor === 'q') showQueue(); else if (popFor?.startsWith('p:')) showPerson(popFor.slice(2)); }
+document.getElementById('world').addEventListener('pointerdown', e => { if (!e.target.closest('.av, .queue')) closePop(); });
+
 async function holdAnswer(id, ok, btn) {
   const r = reqs.find(x => x.id === id); if (!r || !dbRef) return;
   btn.disabled = true;
@@ -735,7 +777,7 @@ function renderSide(visible) {
         <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div></div>
       <span class="chip ${s.state}">${STATE_KO[s.state]}</span></div>`).join('')
     : `<div class="empty">이 층엔 아무도 없어요.</div>`;
-  document.querySelectorAll('.person-row').forEach(el => el.onclick = () => { selected = el.dataset.id; render(); });
+  document.querySelectorAll('.person-row').forEach(el => el.onclick = () => { selected = el.dataset.id; render(); showPerson(el.dataset.id); });
   const ids = new Set(visible.map(s => s.id));
   document.getElementById('log').innerHTML = state.log.filter(l => ids.has(l.who)).slice(-60).reverse().map(l => `
     <li><time>${new Date(l.at).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</time>
@@ -778,6 +820,7 @@ function render() {
   renderPeople(state.sessions);
   renderSide(visible);
   renderTaskbar();
+  refreshPop();
 }
 
 document.getElementById('legend').innerHTML = ROOMS.map(r => `<div><i style="background:${shade(r.color, .85)}"></i><span><b>${r.name}</b> <span class="muted">${r.what}</span></span></div>`).join('');
