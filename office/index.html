@@ -244,7 +244,7 @@ const ROOMS = [
   { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 대표 · 이음 대표실과 동일 면적' },
   { id: 'lounge',   floor: '2F', name: '라운지',      x: 0,  y: 7, w: 13, h: 6, color: '#FFF7F2', what: '쉬는 중' },
   { id: 'meeting',  floor: '2F', name: '회의실',      x: 13, y: 7, w: 11, h: 6, color: '#EEF7F2', what: '계획 · 할 일 · 연결 도구' },
-  { id: 'desk',     floor: '1F', name: '내 자리',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '답변 · 다음 요청 대기' },
+  { id: 'desk',     floor: '1F', name: '대기실',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '방금 끝냄 · 다음 요청 기다림' },
   { id: 'dev',      floor: '1F', name: '개발실',      x: 13, y: 0, w: 11, h: 7, color: '#EDF7F2', what: '코드 작성 · 수정' },
   { id: 'library',  floor: '1F', name: '자료실',      x: 0,  y: 7, w: 7,  h: 6, color: '#FAF5E8', what: '파일 읽기 · 검색' },
   { id: 'search',   floor: '1F', name: '정보검색실',  x: 7,  y: 7, w: 6,  h: 6, color: '#EEF7FA', what: '웹 검색 · 웹 읽기' },
@@ -855,7 +855,7 @@ function showNotice(msg) { notice.hidden = false; notice.querySelector('p').text
 function fromSnapshot(v) {
   const sessions = (v.people || []).map(p => ({
     id: p.id, project: p.floor || 'plan', name: p.name || '제목 없는 작업', isSubagent: false,
-    // 2층(대표층)은 이음 대표·루에 대표·규연 총괄만. 다른 작업 창은 모두 1층 '내 자리'로 (규연 10-20)
+    // 2층(대표층)은 이음 대표·루에 대표·규연 총괄만. 다른 작업 창은 모두 1층 '대기실'로 (규연 10-20)
     room: roomFloor[p.room] === '2F' && p.room !== 'tower' && p.room !== 'rue' ? 'desk' : roomFloor[p.room] ? p.room : 'desk', state: p.state || 'waiting', bubble: p.bubble || '',
     toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
   })).sort((a, b) => b.lastAt - a.lastAt);
