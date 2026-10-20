@@ -547,7 +547,7 @@ async function loadFile() {
   } catch { live.textContent = '● 불러올 수 없음'; }
 }
 async function startData() {
-  if (!window.claude) { loadFile(); setInterval(loadFile, 5 * 60000); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); return; }
+  if (!window.claude) { loadFile(); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); return; }
   const db = window.claude?.use ? await window.claude.use('db') : null;
   if (!db) { live.textContent = '● 불러올 수 없음'; showNotice('저장된 사무실 상태를 읽지 못했어요. claude.ai에 로그인한 상태로 열어 주세요.'); return; }
   db.doc('snapshot/current').onSnapshot((d) => {
