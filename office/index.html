@@ -42,6 +42,14 @@
   main.drag { cursor: grabbing; }
   .topbar { position: absolute; left: 14px; top: 12px; right: 14px; display: flex; justify-content: space-between; pointer-events: none; z-index: 5; }
   .pill { pointer-events: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; display: flex; gap: 9px; align-items: center; box-shadow: 0 2px 8px #0000000d; }
+  .projbar { position: absolute; left: 14px; right: 14px; top: 54px; display: flex; gap: 6px; overflow-x: auto; z-index: 5; scrollbar-width: none; padding-bottom: 2px; }
+  .projbar::-webkit-scrollbar { display: none; }
+  .pj { flex: none; display: flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font: inherit; font-size: 12px; color: var(--text); cursor: pointer; white-space: nowrap; max-width: 180px; }
+  .pj span { overflow: hidden; text-overflow: ellipsis; }
+  .pj.on { border: 2px solid #67C8F2; padding: 4px 10px; background: #e9f6fd; }
+  .pj i { width: 8px; height: 8px; border-radius: 50%; flex: none; background: #b8bec7; }
+  .pj i.stuck { background: #E5534B; } .pj i.go { background: #3FB37F; }
+  .av.dim { opacity: .15 !important; pointer-events: none; }
   .pill .fl { background: var(--text); color: var(--panel); border-radius: 6px; padding: 1px 6px; font-weight: 700; font-size: 11px; }
   .live-pill { font-weight: 700; font-size: 11px; color: var(--green); }
   .live-pill.off { color: var(--muted); }
@@ -160,6 +168,7 @@
       <div class="pill" id="title"><span class="fl">—</span><b>가상스튜디오</b></div>
       <div class="pill live-pill off" id="live">● 불러오는 중</div>
     </div>
+    <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
     <div class="zoom"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="맞춤">⟲</button><button id="zwide" title="넓게 보기">⤢</button></div>
     <div class="notice" id="notice" hidden><p></p></div>
@@ -430,12 +439,12 @@ function fit() {
   const phone = matchMedia('(max-width: 900px)').matches;
   if (phone) {
     const avail = Math.max(320, innerHeight - document.getElementById('floors').offsetHeight - 96);
-    const k = Math.min((avail - 56) / h, 1.6 * stage.clientWidth / WORLD_W);
-    stage.style.height = Math.round(Math.min(avail, h * k + 64)) + 'px';
+    const k = Math.min((avail - 92) / h, 1.6 * stage.clientWidth / WORLD_W);
+    stage.style.height = Math.round(Math.min(avail, h * k + 100)) + 'px';
   } else stage.style.height = '';
   const r = stage.getBoundingClientRect();
-  view.k = phone ? Math.min((r.height - 56) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 48) / h);
-  view.x = (r.width - WORLD_W * view.k) / 2; view.y = 44 + (r.height - 48 - h * view.k) / 2 - top * view.k;
+  view.k = phone ? Math.min((r.height - 92) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 88) / h);
+  view.x = (r.width - WORLD_W * view.k) / 2; view.y = 84 + (r.height - 88 - h * view.k) / 2 - top * view.k;
   apply();
 }
 function zoomAt(f, cx, cy) {
@@ -514,7 +523,7 @@ function renderPeople(visible) {
       }
       const who = s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : ''; // 관제탑 = 이음, 루에 = 흰 고양이
       const desk = deskOf(s), cheer = desk.done.length > 0;
-      el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who} ${cheer ? 'cheer' : ''}`;
+      el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who} ${cheer ? 'cheer' : ''} ${proj && projOf(s) !== proj ? 'dim' : ''}`;
       const pp = el.querySelector('.paper'); pp.hidden = !desk.open; pp.textContent = desk.open > 1 ? desk.open : ''; pp.title = desk.open ? `맡긴 일 ${desk.open}건` : '';
       el.querySelectorAll('.arm').forEach(a => a.style.background = s.color || colorOf(s.project));
       const sp = el.querySelector('.sprite'); if (who && !sp.src.endsWith(who + '.png')) sp.src = who + '.png';
@@ -636,10 +645,39 @@ function renderSide(visible) {
     <div><b>${esc(l.name)}</b><br>${esc(l.text)}</div></li>`).join('') || `<li><span></span><span class="muted">새 활동이 생기면 여기에 쌓여요.</span></li>`;
 }
 
+// ---------- 프로젝트별 보기 ----------
+// 프로젝트 = 작업 이름. 빨강 = 막힘(답 기다림), 초록 = 작업 중, 회색 = 쉬는 중. 막힌 것부터.
+let proj = store.get('vs-proj') || '';
+const projOf = s => s.room === 'tower' ? '관제탑' : s.name;
+function renderProjects() {
+  const g = new Map();
+  for (const s of state.sessions) {
+    const k = projOf(s), o = g.get(k) || { k, stuck: false, go: false, at: 0 };
+    if (s.state === 'thinking') o.stuck = true; // '답 기다림' = 규연 답을 기다리는 중
+    if (s.state === 'working') o.go = true;
+    o.at = Math.max(o.at, s.lastAt); g.set(k, o);
+  }
+  if (proj && !g.has(proj)) proj = '';
+  const rank = o => o.stuck ? 0 : o.go ? 1 : 2;
+  const list = [...g.values()].sort((a, b) => rank(a) - rank(b) || b.at - a.at);
+  const box = document.getElementById('projbar');
+  box.innerHTML = `<button class="pj ${proj ? '' : 'on'}" data-k="">전체 ${list.length}</button>` + list.map(o =>
+    `<button class="pj ${proj === o.k ? 'on' : ''}" data-k="${esc(o.k)}" title="${o.stuck ? '막힘: 답 기다림' : o.go ? '작업 중' : '쉬는 중'}"><i class="${o.stuck ? 'stuck' : o.go ? 'go' : ''}"></i><span>${esc(o.k)}</span></button>`).join('');
+  box.querySelectorAll('.pj').forEach(el => el.onclick = () => {
+    proj = proj === el.dataset.k ? '' : el.dataset.k; store.set('vs-proj', proj);
+    if (proj) { // 그 프로젝트가 있는 층으로
+      const fl = new Set(state.sessions.filter(s => projOf(s) === proj).map(s => roomFloor[s.room]));
+      floor = fl.size === 1 ? [...fl][0] : '*'; store.set('vs-cloud-floor2', floor);
+    }
+    render(); fit();
+  });
+}
+
 function render() {
   if (!state) return;
   renderFloors();
-  const visible = state.sessions.filter(s => floor === '*' || roomFloor[s.room] === floor);
+  renderProjects();
+  const visible = state.sessions.filter(s => (floor === '*' || roomFloor[s.room] === floor) && (!proj || projOf(s) === proj));
   renderPeople(state.sessions);
   renderSide(visible);
   renderTaskbar();
