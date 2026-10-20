@@ -140,8 +140,12 @@
   .av.cheer .arm { display: block; }
   .av .arm.l { left: 0; transform: rotate(-25deg); } .av .arm.r { right: 0; transform: rotate(25deg); }
   @keyframes cheer { 50% { transform: translateY(-5px); } }
-  .queue { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 9000; cursor: pointer; }
-  .queue .stack { display: flex; gap: 3px; }
+  .queue { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 9000; }
+  .queue .tk { position: absolute; transform: translate(-50%, -100%); display: flex; align-items: center; gap: 4px; cursor: pointer; background: #FFF6DA; border: 1px solid #E8C25A; color: #7a5b0e; border-radius: 8px; padding: 3px 8px; font-size: 13px; font-weight: 700; white-space: nowrap; max-width: 200px; box-shadow: 0 2px 3px #6b521a22; }
+  .queue .tk.ask { background: #FDECEC; border-color: #E59A9A; color: #9a3434; }
+  .queue .tk i { font-style: normal; }
+  .queue .tk span { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; } .queue .tk small { font-weight: 500; font-size: 11px; opacity: .85; overflow: hidden; text-overflow: ellipsis; max-width: 140px; white-space: nowrap; }
+  .queue .qhead { position: absolute; transform: translate(-50%, -100%); background: #fffdf8; border: 1px solid #d9cdbf; color: #4a5058; border-radius: 8px; padding: 3px 9px; font-size: 12.5px; font-weight: 700; white-space: nowrap; cursor: pointer; }
   .side-head { font-size: 11px; font-weight: 700; color: var(--muted); padding: 10px 0 2px; border-top: 1px solid var(--line); }
   .pop { position: absolute; left: 50%; top: 92px; transform: translateX(-50%); width: min(340px, calc(100% - 28px)); z-index: 9500; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 10px 30px #4a5d7026; padding: 12px 14px; font-size: 12.5px; }
   .pop h3 { margin: 0 26px 4px 0; font-size: 14px; }
@@ -152,8 +156,6 @@
   .pop li span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .pop button.ok, .pop button.no, .pop a.go { flex: none; border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 4px 9px; font: inherit; font-size: 11.5px; cursor: pointer; color: var(--text); text-decoration: none; }
   .pop button.ok { background: #3FB37F; border-color: #3FB37F; color: #fff; font-weight: 700; }
-  .queue .stack i { width: 11px; height: 14px; background: #fff; border: 1px solid #E8C25A; border-radius: 2px; }
-  .queue span { background: #FFF6DA; border: 1px solid #E8C25A; color: #7a5b0e; border-radius: 7px; padding: 1px 7px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
   .rq { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
   .rq:last-child { border-bottom: 0; }
   .rq .meta { flex: 1; min-width: 0; }
@@ -652,14 +654,17 @@ function renderPeople(visible) {
     });
   }
   for (const [id, el] of els) if (!seen.has(id)) { el.remove(); els.delete(id); }
-  // 확인 대기 줄: 2층 대표실 앞
+  // 결재 줄: 2층 규연 총괄 책상 앞에 프로젝트 이름표로 줄 섬 (승인 대기 + 규연 답 기다리는 작업, 규연 10-20)
   let q = document.getElementById('queue');
-  const hold = reqs.filter(r => r.status === 'hold');
+  const line = queueLine();
   if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
-  q.hidden = !hold.length;
-  if (hold.length) {
-    const [qx, qy] = iso(15.2, 6.7); q.style.left = qx + 'px'; q.style.top = (qy + floorDy('2F')) + 'px';
-    q.innerHTML = `<div class="stack">${hold.slice(0, 6).map(() => '<i></i>').join('')}</div><span>확인 대기 ${hold.length}</span>`;
+  q.hidden = !line.length || floor === '1F';
+  if (!q.hidden) {
+    const y0 = floorDy('2F'), shown = line.slice(0, 6);
+    const at = i => [628 + i * 26, y0 + 352 + i * 40];
+    const [hx, hy] = [538, y0 + 338];
+    q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}</div>` + shown.map((t, i) => { const [x, y] = at(i); return `<div class="tk ${t.ask ? 'ask' : ''}" style="left:${x}px;top:${y}px;z-index:${Math.round(y)}" title="${esc(t.label + (t.what ? ' · ' + t.what : ''))}"><i>${t.ask ? '💭' : '📄'}</i><span>${esc(t.label)}${t.what ? `<small>${esc(t.what)}</small>` : ''}</span></div>`; }).join('')
+      + (line.length > 6 ? (([x, y]) => `<div class="tk" style="left:${x}px;top:${y}px">+${line.length - 6}</div>`)(at(6)) : '');
   }
 }
 
@@ -747,12 +752,20 @@ function showPerson(id) {
     ${mine.length ? `<b style="font-size:11.5px">맡긴 일 ${mine.length}</b><ul>${mine.map(r => `<li><span>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</span><span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></li>`).join('')}</ul>` : ''}
     ${dbRef ? '<div class="sub" style="margin:8px 0 0">아래 칸에 쓰면 이 사람에게 맡겨져요.</div>' : ''}`, 'p:' + id);
 }
+function queueLine() {
+  const hold = reqs.filter(r => r.status === 'hold').map(r => ({ req: r, label: (r.toName || '이음 대표').replace('총괄 (이음)', '이음 대표'), what: r.text || '' }));
+  const ask = (state?.sessions || []).filter(s => s.state === 'thinking').map(s => ({ ask: true, s, label: roleName(s), what: s.ask || s.bubble || '' }));
+  return [...hold, ...ask];
+}
 function showQueue() {
-  const hold = reqs.filter(r => r.status === 'hold');
-  if (!hold.length) return closePop();
-  openPop(`<h3>확인 대기 ${hold.length}</h3><div class="sub">설치·삭제·돈·밖으로 보내기가 들어간 일이에요. 승인하면 이음에게 넘어가요.</div>
-    <ul>${hold.map(r => `<li data-id="${esc(r.id)}"><span>${esc(r.text || '맡긴 일')}<br><small style="color:var(--muted)">${esc(r.toName || '이음 대표')}</small></span>
-      ${dbRef ? '<span style="display:flex;gap:4px"><button class="ok" type="button">승인</button><button class="no" type="button">취소</button></span>' : '<a class="go" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">승인하러 가기</a>'}</li>`).join('')}</ul>`, 'q');
+  const line = queueLine();
+  if (!line.length) return closePop();
+  const hold = line.filter(t => t.req), ask = line.filter(t => t.ask);
+  openPop(`<h3>결재 줄 ${line.length}</h3>
+    ${hold.length ? `<b style="font-size:11.5px">📄 승인 대기 ${hold.length}</b><div class="sub">설치·삭제·돈·밖으로 보내기가 들어간 일이에요. 승인하면 이음에게 넘어가요.</div>
+    <ul>${hold.map(({ req: r, label }) => `<li data-id="${esc(r.id)}"><span>${esc(label)}<br><small style="color:var(--muted)">${esc(r.text || '맡긴 일')}</small></span>
+      ${dbRef ? '<span style="display:flex;gap:4px"><button class="ok" type="button">승인</button><button class="no" type="button">취소</button></span>' : '<a class="go" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">승인하러 가기</a>'}</li>`).join('')}</ul>` : ''}
+    ${ask.length ? `<b style="font-size:11.5px">💭 규연 답 기다림 ${ask.length}</b><ul>${ask.map(({ s, label }) => `<li><span>${esc(label)}${(s.ask || s.bubble) ? `<br><small style="color:var(--muted)">${esc(s.ask || s.bubble)}</small>` : ''}</span><small style="color:var(--muted)">${ago(s.lastAt, state.now)}</small></li>`).join('')}</ul><div class="sub">그 스레드에 가서 답해 주면 줄에서 빠져요.</div>` : ''}`, 'q');
   pop.querySelectorAll('li[data-id] button').forEach(b => b.onclick = async () => { await holdAnswer(b.closest('li').dataset.id, b.classList.contains('ok'), b); });
 }
 function refreshPop() { if (pop.hidden) return; if (popFor === 'q') showQueue(); else if (popFor?.startsWith('p:')) showPerson(popFor.slice(2)); }
@@ -856,7 +869,7 @@ function fromSnapshot(v) {
   const sessions = (v.people || []).map(p => ({
     id: p.id, project: p.floor || 'plan', name: p.name || '제목 없는 작업', isSubagent: false,
     // 2층(대표층)은 이음 대표·루에 대표·규연 총괄만. 다른 작업 창은 모두 1층 '대기실'로 (규연 10-20)
-    room: roomFloor[p.room] === '2F' && p.room !== 'tower' && p.room !== 'rue' ? 'desk' : roomFloor[p.room] ? p.room : 'desk', state: p.state || 'waiting', bubble: p.bubble || '',
+    room: roomFloor[p.room] === '2F' && p.room !== 'tower' && p.room !== 'rue' ? 'desk' : roomFloor[p.room] ? p.room : 'desk', state: p.state || 'waiting', bubble: p.bubble || '', ask: String(p.ask || '').slice(0, 16),
     toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
   })).sort((a, b) => b.lastAt - a.lastAt);
   // 색 구분: Claude는 주황, Codex는 파스텔 블루(이음·루에는 그림)
