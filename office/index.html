@@ -495,6 +495,7 @@ function furniture(r) {
 }
 // 층 배경은 SVG와 동일한 좌표계(1084×650). 준비된 PNG 경로만 이 표에 추가합니다.
 const FLOOR_BACKGROUNDS = { '2F': 'floor-2f.png?v=gyuyeon-1', '1F': 'floor-1f.png?v=furniture-final-1' }; // 예: '2F': 'floor-2f.png?v=gyuyeon-1'
+const ROOM_LABEL_AT = { library: [2.5, 11.2], desk: [10.6, 8.6], search: [9.6, 12.5], dev: [23.3, 6.6], server: [15.2, 12.4], elevator: [21.2, 12.2] };
 function drawFloor(f) {
   let s = `<g data-floor="${f.id}" transform="translate(0 ${floorDy(f.id)})">`;
   let labels='';
@@ -514,8 +515,11 @@ function drawFloor(f) {
     if (r.y > 0) s += `<polygon points="${pts([a, b, up(b, 10), up(a, 10)])}" fill="${C.wall}" stroke="#dbe3e9"/>`; // 낮은 칸막이
     if (r.x > 0) s += `<polygon points="${pts([a, d, up(d, 10), up(a, 10)])}" fill="${shade(C.wall, .95)}" stroke="#dbe3e9"/>`;
     s += furniture(r);
-    const [lx, ly] = iso(r.x + r.w / 2, r.y + r.h - .45);
-    if(f.id !== '2F') labels += `<text class="room-label" x="${lx}" y="${ly}" text-anchor="middle">${r.name}</text>`;
+    // 1층 이름표: 루에 그림의 빈 바닥 자리에 맞춘 위치(칸 좌표), 글자는 작은 이름판으로
+    const at = ROOM_LABEL_AT[r.id] || [r.x + r.w / 2, r.y + r.h - .45];
+    const [lx, ly] = iso(at[0], at[1]);
+    const lw = r.name.length * 11 + 16;
+    if(f.id !== '2F') labels += `<g class="room-plate" transform="translate(${lx} ${ly})"><rect x="${-lw / 2}" y="-11" width="${lw}" height="19" rx="9.5" fill="#fffdf8" fill-opacity=".9" stroke="#d9cdbf"/><text x="0" y="3" text-anchor="middle" fill="#55606b" font-size="11" font-weight="700">${r.name}</text></g>`;
   }
   if(f.id === '2F') {
     const desks=[['이음 대표',340,216],['규연 총괄',538,302],['루에 대표',730,390]];
