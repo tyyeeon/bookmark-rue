@@ -112,6 +112,41 @@
   .notice { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 6; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; max-width: min(420px, calc(100% - 32px)); box-shadow: 0 4px 16px #0000001a; }
   .notice p { margin: 0 0 8px; }
   .floor:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* 일 맡기기 */
+  .taskbar { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); width: min(560px, calc(100% - 140px)); z-index: 7; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 16px #0000001a; }
+  .tb-top { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); margin-bottom: 6px; }
+  .tb-to b { color: var(--text); }
+  .tb-to button { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0 2px; }
+  .tb-quick { margin-left: auto; display: flex; gap: 4px; }
+  .tb-quick button, .rq button { border: 1px solid var(--line); background: var(--bg); color: var(--text); border-radius: 8px; font-size: 11px; padding: 3px 8px; cursor: pointer; }
+  .tb-form { display: flex; gap: 6px; }
+  .tb-form input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; font: inherit; background: var(--bg); color: var(--text); }
+  .tb-form button { border: 0; border-radius: 9px; padding: 0 14px; background: #67C8F2; color: #fff; font-weight: 700; cursor: pointer; }
+  .tb-msg { font-size: 11.5px; margin-top: 5px; color: var(--muted); min-height: 0; }
+  .tb-msg.warn { color: #b0533f; }
+  .taskbar .tb-link { display: block; text-align: center; padding: 6px; color: var(--text); font-weight: 600; text-decoration: none; }
+  .av .paper { position: absolute; right: -16px; top: 10px; width: 13px; height: 16px; background: #fff; border: 1px solid #c9d6de; border-radius: 2px; transform: rotate(-8deg); box-shadow: 2px 2px 0 #fff, 2px 2px 0 1px #c9d6de; font-size: 8px; line-height: 15px; text-align: center; color: #35424B; font-weight: 700; }
+  .av.cheer .person, .av.cheer .sprite { animation: cheer .7s ease-in-out infinite; }
+  .av.cheer .bubble { display: block !important; border-color: #EE9F8E; }
+  .av .arm { display: none; position: absolute; top: 3px; width: 4px; height: 13px; border-radius: 3px; }
+  .av.cheer .arm { display: block; }
+  .av .arm.l { left: 0; transform: rotate(-25deg); } .av .arm.r { right: 0; transform: rotate(25deg); }
+  @keyframes cheer { 50% { transform: translateY(-5px); } }
+  .queue { position: absolute; transform: translate(-50%, -100%); display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 9000; cursor: pointer; }
+  .queue .stack { display: flex; gap: 3px; }
+  .queue .stack i { width: 11px; height: 14px; background: #fff; border: 1px solid #E8C25A; border-radius: 2px; }
+  .queue span { background: #FFF6DA; border: 1px solid #E8C25A; color: #7a5b0e; border-radius: 7px; padding: 1px 7px; font-size: 10.5px; font-weight: 700; white-space: nowrap; }
+  .rq { display: flex; gap: 8px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .rq:last-child { border-bottom: 0; }
+  .rq .meta { flex: 1; min-width: 0; }
+  .rq .sub { color: var(--muted); font-size: 11px; }
+  .chip.hold { background: #FFF6DA; color: #7a5b0e; } .chip.new { background: #e6efff; color: var(--blue); } .chip.assigned { background: #f1ebff; color: #7a4fd0; } .chip.done { background: #e8f6ee; color: var(--green); }
+  .hint { display: none; }
+  @media (max-width: 900px) {
+    .taskbar { position: fixed; left: 0; right: 0; bottom: 0; transform: none; width: auto; border-radius: 14px 14px 0 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .app { padding-bottom: 120px; }
+    .tb-quick { margin-left: 0; }
+  }
   .led { animation: blink 1.6s steps(2, jump-none) infinite; }
   @keyframes blink { 50% { opacity: .25; } }
   @media (prefers-reduced-motion: reduce) { .led { animation: none; }
@@ -129,9 +164,16 @@
     <div class="zoom"><button id="zin">+</button><button id="zout">−</button><button id="zfit" title="맞춤">⟲</button><button id="zwide" title="넓게 보기">⤢</button></div>
     <div class="notice" id="notice" hidden><p></p></div>
     <div class="hint">"사무실 갱신"이라고 말하면 새로 채워요 · 드래그로 이동</div>
+    <div class="taskbar" id="taskbar">
+      <div class="tb-top"><span class="tb-to">받는 사람: <b id="tb-to">총괄 (이음)</b> <button id="tb-clear" type="button" hidden aria-label="총괄에게로 돌리기">✕</button></span>
+        <span class="tb-quick"><button type="button" data-q="pause">잠깐 멈춰</button><button type="button" data-q="first">이거 먼저</button><button type="button" data-q="ask">끝났어?</button></span></div>
+      <form class="tb-form" id="tb-form"><input id="tb-text" maxlength="240" autocomplete="off" placeholder="예: 오늘 회의록 정리해" aria-label="맡길 일"><button type="submit">맡기기</button></form>
+      <div class="tb-msg" id="tb-msg" role="status"></div>
+    </div>
   </main>
   <aside class="right">
     <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><div id="list"></div></div>
+    <div class="card" id="rq-card"><h2>맡긴 일 <small id="rq-count"></small></h2><div id="rq-list"></div></div>
     <div class="card"><h2>활동 로그</h2><ul class="log" id="log"></ul></div>
     <div class="card"><h2>어디서 무엇을 하나</h2><div class="legend" id="legend"></div></div>
   </aside>
@@ -465,20 +507,23 @@ function renderPeople(visible) {
       let el = els.get(s.id);
       if (!el) {
         el = document.createElement('div'); el.className = 'av';
-        el.innerHTML = `<div class="bubble"></div><img class="sprite" alt=""><div class="person"><div class="shadow"></div><div class="body"></div><div class="head"></div></div><div class="tag"><span class="dot"></span><span class="nm"></span></div>`;
-        el.onclick = () => { selected = s.id; render(); };
+        el.innerHTML = `<div class="bubble"></div><img class="sprite" alt=""><div class="person"><div class="shadow"></div><i class="arm l"></i><i class="arm r"></i><div class="body"></div><div class="head"></div></div><div class="paper" hidden></div><div class="tag"><span class="dot"></span><span class="nm"></span></div>`;
+        el.onclick = () => { selected = s.id; seeDone(s.id); render(); };
         el.style.left = px + 'px'; el.style.top = py + 'px';
         host.appendChild(el); els.set(s.id, el);
       }
       const who = s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : ''; // 관제탑 = 이음, 루에 = 흰 고양이
-      el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who}`;
+      const desk = deskOf(s), cheer = desk.done.length > 0;
+      el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who} ${cheer ? 'cheer' : ''}`;
+      const pp = el.querySelector('.paper'); pp.hidden = !desk.open; pp.textContent = desk.open > 1 ? desk.open : ''; pp.title = desk.open ? `맡긴 일 ${desk.open}건` : '';
+      el.querySelectorAll('.arm').forEach(a => a.style.background = s.color || colorOf(s.project));
       const sp = el.querySelector('.sprite'); if (who && !sp.src.endsWith(who + '.png')) sp.src = who + '.png';
       el.style.left = px + 'px'; el.style.top = py + 'px';
       el.style.zIndex = Math.round(py);
       el.querySelector('.body').style.background = s.color || colorOf(s.project);
       const b = el.querySelector('.bubble');
       const icon = { working: '🔧 ', thinking: '💭 ', waiting: '💬 ', idle: '☕ ' }[s.state];
-      b.textContent = icon + (s.bubble || STATE_KO[s.state]); b.title = s.bubble;
+      b.textContent = cheer ? '🙌 끝났습니다!' : icon + (s.bubble || STATE_KO[s.state]); b.title = cheer ? desk.done.map(r => r.text || '').join('\n') : s.bubble;
       el.querySelector('.nm').textContent = (s.isSubagent ? '↳ ' : '') + s.name;
       el.title = s.name;
       el.querySelector('.tag .dot').className = 'dot ' + (s.state === 'working' || s.state === 'thinking' ? 'live' : '');
@@ -486,7 +531,92 @@ function renderPeople(visible) {
     });
   }
   for (const [id, el] of els) if (!seen.has(id)) { el.remove(); els.delete(id); }
+  // 확인 대기 줄: 2층 대표실 앞
+  let q = document.getElementById('queue');
+  const hold = reqs.filter(r => r.status === 'hold');
+  if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.onclick = () => document.getElementById('rq-card').scrollIntoView({ behavior: 'smooth' }); host.appendChild(q); }
+  q.hidden = !hold.length;
+  if (hold.length) {
+    const [qx, qy] = iso(15.2, 6.7); q.style.left = qx + 'px'; q.style.top = (qy + floorDy('2F')) + 'px';
+    q.innerHTML = `<div class="stack">${hold.slice(0, 6).map(() => '<i></i>').join('')}</div><span>확인 대기 ${hold.length}</span>`;
+  }
 }
+
+// ---------- 일 맡기기 ----------
+// 화면은 실행하지 않는다: requests 기록에 한 줄 남기고, 이음(총괄)에게 알리면 이음이 작업자에게 나눠 준다.
+let reqs = [];
+const OPEN = new Set(['new', 'assigned']);
+const seenDone = new Set(JSON.parse(store.get('vs-seen-done') || '[]'));
+function deskOf(s) {
+  const mine = r => r.to === s.id || (r.to === 'boss' && s.room === 'tower');
+  return {
+    open: reqs.filter(r => OPEN.has(r.status) && mine(r)).length,
+    done: reqs.filter(r => r.status === 'done' && r.to === s.id && !seenDone.has(r.id) && Date.now() - (Date.parse(r.doneAt) || 0) < 12 * 3600e3),
+  };
+}
+function seeDone(id) {
+  const s = state?.sessions.find(x => x.id === id); if (!s) return;
+  deskOf(s).done.forEach(r => seenDone.add(r.id));
+  store.set('vs-seen-done', JSON.stringify([...seenDone].slice(-200)));
+}
+const CMD = /(^\s*[$#>\/\\]|`|\$\(|&&|\|\||[;|]\s*[a-z]|\b(sudo|rm|curl|wget|chmod|chown|npm|npx|pip3?|brew|git|bash|zsh|sh|python3?|node|ssh|scp|kill|mkdir|osascript|powershell)\s+[-\w.\/~])/i;
+const RISK = /설치|깔아|깔기|삭제|지워|지우|없애|결제|구매|구독|송금|이체|입금|돈|비용|유료|사\s?줘|보내|전송|발송|메일|문자|올려|업로드|공유|게시|배포|install|delete|remove|pay|buy|purchase|send|e-?mail|upload|share|publish|deploy/i;
+const QUICK = { pause: '잠깐 멈춰', first: '이거 먼저', ask: '끝났어?' };
+const tb = { to: document.getElementById('tb-to'), clear: document.getElementById('tb-clear'), text: document.getElementById('tb-text'), msg: document.getElementById('tb-msg') };
+function target() {
+  const s = state?.sessions.find(x => x.id === selected);
+  return !s || s.room === 'tower' ? { id: 'boss', name: '총괄 (이음)' } : { id: s.id, name: s.name };
+}
+function say(t, warn) { tb.msg.textContent = t; tb.msg.className = 'tb-msg' + (warn ? ' warn' : ''); }
+function renderTaskbar() {
+  const t = target(); tb.to.textContent = t.name; tb.clear.hidden = t.id === 'boss';
+  const list = reqs.slice().sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 20);
+  document.getElementById('rq-count').textContent = list.length ? `${reqs.filter(r => r.status !== 'done').length}건 진행` : '';
+  const KO = { hold: '확인 대기', new: '접수', assigned: '하는 중', done: '끝남' };
+  document.getElementById('rq-list').innerHTML = list.length ? list.map(r => `
+    <div class="rq" data-id="${esc(r.id)}"><div class="meta"><b>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</b>
+      <div class="sub">${esc(r.toName || '총괄 (이음)')} · ${r.at ? ago(Date.parse(r.at), Date.now()) : ''}${r.note ? ' · ' + esc(r.note) : ''}</div>
+      ${r.status === 'hold' && dbRef ? '<div style="margin-top:5px;display:flex;gap:5px"><button data-act="ok">확인하고 맡기기</button><button data-act="no">취소</button></div>' : ''}</div>
+      <span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></div>`).join('')
+    : '<div class="empty">아래 칸에 할 일을 적어 맡겨 보세요.</div>';
+  document.querySelectorAll('.rq button').forEach(b => b.onclick = () => holdAnswer(b.closest('.rq').dataset.id, b.dataset.act === 'ok', b));
+}
+let dbRef = null, comments = null;
+async function notifyBoss(r) {
+  // 이음에게 알림: 댓글 'Claude에게 보내기'. 안 되면 기록만 남고 다음 확인 때 처리.
+  try {
+    comments ||= await window.claude.use('comments');
+    if (!comments || (await comments.canSendToClaude()) !== 'available') return false;
+    const anchor = await comments.anchorFor(document.getElementById('taskbar'));
+    await comments.sendToClaude({ anchor, text: `[일 맡기기] ${r.toName}에게: ${r.text || QUICK[r.kind]} (요청 ${r.id})` });
+    return true;
+  } catch (e) { return false; }
+}
+async function submit(kind, text) {
+  if (!dbRef) { say('여기서는 맡길 수 없어요. claude.ai 사무실에서 맡겨 주세요.', true); return; }
+  text = (text || '').trim();
+  if (kind === 'task' && !text) return;
+  if (text.length > 240) { say('240자까지만 적을 수 있어요.', true); return; }
+  if (CMD.test(text)) { say('명령어처럼 보이는 글은 받지 않아요. 하고 싶은 일을 말로 적어 주세요.', true); return; }
+  const t = target(), hold = RISK.test(text);
+  const r = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), at: new Date().toISOString(), kind, text, to: t.id, toName: t.name, status: hold ? 'hold' : 'new' };
+  try { await dbRef.collection('requests').doc(r.id).set(r); } catch { say('기록하지 못했어요. 잠시 뒤에 다시 눌러 주세요.', true); return; }
+  tb.text.value = '';
+  if (hold) { say('설치·삭제·돈·밖으로 보내기가 들어 있어서 대표실 앞에 세워 뒀어요. "맡긴 일"에서 확인하면 맡겨요.'); return; }
+  say(await notifyBoss(r) ? `${t.name}에게 맡겼어요. 이음이 읽고 나눠 줄게요.` : '기록해 뒀어요. 이음이 다음에 확인할 때 나눠 줘요.');
+}
+async function holdAnswer(id, ok, btn) {
+  const r = reqs.find(x => x.id === id); if (!r || !dbRef) return;
+  btn.disabled = true;
+  try {
+    if (!ok) { await dbRef.collection('requests').doc(id).delete(); say('취소했어요.'); return; }
+    await dbRef.collection('requests').doc(id).update({ status: 'new', confirmedAt: new Date().toISOString() });
+    say(await notifyBoss({ ...r }) ? '확인했어요. 이음에게 맡겼어요.' : '확인했어요. 이음이 다음에 확인할 때 나눠 줘요.');
+  } catch { say('바꾸지 못했어요. 잠시 뒤에 다시 눌러 주세요.', true); btn.disabled = false; }
+}
+document.getElementById('tb-form').onsubmit = e => { e.preventDefault(); submit('task', tb.text.value); };
+document.querySelectorAll('.tb-quick button').forEach(b => b.onclick = () => submit(b.dataset.q, b.dataset.q === 'first' ? tb.text.value : ''));
+tb.clear.onclick = () => { selected = null; render(); };
 
 function renderSide(visible) {
   document.getElementById('count').textContent = `${visible.filter(s => s.state !== 'idle').length}명 근무 중`;
@@ -512,6 +642,7 @@ function render() {
   const visible = state.sessions.filter(s => floor === '*' || roomFloor[s.room] === floor);
   renderPeople(state.sessions);
   renderSide(visible);
+  renderTaskbar();
 }
 
 document.getElementById('legend').innerHTML = ROOMS.map(r => `<div><i style="background:${shade(r.color, .85)}"></i><span><b>${r.name}</b> <span class="muted">${r.what}</span></span></div>`).join('');
@@ -543,13 +674,19 @@ function stamp() {
 async function loadFile() {
   try {
     const v = await (await fetch('data.json?t=' + Date.now(), { cache: 'no-store' })).json();
+    reqs = v.requests || [];
     notice.hidden = true; snapAt = Date.parse(v.at) || 0; state = fromSnapshot(v); render(); stamp();
   } catch { live.textContent = '● 불러올 수 없음'; }
 }
 async function startData() {
-  if (!window.claude) { loadFile(); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); live.style.cursor = 'pointer'; live.title = '눌러서 새로 읽기'; live.onclick = () => { live.textContent = '● 새로 읽는 중'; loadFile(); }; return; }
+  if (!window.claude) {
+    // 공개 앱: 맡기기는 claude.ai 사무실에서만
+    document.getElementById('taskbar').innerHTML = '<a class="tb-link" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">✍️ 일 맡기기 (claude.ai 사무실에서 열기)</a>';
+    loadFile(); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); live.style.cursor = 'pointer'; live.title = '눌러서 새로 읽기'; live.onclick = () => { live.textContent = '● 새로 읽는 중'; loadFile(); }; return; }
   const db = window.claude?.use ? await window.claude.use('db') : null;
   if (!db) { live.textContent = '● 불러올 수 없음'; showNotice('저장된 사무실 상태를 읽지 못했어요. claude.ai에 로그인한 상태로 열어 주세요.'); return; }
+  dbRef = db;
+  db.collection('requests').onSnapshot(qs => { reqs = qs.docs.map(d => d.data()); if (state) render(); }, () => {});
   db.doc('snapshot/current').onSnapshot((d) => {
     if (!d.exists) { live.textContent = '● 아직 비어 있음'; showNotice('아직 채워진 상태가 없어요. 이음에게 "사무실 갱신"이라고 말하면 지금 상태로 채워요.'); return; }
     const v = d.data();
