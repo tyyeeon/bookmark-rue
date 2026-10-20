@@ -774,7 +774,7 @@ function renderSide(visible) {
   visible = [...visible].sort((a, b) => rank(a) - rank(b));
   const boss = (floor === '*' || floor === '2F') && !proj ? `
     <div class="person-row boss-row"><div class="ava" style="background:#86C98F">규</div>
-      <div class="meta"><b>규연 총괄</b><div class="sub">2F · 일을 맡기는 사람</div></div></div>` : '';
+      <div class="meta"><b>규연 총괄</b><div class="sub">2F · 최종 컨펌</div></div></div>` : '';
   const sideRank = s => rank(s) < 2 ? -1 : /^rue/.test(s.id) ? 1 : /^codex/.test(s.id) ? 2 : 0;
   visible = [...visible].sort((a, b) => rank(a) - rank(b) || sideRank(a) - sideRank(b));
   const rows = visible.map(s => `
