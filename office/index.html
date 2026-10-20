@@ -203,7 +203,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
     <div class="notice" id="notice" hidden><p></p></div>
     <div class="hint">"사무실 갱신"이라고 말하면 새로 채워요 · 드래그로 이동</div>
     <div class="taskbar" id="taskbar">
-      <div class="tb-top"><span class="tb-to">받는 사람: <b id="tb-to">총괄 (이음)</b> <button id="tb-clear" type="button" hidden aria-label="총괄에게로 돌리기">✕</button></span>
+      <div class="tb-top"><span class="tb-to">받는 사람: <b id="tb-to">이음 대표</b> <button id="tb-clear" type="button" hidden aria-label="이음 대표에게로 돌리기">✕</button></span>
         <span class="tb-quick"><button type="button" data-q="pause">잠깐 멈춰</button><button type="button" data-q="first">이거 먼저</button><button type="button" data-q="ask">끝났어?</button></span></div>
       <form class="tb-form" id="tb-form"><input id="tb-text" maxlength="240" autocomplete="off" placeholder="예: 오늘 회의록 정리해" aria-label="맡길 일"><button type="submit">맡기기</button></form>
       <div class="tb-msg" id="tb-msg" role="status"></div>
@@ -224,13 +224,13 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 const TW = 56, TH = 28, WALL = 64, PAD = 24, GAP = 26;
 const COLS = 24, ROWS = 13;
 const FLOORS = [
-  { id: '2F', name: '대표층', sub: '관제탑 · 루에 대표실 · 라운지 · 회의실', color: '#67C8F2' },
+  { id: '2F', name: '대표층', sub: '이음 대표실 · 루에 대표실 · 라운지 · 회의실', color: '#67C8F2' },
   { id: '1F', name: '작업층', sub: '자리 · 개발 · 자료 · 검색 · 서버', color: '#EE9F8E' },
 ];
 const ROOMS = [
   { id: 'huddle',   floor: '2F', name: '소회의실',    x: 0,  y: 0, w: 3,  h: 7, color: '#F4F0F8', what: '짧은 논의 · 둘이 맞춰 보기' },
-  { id: 'tower',    floor: '2F', name: '관제탑실',    x: 3,  y: 0, w: 10.5, h: 7, color: '#F0EEF6', what: '이음 전용 · 루에실과 동일 면적' },
-  { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 전용 · 관제탑실과 동일 면적' },
+  { id: 'tower',    floor: '2F', name: '이음 대표실',    x: 3,  y: 0, w: 10.5, h: 7, color: '#F0EEF6', what: '이음 대표 · 루에 대표실과 동일 면적' },
+  { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 대표 · 이음 대표실과 동일 면적' },
   { id: 'lounge',   floor: '2F', name: '라운지',      x: 0,  y: 7, w: 13, h: 6, color: '#FFF7F2', what: '쉬는 중' },
   { id: 'meeting',  floor: '2F', name: '회의실',      x: 13, y: 7, w: 11, h: 6, color: '#EEF7F2', what: '계획 · 할 일 · 연결 도구' },
   { id: 'desk',     floor: '1F', name: '내 자리',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '답변 · 다음 요청 대기' },
@@ -504,7 +504,11 @@ function drawFloor(f) {
     if (r.x > 0) s += `<polygon points="${pts([a, d, up(d, 10), up(a, 10)])}" fill="${shade(C.wall, .95)}" stroke="#dbe3e9"/>`;
     s += furniture(r);
     const [lx, ly] = iso(r.x + r.w / 2, r.y + r.h - .45);
-    labels += `<text class="room-label" x="${lx}" y="${ly}" text-anchor="middle">${r.name}</text>`;
+    if(f.id !== '2F') labels += `<text class="room-label" x="${lx}" y="${ly}" text-anchor="middle">${r.name}</text>`;
+  }
+  if(f.id === '2F') {
+    const desks=[['이음 대표',340,216],['규연 총괄',538,302],['루에 대표',730,390]];
+    labels += desks.map(([name,x,y])=>`<g class="desk-nameplate" transform="translate(${x} ${y})" aria-label="${name}"><rect x="-40" y="-15" width="80" height="24" rx="6" fill="#fffdf8" fill-opacity=".96" stroke="#d9cdbf"/><text x="0" y="1" text-anchor="middle" fill="#4a5058" font-size="12" font-weight="700">${name}</text></g>`).join('');
   }
   labels += `<text class="floor-label" x="${PAD}" y="${PAD + 6}">${f.id}</text><text class="floor-sub" x="${PAD + 40}" y="${PAD + 4}">${f.name}</text>`;
   return s + '</g>' + labels + '</g>';
@@ -593,6 +597,7 @@ function renderFloors() {
   document.getElementById('title').innerHTML = `<span class="fl">${f ? f.id : 'ALL'}</span><b>${f ? `${f.name} · ${f.sub}` : 'LUMINODE 가상스튜디오'}</b>`;
 }
 
+const roleName = s => s.room === 'tower' || s.name === '이음' ? '이음 대표' : s.name === '루에' ? '루에 대표' : s.name;
 function renderPeople(visible) {
   const host = document.getElementById('people');
   const seen = new Set();
@@ -625,8 +630,8 @@ function renderPeople(visible) {
       const b = el.querySelector('.bubble');
       const icon = { working: '🔧 ', thinking: '💭 ', waiting: '💬 ', idle: '☕ ' }[s.state];
       b.textContent = cheer ? '🙌 끝났습니다!' : icon + (s.bubble || STATE_KO[s.state]); b.title = cheer ? desk.done.map(r => r.text || '').join('\n') : s.bubble;
-      el.querySelector('.nm').textContent = (s.isSubagent ? '↳ ' : '') + s.name;
-      el.title = s.name;
+      el.querySelector('.nm').textContent = (s.isSubagent ? '↳ ' : '') + roleName(s);
+      el.title = roleName(s);
       el.querySelector('.tag .dot').className = 'dot ' + (s.state === 'working' || s.state === 'thinking' ? 'live' : '');
       seen.add(s.id);
     });
@@ -644,7 +649,7 @@ function renderPeople(visible) {
 }
 
 // ---------- 일 맡기기 ----------
-// 화면은 실행하지 않는다: requests 기록에 한 줄 남기고, 이음(총괄)에게 알리면 이음이 작업자에게 나눠 준다.
+// 화면은 실행하지 않는다: requests 기록에 한 줄 남기고, 이음(대표)에게 알리면 이음이 작업자에게 나눠 준다.
 let reqs = [];
 const OPEN = new Set(['new', 'assigned']);
 const seenDone = new Set(JSON.parse(store.get('vs-seen-done') || '[]'));
@@ -666,7 +671,7 @@ const QUICK = { pause: '잠깐 멈춰', first: '이거 먼저', ask: '끝났어?
 const tb = { to: document.getElementById('tb-to'), clear: document.getElementById('tb-clear'), text: document.getElementById('tb-text'), msg: document.getElementById('tb-msg') };
 function target() {
   const s = state?.sessions.find(x => x.id === selected);
-  return !s || s.room === 'tower' ? { id: 'boss', name: '총괄 (이음)' } : { id: s.id, name: s.name };
+  return !s || s.room === 'tower' ? { id: 'boss', name: '이음 대표' } : { id: s.id, name: roleName(s) };
 }
 function say(t, warn) { tb.msg.textContent = t; tb.msg.className = 'tb-msg' + (warn ? ' warn' : ''); }
 function renderTaskbar() {
@@ -676,7 +681,7 @@ function renderTaskbar() {
   const KO = { hold: '확인 대기', new: '접수', assigned: '하는 중', done: '끝남' };
   document.getElementById('rq-list').innerHTML = list.length ? list.map(r => `
     <div class="rq" data-id="${esc(r.id)}"><div class="meta"><b>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</b>
-      <div class="sub">${esc(r.toName || '총괄 (이음)')} · ${r.at ? ago(Date.parse(r.at), Date.now()) : ''}${r.note ? ' · ' + esc(r.note) : ''}</div>
+      <div class="sub">${esc((r.toName || '이음 대표').replace('총괄 (이음)', '이음 대표'))} · ${r.at ? ago(Date.parse(r.at), Date.now()) : ''}${r.note ? ' · ' + esc(r.note) : ''}</div>
       ${r.status === 'hold' && dbRef ? '<div style="margin-top:5px;display:flex;gap:5px"><button data-act="ok">확인하고 맡기기</button><button data-act="no">취소</button></div>' : ''}</div>
       <span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></div>`).join('')
     : '<div class="empty">아래 칸에 할 일을 적어 맡겨 보세요.</div>';
@@ -725,7 +730,7 @@ function renderSide(visible) {
   document.getElementById('list').innerHTML = visible.length ? visible.map(s => `
     <div class="person-row" data-id="${esc(s.id)}">
       <div class="ava" style="background:${s.color || colorOf(s.project)}">${esc((s.name || '?')[0])}</div>
-      <div class="meta"><b>${s.isSubagent ? '↳ ' : ''}${esc(s.name)}</b>
+      <div class="meta"><b>${s.isSubagent ? '↳ ' : ''}${esc(roleName(s))}</b>
         <div class="sub">${esc(room[s.room])}${s.bubble ? ' · ' + esc(s.bubble) : ''}</div>
         <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div></div>
       <span class="chip ${s.state}">${STATE_KO[s.state]}</span></div>`).join('')
@@ -740,7 +745,7 @@ function renderSide(visible) {
 // ---------- 프로젝트별 보기 ----------
 // 프로젝트 = 작업 이름. 빨강 = 막힘(답 기다림), 초록 = 작업 중, 회색 = 쉬는 중. 막힌 것부터.
 let proj = store.get('vs-proj') || '';
-const projOf = s => s.room === 'tower' ? '관제탑' : s.name;
+const projOf = s => s.room === 'tower' ? '이음 대표' : roleName(s);
 function renderProjects() {
   const g = new Map();
   for (const s of state.sessions) {

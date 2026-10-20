@@ -3,3 +3,8 @@
 .gyuyeon-name{background:var(--card);border:1px solid #edb6a1;border-radius:8px;padding:3px 8px;white-space:nowrap;font-size:11px}.gyuyeon-name small{font-size:9px;color:var(--muted);margin-left:4px}
 .zoom .gyuyeon-toggle{width:34px;height:34px;padding:4px;font-size:19px;line-height:1;background:var(--panel);color:var(--text)}
 .zoom .gyuyeon-toggle[hidden]{display:none}.gyuyeon-avatar:focus-visible,.gyuyeon-toggle:focus-visible{outline:3px solid #67c8f2;outline-offset:4px}
+#map > g[data-floor="2F"] > .floor-art{filter:saturate(.88)}
+#map > g[data-floor="1F"] > .floor-art{filter:saturate(.94)}
+
+/* The central desk has one nameplate; retain avatar geometry without duplicate text. */
+.gyuyeon-name{visibility:hidden}

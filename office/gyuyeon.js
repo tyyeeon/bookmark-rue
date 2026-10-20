@@ -14,10 +14,10 @@ toggle.type = 'button'; toggle.className = 'gyuyeon-toggle';
 toggle.title = '규연의 장식 캐릭터 모습 전환 · 접속 상태와 무관';
 function render() {
   image.src = assets[mode]; image.alt = mode === 'human' ? '쿠키와 보고서를 든 사람 규연' : '쿠키와 보고서를 든 다람쥐 규연';
-  avatar.setAttribute('aria-label', `${mode === 'human' ? '사람' : '다람쥐'} 규연 · 눌러서 모습 전환 · 장식 캐릭터`);
+  avatar.setAttribute('aria-label', `${mode === 'human' ? '사람' : '다람쥐'} 규연 총괄 · 눌러서 모습 전환 · 장식 캐릭터`);
   toggle.textContent = mode === 'human' ? '🐿️' : '🙂';
   toggle.title = mode === 'human' ? '다람쥐 규연으로 변신 · 장식 캐릭터' : '사람 규연으로 변신 · 장식 캐릭터';
-  avatar.querySelector('.gyuyeon-name').innerHTML = `규연 · ${mode === 'human' ? '사람' : '다람쥐'} <small>장식</small>`;
+  avatar.querySelector('.gyuyeon-name').textContent = '규연 총괄';
   toggle.setAttribute('aria-label', avatar.getAttribute('aria-label'));
 }
 function change() { mode = mode === 'human' ? 'squirrel' : 'human'; try { localStorage.setItem('office-gyuyeon-mode', mode); } catch {} render(); }
