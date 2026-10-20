@@ -607,7 +607,7 @@ function renderFloors() {
   document.getElementById('title').innerHTML = `<span class="fl">${f ? f.id : 'ALL'}</span><b>${f ? `${f.name} · ${f.sub}` : 'LUMINODE 가상스튜디오'}</b>`;
 }
 
-const roleName = s => s.room === 'tower' || s.name === '이음' ? '이음 대표' : s.name === '루에' ? '루에 대표' : s.name;
+const roleName = s => s.room === 'tower' || s.name === '이음' ? '이음 대표' : (s.name === '루에' || s.id === 'rue-chat' || s.name === '루에 (대표)') ? '루에 대표' : s.name;
 function renderPeople(visible) {
   const host = document.getElementById('people');
   const seen = new Set();
@@ -771,7 +771,7 @@ function renderSide(visible) {
   const room = Object.fromEntries(ROOMS.map(r => [r.id, r.name]));
   document.getElementById('list').innerHTML = visible.length ? visible.map(s => `
     <div class="person-row" data-id="${esc(s.id)}">
-      <div class="ava" style="background:${s.color || colorOf(s.project)}">${esc((s.name || '?')[0])}</div>
+      <div class="ava" style="background:${s.color || colorOf(s.project)}">${esc((roleName(s) || '?')[0])}</div>
       <div class="meta"><b>${s.isSubagent ? '↳ ' : ''}${esc(roleName(s))}</b>
         <div class="sub">${esc(room[s.room])}${s.bubble ? ' · ' + esc(s.bubble) : ''}</div>
         <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div></div>
