@@ -21,3 +21,4 @@
 @media(max-width:370px){body{padding:8px}#haru-v4{height:calc(100dvh - 16px);padding-left:5px;padding-right:5px;border-radius:33px}#haru-v4 .top{padding-left:10px;padding-right:10px}#haru-v4 h1{font-size:32px}#haru-v4 .filters{gap:5px;margin-left:5px;margin-right:5px}#haru-v4 .chip{font-size:10px;gap:3px}#haru-v4 .settings-row{padding:12px 10px;font-size:12px}#haru-v4 .setting-label{gap:7px}#haru-v4 .settings-row>span:last-child{font-size:10px}#haru-v4 .month-title{font-size:15px}}
 @media(prefers-reduced-motion:reduce){#haru-v4 *{transition:none!important}}
 @supports not (backdrop-filter:blur(2px)){#haru-v4 .calendar,#haru-v4 .agenda,#haru-v4 .settings-row{background:#f8faf4f5}}
+#haru-v4 .cover{background:linear-gradient(180deg,#f6f9f1,#e4ecd9)}#haru-v4 .cover-img{object-fit:contain;padding:0 3% 2%}#haru-v4 .start-hotspot{inset:0;bottom:auto;width:100%;height:100%;border-radius:35px}
