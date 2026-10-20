@@ -551,7 +551,7 @@ function deskOf(s) {
   const mine = r => r.to === s.id || (r.to === 'boss' && s.room === 'tower');
   return {
     open: reqs.filter(r => OPEN.has(r.status) && mine(r)).length,
-    done: reqs.filter(r => r.status === 'done' && r.to === s.id && !seenDone.has(r.id) && Date.now() - (Date.parse(r.doneAt) || 0) < 12 * 3600e3),
+    done: reqs.filter(r => r.status === 'done' && mine(r) && !seenDone.has(r.id) && Date.now() - (Date.parse(r.doneAt) || 0) < 12 * 3600e3),
   };
 }
 function seeDone(id) {
