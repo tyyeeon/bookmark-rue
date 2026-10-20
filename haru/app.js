@@ -63,5 +63,5 @@ function collapse(){collapsed=!collapsed;monthly();}let down=0,dragged=false;$('
 $('start').onclick=()=>$('cover').classList.add('hidden');$('show-cover').onclick=$('home-cover').onclick=()=>$('cover').classList.remove('hidden');$('reload').onclick=()=>refresh();
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDialog();if(e.key==='Tab'&&$('dialog').classList.contains('open')){const nodes=[...$('dialog').querySelectorAll('button:not([disabled]),input,select,textarea')].filter(n=>n.getClientRects().length);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){render();if(online())refresh(true);}});setInterval(()=>{if(!document.hidden&&online())refresh(true);},60000);
-render();if(online())refresh(true);else message('연결 전 미리보기예요. 화면을 둘러볼 수 있고, 구글 연결 후 같은 일정표에 저장돼요.');
+render();if(online()){try{const c=JSON.parse(localStorage.getItem('haru-cache')||'null');if(c&&c.ok===true&&Array.isArray(c.items))accept(c);}catch(_){}refresh(true);}else message('연결 전 미리보기예요. 화면을 둘러볼 수 있고, 구글 연결 후 같은 일정표에 저장돼요.');
 })();

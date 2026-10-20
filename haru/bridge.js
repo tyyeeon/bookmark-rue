@@ -7,7 +7,7 @@
   if(!c||!/^https:\/\/script\.google\.com\//.test(c.api))return;
   const runner=(ok,fail)=>{
     const call=(fn,payload)=>{fetch(c.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({k:c.k,fn,payload}),redirect:'follow'})
-      .then(r=>r.json()).then(j=>{if(!j||j.ok!==true)throw new Error((j&&j.error)||'연결하지 못했어요.');ok&&ok(j.result);})
+      .then(r=>r.json()).then(j=>{if(!j||j.ok!==true)throw new Error((j&&j.error)||'연결하지 못했어요.');if(fn==='getHaruState'||fn==='saveHaruEvent'||fn==='setHaruStatus'){try{localStorage.setItem('haru-cache',JSON.stringify(j.result));}catch(_){}}ok&&ok(j.result);})
       .catch(e=>fail&&fail(e instanceof Error?e:new Error(String(e))));};
     return {withSuccessHandler:f=>runner(f,fail),withFailureHandler:f=>runner(ok,f),
       getHaruState:()=>call('getHaruState'),saveHaruEvent:x=>call('saveHaruEvent',x),setHaruStatus:x=>call('setHaruStatus',x)};
