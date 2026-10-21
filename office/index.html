@@ -4,8 +4,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="관제탑">
 <meta name="robots" content="noindex"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=1"><link rel="icon" href="icon-512.png">
-<link rel="stylesheet" href="gyuyeon.css?v=furniture-final-1"></head><body>
+</head><body>
 <title>관제탑</title>
+<link rel="stylesheet" href="gyuyeon.css?v=r3">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
   :root {
@@ -84,6 +85,26 @@
   .av.idle:hover .tag, .av.idle.sel .tag { display: flex; }
   .av.sel .tag { border-color: var(--accent); box-shadow: 0 0 0 2px #d9775733; }
   @keyframes bob { 50% { transform: translateY(-2px); } }
+  /* 책상 계기판: 맥락 % 막대 · 압축 · 교대 깃발 · 계정 (10-21 증축) */
+  .av .hud { margin-top: 3px; display: flex; align-items: center; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; font-size: 9px; line-height: 1.3; white-space: nowrap; color: var(--muted); }
+  .av .hud[hidden] { display: none; }
+  .av .hud .bar { width: 34px; height: 4px; border-radius: 2px; background: #e3e8ee; overflow: hidden; flex: none; }
+  .av .hud .bar b { display: block; height: 100%; background: #3f97c4; }
+  .av .hud.mid .bar b { background: #d89a1e; } .av .hud.high .bar b { background: #d4523f; }
+  .av .hud .fg { display: none; } .av .hud.flag { border-color: #e59a9a; color: #9a3434; } .av .hud.flag .fg { display: inline; }
+  .av.idle .hud { opacity: .75; }
+  .av.thinking .person, .av.thinking .sprite { transform: translateY(-3px); }
+  .quota .allow{margin-top:6px;font:inherit;font-size:12px;padding:5px 10px;border-radius:8px;border:1px solid #d98b78;background:#fff4f0;color:#8a3f2e;cursor:pointer}
+.flagbar { display: flex; gap: 6px; align-items: center; justify-content: space-between; background: #FDECEC; border: 1px solid #E59A9A; color: #9a3434; border-radius: 10px; padding: 7px 9px; margin-bottom: 10px; font-size: 11.5px; }
+  .flagbar button { border: 1px solid #E59A9A; background: #fff; color: #9a3434; border-radius: 8px; font: inherit; font-size: 11px; font-weight: 700; padding: 3px 8px; cursor: pointer; white-space: nowrap; }
+  .quota .q { display: grid; grid-template-columns: 1fr auto; gap: 1px 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .quota .q:first-of-type { border-top: 0; }
+  .quota .q b { font-size: 12px; } .quota .q .pc { font-weight: 800; font-size: 13px; color: #2f86b3; text-align: right; }
+  .quota .q .pc.low { color: #c0453a; } .quota .q .pc.na { color: var(--muted); font-weight: 600; font-size: 11px; }
+  .quota .q .sub { grid-column: 1 / -1; color: var(--muted); font-size: 10.5px; }
+  .quota .q .track { grid-column: 1 / -1; height: 6px; border-radius: 3px; background: #e3e8ee; overflow: hidden; }
+  .quota .q .track b { display: block; height: 100%; background: #3f97c4; border-radius: 3px; } .quota .q .track b.low { background: #d4523f; }
+  .person-row .lane { color: var(--muted); font-size: 10.5px; } .person-row .lane.flag { color: #9a3434; font-weight: 700; }
 
   .person-row { display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; }
   .person-row:first-of-type { border-top: 0; }
@@ -197,12 +218,34 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 
 .floor-art{pointer-events:none}.floor-art.loaded ~ .floor-vector{visibility:hidden}#map.artwork-off .floor-art{display:none}#map.artwork-off .floor-vector{visibility:visible}#zart[hidden]{display:none}
 /* 생성 배경의 가구 원근 차이만 보정. 데이터 좌표/선택 대상은 그대로입니다. */
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="tower"]{translate:-75px 30px}
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="rue"]{translate:5px 55px}
 .snapshot-note{font-size:11px;color:var(--muted);line-height:1.65;margin:0 0 10px;padding:8px;background:var(--bg);border-radius:8px}
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="desk"]{translate:18px 38px}
-#map:has(.floor-art.loaded):not(.artwork-off) + #people .av[data-room="dev"]{translate:0 40px}
-.app[data-floor="1F"] #world [data-floor="2F"],.app[data-floor="1F"] #world [data-floor="2F"] *,.app[data-floor="2F"] #world [data-floor="1F"],.app[data-floor="2F"] #world [data-floor="1F"] *{visibility:hidden}
+.app[data-floor="1F"] #world [data-floor]:not([data-floor="1F"]),.app[data-floor="1F"] #world [data-floor]:not([data-floor="1F"]) *,.app[data-floor="2F"] #world [data-floor]:not([data-floor="2F"]),.app[data-floor="2F"] #world [data-floor]:not([data-floor="2F"]) *,.app[data-floor="3F"] #world [data-floor]:not([data-floor="3F"]),.app[data-floor="3F"] #world [data-floor]:not([data-floor="3F"]) *{visibility:hidden}
+
+/* 책상 배치(루에 r3, 10-22): 직원 = 자세 그림 한 장, 이름표·계기판은 책상 앞 빈 바닥에 */
+.av{transform:none;width:0;height:0;display:block;transition:left 1.4s cubic-bezier(.4,.1,.2,1),top 1.4s cubic-bezier(.4,.1,.2,1)}
+.av .sprite,.av.rue .sprite{display:block;position:absolute;height:auto;max-width:none;filter:drop-shadow(0 2px 2px #0000001a)}
+.av .person,.av .tag,.av .arm{display:none!important}
+.av .bubble{position:absolute;left:0;transform:translateX(-50%);margin:0;z-index:2}
+.av .paper{left:14px;right:auto}
+.av.wait .sprite{transform:none}
+.av.q .bubble{left:auto;right:14px;transform:none;max-width:110px;font-size:10.5px;padding:3px 7px}.av.q .bubble::after{left:auto;right:-5px;bottom:8px;transform:rotate(-45deg)}
+.fgl{z-index:3000;pointer-events:none}
+#map.artwork-off + #people .fgl{display:none}
+.plate{position:absolute;transform:translate(-50%,-50%);width:107px;height:33px;box-sizing:border-box;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:2px 6px;z-index:6000;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:2px;box-shadow:0 2px 8px #566f8512;overflow:hidden}
+.plate > b{display:flex;align-items:center;gap:4px;font-size:10.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plate > b .nm{overflow:hidden;text-overflow:ellipsis}
+.plate .dot{width:6px;height:6px}.plate .dot.live{box-shadow:0 0 0 2px #22a35a22}
+.plate .hud{display:flex;align-items:center;gap:3px;font-size:8.5px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden}
+.plate .hud[hidden]{display:none}
+.plate .hud .bar{width:24px;height:4px;border-radius:2px;background:#e3e8ee;overflow:hidden;flex:none}
+.plate .hud .bar b{display:block;height:100%;background:#3f97c4}
+.plate .hud.mid .bar b{background:#d89a1e}.plate .hud.high .bar b{background:#d4523f}
+.plate .hud .fg{display:none;position:static}.plate .hud.flag{color:#9a3434;font-weight:700}.plate .hud.flag .fg{display:inline}
+.plate:has(.hud.flag){border-color:#e59a9a;background:#fff6f5}
+.plate small{font-size:8.5px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plate small:empty{display:none}
+.plate.idle{opacity:.82}.plate.sel{border-color:var(--accent);box-shadow:0 0 0 2px #d9775733}.plate.dim{opacity:.15;pointer-events:none}
+.plate.boss{border-color:#edb6a1;cursor:default}
+.queue .qhead{z-index:6500}
 </style>
 <div class="app">
   <aside class="left" id="floors"></aside>
@@ -225,7 +268,8 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
     </div>
   </main>
   <aside class="right">
-    <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><p class="snapshot-note">저장된 현황 · 실시간 상태와 다를 수 있어요.<br>상단의 마지막 갱신 시각을 확인해 주세요.</p><div id="list"></div></div>
+    <div class="card quota"><h2>계정 남은 한도 <small id="quota-at"></small></h2><div id="quota"></div></div>
+    <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><p class="snapshot-note">저장된 현황 · 실시간 상태와 다를 수 있어요.<br>상단의 마지막 갱신 시각을 확인해 주세요.</p><div id="flags"></div><div id="list"></div></div>
     <div class="card" id="rq-card"><h2>맡긴 일 <small id="rq-count"></small></h2><div id="rq-list"></div></div>
     <div class="card"><h2>활동 로그</h2><ul class="log" id="log"></ul></div>
     <div class="card"><h2>어디서 무엇을 하나</h2><div class="legend" id="legend"></div></div>
@@ -235,25 +279,30 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 <script>
 
 // ---------- 지도 ----------
-// 두 층짜리 건물. 방 좌표는 각 층 안에서의 칸 좌표.
+// 세 층짜리 건물(규연 10-21 증축). 방 좌표는 각 층 안에서의 칸 좌표.
 const TW = 56, TH = 28, WALL = 64, PAD = 24, GAP = 26;
 const COLS = 24, ROWS = 13;
 const FLOORS = [
-  { id: '2F', name: '대표층', sub: '이음 대표실 · 루에 대표실 · 라운지 · 회의실', color: '#67C8F2' },
-  { id: '1F', name: '작업층', sub: '자리 · 개발 · 자료 · 검색 · 서버', color: '#EE9F8E' },
+  { id: '3F', name: '대표층', sub: '이음 · 규연 · 루에', color: '#67C8F2' },
+  { id: '2F', name: 'Claude층', sub: 'Claude 스레드 책상', color: '#EE9F8E' },
+  { id: '1F', name: 'Codex·루에층', sub: 'Codex 세션 · 루에 대화 책상', color: '#9CC8EE' },
 ];
 const ROOMS = [
-  { id: 'huddle',   floor: '2F', name: '소회의실',    x: 0,  y: 0, w: 3,  h: 7, color: '#F4F0F8', what: '짧은 논의 · 둘이 맞춰 보기' },
-  { id: 'tower',    floor: '2F', name: '이음 대표실',    x: 3,  y: 0, w: 10.5, h: 7, color: '#F0EEF6', what: '이음 대표 · 루에 대표실과 동일 면적' },
-  { id: 'rue',      floor: '2F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 대표 · 이음 대표실과 동일 면적' },
-  { id: 'lounge',   floor: '2F', name: '라운지',      x: 0,  y: 7, w: 13, h: 6, color: '#FFF7F2', what: '쉬는 중' },
-  { id: 'meeting',  floor: '2F', name: '회의실',      x: 13, y: 7, w: 11, h: 6, color: '#EEF7F2', what: '계획 · 할 일 · 연결 도구' },
-  { id: 'desk',     floor: '1F', name: '대기실',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '방금 끝냄 · 다음 요청 기다림' },
-  { id: 'dev',      floor: '1F', name: '개발실',      x: 13, y: 0, w: 11, h: 7, color: '#EDF7F2', what: '코드 작성 · 수정' },
-  { id: 'library',  floor: '1F', name: '자료실',      x: 0,  y: 7, w: 7,  h: 6, color: '#FAF5E8', what: '파일 읽기 · 검색' },
-  { id: 'search',   floor: '1F', name: '정보검색실',  x: 7,  y: 7, w: 6,  h: 6, color: '#EEF7FA', what: '웹 검색 · 웹 읽기' },
-  { id: 'server',   floor: '1F', name: '서버실',      x: 13, y: 7, w: 6,  h: 6, color: '#EDF0F3', what: '명령 실행 · git' },
-  { id: 'elevator', floor: '1F', name: '엘리베이터',  x: 19, y: 7, w: 5,  h: 6, color: '#F2EFF8', what: '서브에이전트 호출' },
+  { id: 'huddle',   floor: '3F', name: '소회의실',    x: 0,  y: 0, w: 3,  h: 7, color: '#F4F0F8', what: '짧은 논의 · 둘이 맞춰 보기' },
+  { id: 'tower',    floor: '3F', name: '이음 대표실',    x: 3,  y: 0, w: 10.5, h: 7, color: '#F0EEF6', what: '이음 대표 · 루에 대표실과 동일 면적' },
+  { id: 'rue',      floor: '3F', name: '루에 대표실', x: 13.5, y: 0, w: 10.5, h: 7, color: '#ECF7FC', what: '루에 대표 · 이음 대표실과 동일 면적' },
+  { id: 'lounge',   floor: '3F', name: '라운지',      x: 0,  y: 7, w: 13, h: 6, color: '#FFF7F2', what: '쉬는 중' },
+  { id: 'meeting',  floor: '3F', name: '회의실',      x: 13, y: 7, w: 11, h: 6, color: '#EEF7F2', what: '계획 · 할 일 · 연결 도구' },
+  { id: 'desk',     floor: '2F', name: '대기실',     x: 0,  y: 0, w: 13, h: 7, color: '#F3F8FB', what: '방금 끝냄 · 다음 요청 기다림' },
+  { id: 'dev',      floor: '2F', name: '개발실',      x: 13, y: 0, w: 11, h: 7, color: '#EDF7F2', what: '코드 작성 · 수정' },
+  { id: 'library',  floor: '2F', name: '자료실',      x: 0,  y: 7, w: 7,  h: 6, color: '#FAF5E8', what: '파일 읽기 · 검색' },
+  { id: 'search',   floor: '2F', name: '정보검색실',  x: 7,  y: 7, w: 6,  h: 6, color: '#EEF7FA', what: '웹 검색 · 웹 읽기' },
+  { id: 'server',   floor: '2F', name: '서버실',      x: 13, y: 7, w: 6,  h: 6, color: '#EDF0F3', what: '명령 실행 · git' },
+  { id: 'elevator', floor: '2F', name: '엘리베이터',  x: 19, y: 7, w: 5,  h: 6, color: '#F2EFF8', what: '서브에이전트 호출' },
+  { id: 'codex',    floor: '1F', name: 'Codex 책상',   x: 0,  y: 0, w: 13, h: 7, color: '#EEF5FC', what: 'Codex 세션 · 한 세션 한 책상' },
+  { id: 'ruedesk',  floor: '1F', name: '루에 대화 책상', x: 13, y: 0, w: 11, h: 7, color: '#ECF7FC', what: '루에 쪽 대화창' },
+  { id: 'lobby',    floor: '1F', name: '로비',        x: 0,  y: 7, w: 19, h: 6, color: '#FFF7F2', what: '오가는 길' },
+  { id: 'lift',     floor: '1F', name: '엘리베이터',  x: 19, y: 7, w: 5,  h: 6, color: '#F2EFF8', what: '층 이동' },
 ];
 const roomFloor = Object.fromEntries(ROOMS.map(r => [r.id, r.floor]));
 const OX = ROWS * TW / 2 + PAD, OY = WALL + PAD + 20;
@@ -277,7 +326,10 @@ function box(x, y, w, d, h, color, z0 = 0) {
          `<polygon points="${pts([up(e, z0), up(c, z0), up(c, t), up(e, t)])}" fill="${shade(color, .88)}" stroke="#00000010"/>` +
          `<polygon points="${pts([up(c, z0), up(b, z0), up(b, t), up(c, t)])}" fill="${shade(color, .78)}" stroke="#00000010"/>`;
 }
+// 1층 새 방은 루에 그림이 오기 전까지 2층 방 가구 모양을 빌려 씀
+const LOOK = { codex: 'desk', ruedesk: 'dev', lobby: 'lounge', lift: 'elevator' };
 function slots(r) {
+  if (LOOK[r.id]) r = { ...r, id: LOOK[r.id] };
   const out = [];
   if (r.id === 'desk') { for (const j of [2.4, 5.4]) for (const i of [2.4, 5.4, 8.4, 11.2]) out.push([r.x + i, r.y + j]); return out; }
   if (r.id === 'dev') { for (const j of [2.4, 5.4]) for (const i of [2.6, 5.6, 8.6]) out.push([r.x + i, r.y + j]); return out; }
@@ -401,7 +453,7 @@ function finishingTouches(r) {
   }
   if(r.id==='library')out+=manuscript(X+2.4,Y+3.5,8)+plant(X+3.9,Y+.15,.45,50);
   if(r.id==='search')out+=pinboard(Y,X+1.2,X+3.3);
-  if(r.floor==='2F') {
+  if(r.floor==='3F') {
     // Low border plants leave the existing activity slots clear.
     if(r.id==='meeting')out+=plant(X+W-.35,Y+H-1.9,.55)+plant(X+W-.35,Y+H-3,.65);
     if(r.id==='lounge')out+=plant(X+.3,Y+H-.3,.6)+plant(X+1.1,Y+H-.3,.5);
@@ -409,6 +461,7 @@ function finishingTouches(r) {
   return `<g class="workroom-details" aria-hidden="true">${out}</g>`;
 }
 function furniture(r) {
+  if (LOOK[r.id]) r = { ...r, id: LOOK[r.id] };
   let s = '';
   const S = slots(r), X = r.x, Y = r.y, W = r.w, H = r.h;
   if (r.id === 'tower') {
@@ -498,7 +551,8 @@ function furniture(r) {
   return s + finishingTouches(r);
 }
 // 층 배경은 SVG와 동일한 좌표계(1084×650). 준비된 PNG 경로만 이 표에 추가합니다.
-const FLOOR_BACKGROUNDS = { '2F': 'floor-2f.png?v=gyuyeon-1', '1F': 'floor-1f.png?v=furniture-final-1' }; // 예: '2F': 'floor-2f.png?v=gyuyeon-1'
+// 3층 증축: 루에 r3 그림(10-22, 1626×975 webp, 바깥은 흰 바탕)
+const FLOOR_BACKGROUNDS = { '3F': 'floor-3f.webp?v=r3', '2F': 'floor-2f.webp?v=r3', '1F': 'floor-1f.webp?v=r3' };
 const ROOM_LABEL_AT = { library: [2.5, 11.2], desk: [10.6, 8.6], search: [9.6, 12.5], dev: [23.3, 6.6], server: [15.2, 12.4], elevator: [21.2, 12.2] };
 function drawFloor(f) {
   let s = `<g data-floor="${f.id}" transform="translate(0 ${floorDy(f.id)})">`;
@@ -523,9 +577,9 @@ function drawFloor(f) {
     const at = ROOM_LABEL_AT[r.id] || [r.x + r.w / 2, r.y + r.h - .45];
     const [lx, ly] = iso(at[0], at[1]);
     const lw = r.name.length * 11 + 16;
-    if(f.id !== '2F') labels += `<g class="room-plate" transform="translate(${lx} ${ly})"><rect x="${-lw / 2}" y="-11" width="${lw}" height="19" rx="9.5" fill="#fffdf8" fill-opacity=".9" stroke="#d9cdbf"/><text x="0" y="3" text-anchor="middle" fill="#55606b" font-size="11" font-weight="700">${r.name}</text></g>`;
+    if(!art) labels += `<g class="room-plate" transform="translate(${lx} ${ly})"><rect x="${-lw / 2}" y="-11" width="${lw}" height="19" rx="9.5" fill="#fffdf8" fill-opacity=".9" stroke="#d9cdbf"/><text x="0" y="3" text-anchor="middle" fill="#55606b" font-size="11" font-weight="700">${r.name}</text></g>`;
   }
-  if(f.id === '2F') {
+  if(f.id === '3F' && !art) {
     const desks=[['이음 대표',340,216],['규연 총괄',538,302],['루에 대표',730,390]];
     labels += desks.map(([name,x,y])=>`<g class="desk-nameplate" transform="translate(${x} ${y})" aria-label="${name}"><rect x="-40" y="-15" width="80" height="24" rx="6" fill="#fffdf8" fill-opacity=".96" stroke="#d9cdbf"/><text x="0" y="1" text-anchor="middle" fill="#4a5058" font-size="12" font-weight="700">${name}</text></g>`).join('');
   }
@@ -582,7 +636,7 @@ addEventListener('resize', fit);
 const PALETTE = ['#d97757', '#3b6fd8', '#22a35a', '#7a4fd0', '#d89a1e', '#1f9bb0', '#c2477a', '#5c6b7a'];
 const hash = s => [...s].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
 const colorOf = s => PALETTE[hash(s) % PALETTE.length];
-const STATE_KO = { working: '작업 중', thinking: '답 기다림', waiting: '방금 끝남', idle: '쉬는 중' };
+const STATE_KO = { working: '일하는 중', thinking: '확인 기다림', waiting: '방금 끝남', idle: '쉬는 중' };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function ago(t, now) {
   const s = Math.max(0, (now - t) / 1000 | 0);
@@ -591,7 +645,7 @@ function ago(t, now) {
 }
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 
-let state = null, floor = store.get('vs-cloud-floor2') || (matchMedia('(max-width: 900px)').matches ? '2F' : '*'), selected = null;
+let state = null, floor = store.get('vs-cloud-floor3') || (matchMedia('(max-width: 900px)').matches ? '3F' : '*'), selected = null;
 const els = new Map();
 
 function renderFloors() {
@@ -600,7 +654,7 @@ function renderFloors() {
     return { ...f, n: ps.length, live: ps.some(s => s.state === 'working' || s.state === 'thinking') };
   });
   if (floor !== '*' && !FLOORS.some(f => f.id === floor)) floor = '*';
-  const all = { id: '*', name: '전체 보기', sub: '두 층 한 번에', color: C.ink, n: state.sessions.length, live: groups.some(g => g.live) };
+  const all = { id: '*', name: '전체 보기', sub: '세 층 한 번에', color: C.ink, n: state.sessions.length, live: groups.some(g => g.live) };
   let html = `<h2>🏢 층별 안내 <small>FLOOR GUIDE</small></h2>`;
   [all, ...groups].forEach(g => {
     html += `<div class="floor ${floor === g.id ? 'on' : ''}" data-f="${g.id}">
@@ -610,64 +664,104 @@ function renderFloors() {
   });
   const box = document.getElementById('floors');
   box.innerHTML = html;
-  box.querySelectorAll('.floor').forEach(el => el.onclick = () => { floor = el.dataset.f; store.set('vs-cloud-floor2', floor); render(); fit(); });
+  box.querySelectorAll('.floor').forEach(el => el.onclick = () => { floor = el.dataset.f; store.set('vs-cloud-floor3', floor); render(); fit(); });
   document.querySelector('.app').dataset.floor = floor;
   const f = FLOORS.find(x => x.id === floor);
   document.getElementById('title').innerHTML = `<span class="fl">${f ? f.id : 'ALL'}</span><b>${f ? `${f.name} · ${f.sub}` : 'LUMINODE 가상스튜디오'}</b>`;
 }
 
 const roleName = s => s.room === 'tower' || s.name === '이음' ? '이음 대표' : (s.name === '루에' || s.id === 'rue-chat' || s.name === '루에 (대표)') ? '루에 대표' : s.name;
+// ---------- 책상 배치 (루에 r3 그림, 10-22) ----------
+// 그림은 1626×975, 지도 한 층은 1084×650 → 좌표를 1.5로 나눔. 세션 하나 = 책상 하나.
+// 순서: 층 그림 → 앉은 직원 → 책상 앞판(같은 그림을 다각형으로 잘라 다시 얹음) → 줄 선 직원 → 이름표
+const ART = 1.5;
+const DESKS = {"3F":[{"id":"eum","chair":[566,279],"plate":[612,455]},{"id":"gyuyeon","chair":[832,411],"plate":[868,554]},{"id":"rue","chair":[1136,551],"plate":[1275,825]}],"2F":[{"id":"1","chair":[609,299],"plate":[464,443]},{"id":"2","chair":[831,410],"plate":[722,563]},{"id":"3","chair":[1081,543],"plate":[1192,624]},{"id":"4","chair":[577,529],"plate":[558,687]},{"id":"5","chair":[833,658],"plate":[815,818]},{"id":"6","chair":[1090,740],"plate":[1033,890]}],"1F":[{"id":"1","chair":[609,299],"plate":[464,443]},{"id":"2","chair":[832,410],"plate":[722,563]},{"id":"3","chair":[1082,543],"plate":[1192,624]},{"id":"4","chair":[577,529],"plate":[558,687]},{"id":"5","chair":[833,658],"plate":[815,818]},{"id":"6","chair":[1091,740],"plate":[1033,890]}]};
+const SPR = {"eum":{"work":[174,205,0.52],"rest":[194,211,0.52],"wait":[150,288,0.44]},"rue":{"work":[154,223,0.42],"rest":[172,250,0.42],"wait":[150,288,0.44]},"claude":{"work":[164,218,0.36],"rest":[166,240,0.36],"wait":[150,288,0.42]},"codex":{"work":[164,220,0.41],"rest":[170,241,0.41],"wait":[150,288,0.42]}};
+const QUEUE3F = [[700, 605], [585, 650], [585, 780]];
+const FG = {"1F":["428,278 495,242 618,306 624,342 620,381 582,415 439,353 428,345","661,408 722,357 853,424 863,452 858,501 817,536 677,471 660,464","898,537 963,486 1094,555 1102,630 1067,666 912,603 898,594","401,519 462,473 596,541 602,615 557,651 414,585 401,578","653,653 716,601 849,670 856,747 814,785 668,719 653,710","916,740 973,684 1095,748 1100,818 1065,852 931,786 916,781"],"2F":["428,278 495,242 618,306 624,342 620,381 582,415 439,353 428,345","661,408 722,357 853,424 863,452 858,501 817,536 677,471 660,464","898,537 963,486 1094,555 1102,630 1067,666 912,603 898,594","401,519 462,473 596,541 602,615 557,651 414,585 401,578","653,653 716,601 849,670 856,747 814,785 668,719 653,710","916,740 973,684 1095,748 1100,818 1065,852 931,786 916,781"],"3F":["405,272 465,250 658,314 662,367 635,395 584,418 407,335","473,241 529,266 529,297 473,273","719,412 767,397 890,446 892,496 851,523 720,468","779,393 821,413 821,443 779,425","956,543 1024,523 1253,590 1254,664 1198,694 1152,708 958,613","1037,509 1096,541 1096,574 1037,542"]};
+const at = (f, p) => [p[0] / ART, p[1] / ART + floorDy(f)];
+const kindOf = s => s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : /^codex/.test(s.id) ? 'codex' : 'claude';
+const poseOf = s => s.state === 'thinking' ? 'wait' : s.state === 'working' ? 'work' : 'rest';
+function seatMap(list) {
+  const out = new Map(), byFloor = { '2F': [], '1F': [] };
+  for (const s of list) {
+    const f = roomFloor[s.room] || '2F';
+    if (f === '3F') out.set(s.id, { floor: '3F', desk: DESKS['3F'].find(d => d.id === (s.room === 'rue' ? 'rue' : 'eum')), lap: 0 });
+    else byFloor[f].push(s);
+  }
+  for (const f of ['2F', '1F']) byFloor[f].sort((a, b) => a.id < b.id ? -1 : 1).forEach((s, i) =>
+    out.set(s.id, { floor: f, desk: DESKS[f][i % 6], lap: Math.floor(i / 6) }));
+  return out;
+}
+function drawForeground(host) {
+  if (host.querySelector('.fgl')) return;
+  host.insertAdjacentHTML('beforeend', FLOORS.map(f => `<svg class="fgl" data-floor="${f.id}" style="top:${floorDy(f.id)}px" width="${SLAB_W}" height="${SLAB_H}" viewBox="0 0 1626 975" aria-hidden="true"><clipPath id="fgc-${f.id}">${FG[f.id].map(p => `<polygon points="${p}"/>`).join('')}</clipPath><image href="${FLOOR_BACKGROUNDS[f.id]}" width="1626" height="975" clip-path="url(#fgc-${f.id})"/></svg>`).join('')
+    + `<div class="plate boss" data-floor="3F" style="left:${at('3F', DESKS['3F'][1].plate)[0]}px;top:${at('3F', DESKS['3F'][1].plate)[1]}px"><b><span class="dot"></span>규연 총괄</b><small>결재 책상</small></div>`);
+}
+const plates = new Map();
 function renderPeople(visible) {
   const host = document.getElementById('people');
-  const seen = new Set();
-  const byRoom = {};
-  for (const s of visible) (byRoom[s.room] ||= []).push(s);
-  for (const r of ROOMS) {
-    const S = slots(r), list = (byRoom[r.id] || []).sort((a, b) => a.id < b.id ? -1 : 1);
-    list.forEach((s, i) => {
-      const [x, y] = S[i % S.length]; const lap = Math.floor(i / S.length);
-      const [px, py0] = iso(x + lap * .5, y + lap * .5), py = py0 + floorDy(r.floor);
-      let el = els.get(s.id);
-      if (!el) {
-        el = document.createElement('div'); el.className = 'av';
-        el.innerHTML = `<div class="bubble"></div><img class="sprite" alt=""><div class="person"><div class="shadow"></div><i class="arm l"></i><i class="arm r"></i><div class="body"></div><div class="head"></div></div><div class="paper" hidden></div><div class="tag"><span class="dot"></span><span class="nm"></span></div>`;
-        el.onclick = () => { selected = s.id; seeDone(s.id); render(); showPerson(s.id); };
-        el.style.left = px + 'px'; el.style.top = py + 'px';
-        host.appendChild(el); els.set(s.id, el);
-      }
-      const who = s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : ''; // 관제탑 = 이음, 루에 = 흰 고양이
-      const desk = deskOf(s), cheer = desk.done.length > 0;
-      el.dataset.room = r.id;
-      el.dataset.floor = r.floor;
-      el.className = `av ${s.state} ${selected === s.id ? 'sel' : ''} ${who} ${cheer ? 'cheer' : ''} ${proj && projOf(s) !== proj ? 'dim' : ''}`;
-      const pp = el.querySelector('.paper'); pp.hidden = !desk.open; pp.textContent = desk.open > 1 ? desk.open : ''; pp.title = desk.open ? `맡긴 일 ${desk.open}건` : '';
-      el.querySelectorAll('.arm').forEach(a => a.style.background = s.color || colorOf(s.project));
-      const sp = el.querySelector('.sprite'); if (who && !sp.src.endsWith(who + '.png')) sp.src = who + '.png';
-      el.style.left = px + 'px'; el.style.top = py + 'px';
-      el.style.zIndex = Math.round(py);
-      el.querySelector('.body').style.background = s.color || colorOf(s.project);
-      const b = el.querySelector('.bubble');
-      const icon = { working: '🔧 ', thinking: '💭 ', waiting: '💬 ', idle: '☕ ' }[s.state];
-      b.textContent = cheer ? '🙌 끝났습니다!' : icon + (s.bubble || STATE_KO[s.state]); b.title = cheer ? desk.done.map(r => r.text || '').join('\n') : s.bubble;
-      el.querySelector('.nm').textContent = (s.isSubagent ? '↳ ' : '') + roleName(s);
-      el.title = roleName(s);
-      el.querySelector('.tag .dot').className = 'dot ' + (s.state === 'working' || s.state === 'thinking' ? 'live' : '');
-      seen.add(s.id);
-    });
+  drawForeground(host);
+  const seen = new Set(), seats = seatMap(visible);
+  // 확인 기다림: 오래 기다린 순으로 3층 규연 책상 앞 줄(3자리). 넘치면 자기 책상 옆에 서서 기다림
+  const waiters = visible.filter(s => s.state === 'thinking').sort((a, b) => a.lastAt - b.lastAt).slice(0, QUEUE3F.length).map(s => s.id);
+  for (const s of visible) {
+    const seat = seats.get(s.id); if (!seat) continue;
+    const kind = kindOf(s), pose = poseOf(s), [px0, py0, sc] = SPR[kind][pose];
+    const qi = waiters.indexOf(s.id), lapDx = seat.lap * 22;
+    let showFloor = seat.floor, anchor;
+    if (qi >= 0) { showFloor = '3F'; anchor = at('3F', QUEUE3F[qi]); }
+    else if (pose === 'wait') anchor = at(seat.floor, [seat.desk.chair[0] + 40, seat.desk.chair[1] + 30]);
+    else anchor = at(seat.floor, seat.desk.chair);
+    anchor[0] += lapDx;
+    let el = els.get(s.id);
+    if (!el) {
+      el = document.createElement('div'); el.className = 'av';
+      el.innerHTML = `<div class="bubble"></div><img class="sprite" alt="" draggable="false"><div class="paper" hidden></div>`;
+      el.onclick = () => { selected = s.id; seeDone(s.id); render(); showPerson(s.id); };
+      host.appendChild(el); els.set(s.id, el);
+    }
+    const desk = deskOf(s), cheer = desk.done.length > 0;
+    el.dataset.room = s.room; el.dataset.floor = showFloor;
+    el.className = `av ${s.state} ${kind} ${pose} ${selected === s.id ? 'sel' : ''} ${cheer ? 'cheer' : ''} ${proj && projOf(s) !== proj ? 'dim' : ''}`;
+    el.style.left = anchor[0] + 'px'; el.style.top = anchor[1] + 'px';
+    el.style.zIndex = (pose === 'wait' ? 4000 : 1000) + Math.round(anchor[1]);
+    const sp = el.querySelector('.sprite'), src = `${kind}-${pose}.png`, w = 300 * sc / ART;
+    if (!sp.src.endsWith(src)) sp.src = src;
+    Object.assign(sp.style, { width: w + 'px', left: -px0 * sc / ART + 'px', top: -py0 * sc / ART + 'px' });
+    const b = el.querySelector('.bubble');
+    b.style.bottom = (qi >= 0 ? py0 * sc / ART - 20 : py0 * sc / ART + 2) + 'px'; el.classList.toggle('q', qi >= 0);
+    const icon = { working: '🔧 ', thinking: '💭 ', waiting: '💬 ', idle: '☕ ' }[s.state];
+    b.textContent = cheer ? '🙌 끝났습니다!' : qi >= 0 ? `💭 ${roleName(s)}${s.ask ? ' · ' + s.ask : ''}` : icon + (s.bubble || STATE_KO[s.state]);
+    b.title = cheer ? desk.done.map(r => r.text || '').join('\n') : s.bubble;
+    const pp = el.querySelector('.paper'); pp.hidden = !desk.open; pp.textContent = desk.open > 1 ? desk.open : ''; pp.title = desk.open ? `맡긴 일 ${desk.open}건` : '';
+    pp.style.top = -py0 * sc / ART * .6 + 'px';
+    el.title = `${roleName(s)} · ${STATE_KO[s.state]}`;
+    // 이름표는 늘 자기 책상 앞(줄 서러 가도 책상에 남음)
+    let pl = plates.get(s.id);
+    if (!pl) {
+      pl = document.createElement('div'); pl.className = 'plate';
+      pl.innerHTML = `<b><span class="dot"></span><span class="nm"></span></b><div class="hud" hidden><i class="bar"><b></b></i><span class="ht"></span><span class="fg">🚩</span></div><small class="st"></small>`;
+      pl.onclick = el.onclick; host.appendChild(pl); plates.set(s.id, pl);
+    }
+    const [lx, ly] = at(seat.floor, seat.desk.plate);
+    pl.style.left = lx + lapDx + 'px'; pl.style.top = ly + seat.lap * 14 + 'px';
+    pl.dataset.floor = seat.floor;
+    pl.className = `plate ${s.state} ${selected === s.id ? 'sel' : ''} ${proj && projOf(s) !== proj ? 'dim' : ''}`;
+    pl.querySelector('.nm').textContent = (s.isSubagent ? '↳ ' : '') + roleName(s);
+    pl.querySelector('.dot').className = 'dot ' + (s.state === 'working' || s.state === 'thinking' ? 'live' : '');
+    const hud = pl.querySelector('.hud'); drawHud(hud, s);
+    pl.querySelector('.st').textContent = hud.hidden ? (qi >= 0 ? '결재 줄에 섬' : STATE_KO[s.state]) : '';
+    seen.add(s.id);
   }
   for (const [id, el] of els) if (!seen.has(id)) { el.remove(); els.delete(id); }
-  // 결재 줄: 2층 규연 총괄 책상 앞에 프로젝트 이름표로 줄 섬 (승인 대기 + 규연 답 기다리는 작업, 규연 10-20)
+  for (const [id, el] of plates) if (!seen.has(id)) { el.remove(); plates.delete(id); }
+  // 결재 줄 머리표: 승인 대기 + 규연 답 기다리는 작업 수 (규연 10-20). 사람은 위에서 줄에 세움
   let q = document.getElementById('queue');
   const line = queueLine();
-  if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
-  q.hidden = !line.length || floor === '1F';
-  if (!q.hidden) {
-    const y0 = floorDy('2F'), shown = line.slice(0, 6);
-    const at = i => [628 + i * 26, y0 + 352 + i * 40];
-    const [hx, hy] = [538, y0 + 338];
-    q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}</div>` + shown.map((t, i) => { const [x, y] = at(i); return `<div class="tk ${t.ask ? 'ask' : ''}" style="left:${x}px;top:${y}px;z-index:${Math.round(y)}" title="${esc(t.label + (t.what ? ' · ' + t.what : ''))}"><i>${t.ask ? '💭' : '📄'}</i><span>${esc(t.label)}${t.what ? `<small>${esc(t.what)}</small>` : ''}</span></div>`; }).join('')
-      + (line.length > 6 ? (([x, y]) => `<div class="tk" style="left:${x}px;top:${y}px">+${line.length - 6}</div>`)(at(6)) : '');
-  }
+  if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.dataset.floor = '3F'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
+  q.hidden = !line.length || (floor !== '*' && floor !== '3F');
+  if (!q.hidden) { const [hx, hy] = at('3F', [585, 845]); q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}${line.length > QUEUE3F.length ? ` · ${QUEUE3F.length}명만 서 있음` : ''}</div>`; }
 }
 
 // ---------- 일 맡기기 ----------
@@ -751,6 +845,7 @@ function showPerson(id) {
   openPop(`<h3>${esc(roleName(s))}</h3>
     <div class="sub"><span class="chip ${s.state}">${STATE_KO[s.state]}</span> ${esc(room)} · ${ago(s.lastAt, state.now)}</div>
     <div class="what">${esc(what)}</div>
+    ${laneLine(s, true)}
     ${mine.length ? `<b style="font-size:11.5px">맡긴 일 ${mine.length}</b><ul>${mine.map(r => `<li><span>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</span><span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></li>`).join('')}</ul>` : ''}
     ${dbRef ? '<div class="sub" style="margin:8px 0 0">아래 칸에 쓰면 이 사람에게 맡겨져요.</div>' : ''}`, 'p:' + id);
 }
@@ -800,9 +895,9 @@ function renderSide(visible) {
   const room = Object.fromEntries(ROOMS.map(r => [r.id, r.name]));
   const rank = s => s.room === 'tower' ? 0 : s.room === 'rue' ? 1 : 2;
   visible = [...visible].sort((a, b) => rank(a) - rank(b));
-  const boss = (floor === '*' || floor === '2F') && !proj ? `
+  const boss = (floor === '*' || floor === '3F') && !proj ? `
     <div class="person-row boss-row"><div class="ava" style="background:#86C98F">규</div>
-      <div class="meta"><b>규연 총괄</b><div class="sub">2F · 최종 컨펌</div></div></div>` : '';
+      <div class="meta"><b>규연 총괄</b><div class="sub">3F · 최종 컨펌</div></div></div>` : '';
   const sideRank = s => rank(s) < 2 ? -1 : /^rue/.test(s.id) ? 1 : /^codex/.test(s.id) ? 2 : 0;
   visible = [...visible].sort((a, b) => rank(a) - rank(b) || sideRank(a) - sideRank(b));
   const rows = visible.map(s => `
@@ -810,7 +905,7 @@ function renderSide(visible) {
       <div class="ava" style="background:${rank(s) === 0 ? '#E9846F' : rank(s) === 1 ? '#5DB8E6' : s.color || colorOf(s.project)}">${esc((roleName(s) || '?')[0])}</div>
       <div class="meta"><b>${s.isSubagent ? '↳ ' : ''}${esc(roleName(s))}</b>
         <div class="sub">${esc(room[s.room])}${s.bubble ? ' · ' + esc(s.bubble) : ''}</div>
-        <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div></div>
+        <div class="sub">${roomFloor[s.room]} · ${ago(s.lastAt, state.now)}</div>${laneLine(s)}</div>
       <span class="chip ${s.state}">${STATE_KO[s.state]}</span></div>`);
   const nBoss = visible.filter(s => rank(s) < 2).length;
   rows.splice(nBoss, 0, boss);
@@ -851,7 +946,7 @@ function renderProjects() {
     proj = proj === el.dataset.k ? '' : el.dataset.k; store.set('vs-proj', proj);
     if (proj) { // 그 프로젝트가 있는 층으로
       const fl = new Set(state.sessions.filter(s => projOf(s) === proj).map(s => roomFloor[s.room]));
-      floor = fl.size === 1 ? [...fl][0] : '*'; store.set('vs-cloud-floor2', floor);
+      floor = fl.size === 1 ? [...fl][0] : '*'; store.set('vs-cloud-floor3', floor);
     }
     render(); fit();
   });
@@ -859,12 +954,15 @@ function renderProjects() {
 
 function render() {
   if (!state) return;
+  applyLive();
   renderFloors();
   renderProjects();
   const visible = state.sessions.filter(s => (floor === '*' || roomFloor[s.room] === floor) && (!proj || projOf(s) === proj));
   renderPeople(state.sessions);
   renderSide(visible);
   renderTaskbar();
+  renderFlags();
+  renderQuota();
   refreshPop();
 }
 
@@ -876,16 +974,23 @@ document.getElementById('legend').innerHTML = ROOMS.map(r => `<div><i style="bac
 const live = document.getElementById('live');
 const notice = document.getElementById('notice');
 function showNotice(msg) { notice.hidden = false; notice.querySelector('p').textContent = msg; }
+function homeRoom(p) {
+  if (p.room === 'tower' || p.room === 'rue') return p.room;
+  if (/^codex/.test(p.id)) return roomFloor[p.room] === '1F' && p.room !== 'ruedesk' ? p.room : 'codex';
+  if (/^rue/.test(p.id)) return 'ruedesk';
+  return roomFloor[p.room] === '2F' ? p.room : 'desk';
+}
 function fromSnapshot(v) {
   const sessions = (v.people || []).map(p => ({
     id: p.id, project: p.floor || 'plan', name: p.name || '제목 없는 작업', isSubagent: false,
-    // 2층(대표층)은 이음 대표·루에 대표·규연 총괄만. 다른 작업 창은 모두 1층 '대기실'로 (규연 10-20)
-    room: roomFloor[p.room] === '2F' && p.room !== 'tower' && p.room !== 'rue' ? 'desk' : roomFloor[p.room] ? p.room : 'desk', state: p.state || 'waiting', bubble: p.bubble || '', ask: String(p.ask || '').slice(0, 16),
-    toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
+    // 3층(대표층)은 이음 대표·루에 대표·규연 총괄만(규연 10-20). Claude 스레드는 2층, Codex·루에 대화창은 1층(규연 10-21 증축)
+    room: homeRoom(p), state: p.state || 'waiting', bubble: p.bubble || '', ask: String(p.ask || '').slice(0, 16),
+    toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, snapState: p.state || 'waiting', lane: p.lane && typeof p.lane === 'object' ? p.lane : null, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
   })).sort((a, b) => b.lastAt - a.lastAt);
   // 색 구분: Claude는 주황, Codex는 파스텔 블루(이음·루에는 그림)
   sessions.forEach(x => { if (!/^rue/.test(x.id)) x.color = /^codex/.test(x.id) ? '#9CC8EE' : '#EE9F8E'; });
   const log = (v.log || []).map(l => ({ at: Date.parse(l.at) || 0, who: l.id, name: l.name, text: l.text })).sort((a, b) => a.at - b.at);
+  snapQuota = v.quota && typeof v.quota === 'object' ? v.quota : null;
   return { now: Date.now(), floors: (v.floors || []).map(name => ({ name, sessions: 0, lastAt: 0 })), sessions, log };
 }
 let snapAt = 0;
@@ -916,11 +1021,195 @@ async function startData() {
     const v = d.data();
     notice.hidden = true;
     snapAt = Date.parse(v.at) || 0;
-    state = fromSnapshot(v); render(); stamp();
+    state = fromSnapshot(v); render(); stamp(); startLanes();
   }, () => { live.textContent = '● 불러올 수 없음'; });
+  db.collection('lanes').onSnapshot(qs => { for (const d of qs.docs) laneDocs[d.id] = d.data(); lanesLoaded(); if (state) render(); }, () => lanesLoaded());
+}
+
+// ---------- 책상 계기판: 맥락 % · 압축 횟수 · 교대 깃발 · 계정 · 남은 한도 (규연 10-21 증축) ----------
+// claude.ai에서는 'Claude Code Remote' 커넥터로 Claude 세션을 직접 읽는다(열 때 + 5분마다, 안 보고 있을 땐 쉼). AI 토큰 안 씀.
+// Codex 값은 맥 보고 스크립트·사무실 갱신이 스냅샷에 넣은 p.lane / v.quota를 쓴다. 루에 ChatGPT 대화는 읽을 방법이 없어 상태만.
+const CCR = 'Claude Code Remote';
+const FLAG = { compacts: 2, pct: 50 }; // 교대 깃발: 압축 2번 이상 + 맥락 50% 이상 (규연 10-21)
+const lanes = new Map(); // 세션 id -> 커넥터로 읽은 값
+let laneDocs = {}, mcpRef = null, liveQuota = null, snapQuota = null;
+let lanesLoaded, lanesReady = new Promise(r => lanesLoaded = r); // 압축 기록을 먼저 읽고 나서 세야 덮어쓰지 않음
+const watching = new Map();
+const parsePayload = r => {
+  let v = r?.payload;
+  if (typeof v === 'string') { const a = v.indexOf('{'), b = v.lastIndexOf('}'); try { v = a < 0 ? null : JSON.parse(v.slice(a, b + 1)); } catch { v = null; } }
+  return v?.ccr || v;
+};
+function laneOf(s) {
+  const live = lanes.get(s.id), doc = laneDocs[s.id] || {}, snap = s.lane || {};
+  if (live) return { ...snap, ...live, compacts: doc.compacts ?? live.compacts ?? snap.compacts ?? 0, atLeast: doc.atLeast ?? snap.atLeast };
+  if (snap.pct == null && snap.compacts == null) return null;
+  return { account: snap.account || (/^codex/.test(s.id) ? 'Codex' : 'Claude'), ...snap, compacts: doc.compacts ?? snap.compacts ?? 0, atLeast: doc.atLeast ?? snap.atLeast };
+}
+const isFlag = l => !!l && l.pct != null && (l.compacts || 0) >= FLAG.compacts && l.pct >= FLAG.pct;
+const compactTxt = l => `압축 ${l.compacts || 0}${l.atLeast ? '+' : ''}`;
+function drawHud(h, s) {
+  const l = laneOf(s);
+  h.hidden = !l || l.pct == null;
+  if (h.hidden) return;
+  h.className = 'hud ' + (l.pct >= 75 ? 'high' : l.pct >= 50 ? 'mid' : '') + (isFlag(l) ? ' flag' : '');
+  h.querySelector('.bar b').style.width = Math.min(100, l.pct) + '%';
+  h.querySelector('.ht').textContent = `${l.pct}% · ${compactTxt(l)}` + (l.account && l.account !== (/^codex/.test(s.id) ? 'Codex' : 'Claude') ? ` · ${l.account}` : ''); // 계정이 기본(2·3층 Claude, 1층 Codex)과 다를 때만 표에, 나머지는 누르면 보임
+  h.title = `맥락 ${l.pct}% 사용 · ${compactTxt(l)}번${l.atLeast ? '(처음 볼 때 이미 압축됨, 최소 1번)' : ''} · 계정 ${l.account || '?'}${isFlag(l) ? ' · 교대 필요' : ''}`;
+}
+function laneLine(s, big) {
+  const l = laneOf(s);
+  if (!l || l.pct == null) return /^rue/.test(s.id) && big ? '<div class="sub">루에 ChatGPT 대화는 맥락·한도를 밖에서 읽을 수 없어요.</div>' : '';
+  return `<div class="${big ? 'sub' : 'lane'}${isFlag(l) ? ' flag' : ''}">${isFlag(l) ? '🚩 교대 필요 · ' : ''}맥락 ${l.pct}% · ${compactTxt(l)} · ${esc(l.account || '')}</div>`;
+}
+// 커넥터가 읽은 진행 상태가 있으면 자세(상태)를 그걸로: 일하는 중 / 확인 기다림 / 쉬는 중
+function applyLive() {
+  for (const s of state.sessions) {
+    const l = lanes.get(s.id); if (!l?.bucket) continue;
+    s.state = l.bucket === 'working' ? 'working' : l.bucket === 'blocked' ? 'thinking'
+      : (s.snapState === 'working' || s.snapState === 'thinking') ? 'waiting' : s.snapState;
+    if (l.updated) s.lastAt = Math.max(s.lastAt, l.updated);
+  }
+}
+const BUCKET = { SESSION_STATUS_BUCKET_WORKING: 'working', SESSION_STATUS_BUCKET_BLOCKED: 'blocked', SESSION_STATUS_BUCKET_REVIEW_READY: 'done', SESSION_STATUS_BUCKET_COMPLETED: 'done', SESSION_STATUS_BUCKET_FAILED: 'done' };
+async function countCompaction(id, lane) {
+  // 압축되면 context_usage.after_boundary가 새 값으로 바뀐다 → 바뀔 때마다 +1 (db lanes/{id}에 기억)
+  const d = laneDocs[id] || {};
+  let compacts = d.compacts || 0, atLeast = !!d.atLeast;
+  if (lane.boundary && lane.boundary !== d.boundary) {
+    if (!d.seen) { compacts = Math.max(compacts, 1); atLeast = true; } // 처음 보는데 이미 압축된 세션: 최소 1번
+    else compacts += 1;
+  }
+  lane.compacts = compacts; lane.atLeast = atLeast;
+  if (!dbRef || (d.seen && d.boundary === (lane.boundary || '') && d.compacts === compacts)) return;
+  const doc = { ...d, seen: true, boundary: lane.boundary || '', compacts, atLeast, pct: lane.pct, at: new Date().toISOString() };
+  laneDocs[id] = doc;
+  try { await dbRef.collection('lanes').doc(id).set(doc); } catch {}
+}
+function watchLane(id) {
+  if (watching.has(id) || !mcpRef) return;
+  const stop = mcpRef.watchTool(CCR, 'get_session', { session_id: id }, async ev => {
+    if (ev.type === 'error') {
+      const c = ev.error?.code;
+      if (['needs_reauth', 'server_not_connected', 'not_in_manifest', 'blocked_by_policy', 'approval_required', 'not_granted', 'selection_required'].includes(c)) { lanes.delete(id); laneNote(c); render(); }
+      return;
+    }
+    const v = parsePayload(ev.result); if (!v?.id) return;
+    const em = v.external_metadata || {}, cu = em.context_usage || {};
+    const lane = { ...(lanes.get(id) || {}), live: true, account: 'Claude',
+      pct: cu.max_tokens ? Math.round(cu.used_tokens / cu.max_tokens * 100) : null, max: cu.max_tokens || 0,
+      boundary: cu.after_boundary || '', bucket: BUCKET[v.status_bucket] || '', updated: Date.parse(v.updated_at) || 0,
+      at: ev.result.cache?.storedAt || Date.now() };
+    await countCompaction(id, lane);
+    lanes.set(id, lane); laneNote(''); render();
+  }, { refetchInterval: 5 * 60e3, cache: { staleTime: 60e3, gcTime: 10 * 60e3 } });
+  watching.set(id, stop);
+}
+let laneMsg = '', laneAsk = false;
+function laneNote(code) {
+  const msg = { needs_reauth: 'Claude Code Remote 연결이 끊겼어요. claude.ai 설정 → 커넥터에서 다시 연결해 주세요.',
+    server_not_connected: 'claude.ai 설정 → 커넥터에 Claude Code Remote가 있어야 맥락 %를 읽어요.',
+    selection_required: '같은 이름의 커넥터가 둘이에요. 하나를 골라 주세요.',
+    not_in_manifest: '이 화면에서 Claude Code Remote가 꺼져 있어요. 아래 버튼으로 켤 수 있어요.',
+    approval_required: '맥락 %·한도를 실시간으로 읽으려면 허용이 필요해요.', blocked_by_policy: '조직 설정이 막고 있어요.', not_granted: '' }[code];
+  laneMsg = msg || '';
+  laneAsk = ['approval_required', 'not_in_manifest', 'not_granted'].includes(code);
+  drawLaneNote();
+}
+function drawLaneNote() {
+  const n = document.getElementById('lane-note'), b = document.getElementById('lane-allow');
+  if (n) { n.hidden = !laneMsg; n.textContent = laneMsg; }
+  if (b) b.hidden = !laneAsk;
+}
+// 실시간 읽기는 보는 사람이 버튼을 눌러 허용해야 켜진다(자동 갱신은 허용 창을 띄우지 못함)
+async function allowLive() {
+  const perms = await window.claude?.use?.('permissions');
+  let st = perms ? (await perms.request(['mcp:' + CCR]))['mcp:' + CCR] : 'prompt';
+  if (st === 'denied' && perms) { try { await perms.manage(); st = await perms.state('mcp:' + CCR); } catch { laneMsg = '이 페이지의 권한(Permissions) 메뉴에서 Claude Code Remote를 켜 주세요.'; laneAsk = false; drawLaneNote(); return; } }
+  if (st !== 'granted' && st !== 'prompt') return;
+  for (const [, stop] of watching) stop();
+  watching.clear(); quotaAt = 0; laneNote('');
+  startLanes();
+}
+async function startLanes() {
+  if (!window.claude?.use || !state) return;
+  if (!mcpRef) { mcpRef = await window.claude.use('mcp'); if (!mcpRef) return; }
+  window.claude.use('permissions').then(async perms => { const st = perms && await perms.state('mcp:' + CCR); if (st === 'prompt' || st === 'denied') laneNote('approval_required'); }).catch(() => {});
+  await Promise.race([lanesReady, new Promise(r => setTimeout(r, 8000))]);
+  const ids = state.sessions.filter(s => /^session_/.test(s.id)).map(s => s.id);
+  for (const [id, stop] of watching) if (!ids.includes(id)) { stop(); watching.delete(id); lanes.delete(id); }
+  ids.forEach(watchLane);
+  loadQuota(ids);
+}
+let quotaAt = 0;
+async function loadQuota(ids) {
+  // 가장 최근에 움직인 Claude 세션의 한도 기록(5시간 · 7일 창)을 읽는다
+  if (!mcpRef || Date.now() - quotaAt < 4 * 60e3) return;
+  quotaAt = Date.now();
+  const order = ids.map(id => state.sessions.find(s => s.id === id)).sort((a, b) => b.lastAt - a.lastAt).map(s => s.id);
+  for (const id of order.slice(0, 3)) {
+    try {
+      const r = await mcpRef.callTool(CCR, 'list_events', { session_id: id, kinds: ['rate_limit_event'], limit: 100 }, { cache: { staleTime: 4 * 60e3, gcTime: 10 * 60e3 } });
+      const v = parsePayload(r), evs = (v?.data || []).filter(e => e.rate_limit_event);
+      const e = evs[evs.length - 1], info = e?.rate_limit_event?.internal_anthropic_catchall?.rate_limit_info;
+      if (info?.unifiedWindows) { liveQuota = { claude: { five: info.unifiedWindows.five_hour, week: info.unifiedWindows.seven_day, at: Date.parse(e.created_at) || Date.now() } }; renderQuota(); return; }
+    } catch (err) { if (['approval_required', 'not_in_manifest', 'not_granted'].includes(err?.code)) laneNote(err.code); if (!err?.retryable) return; }
+  }
+}
+setInterval(() => { if (!document.hidden && state) loadQuota(state.sessions.filter(s => /^session_/.test(s.id)).map(s => s.id)); }, 5 * 60e3);
+const leftTxt = ms => { if (!(ms > 0)) return ''; const m = ms / 60000 | 0; return m >= 1440 ? `${m / 1440 | 0}일 ${(m % 1440) / 60 | 0}시간` : m >= 60 ? `${m / 60 | 0}시간 ${m % 60}분` : `${m}분`; };
+function quotaRow(name, sub, leftPct, star) {
+  if (leftPct == null) return `<div class="q"><b>${name}</b><span class="pc na">읽을 수 없음</span><div class="sub">${sub}</div></div>`;
+  const low = leftPct < 20 ? ' low' : '';
+  return `<div class="q"><b>${name}</b><span class="pc${low}">${leftPct}%${star ? '*' : ''}</span><div class="sub">${sub}</div><div class="track"><b class="${low}" style="width:${Math.max(0, Math.min(100, leftPct))}%"></b></div></div>`;
+}
+function renderQuota() {
+  const box = document.getElementById('quota'); if (!box) return;
+  const now = Date.now(), cl = liveQuota?.claude || snapQuota?.claude, cx = snapQuota?.codex;
+  const win = (w, label) => w && w.utilization != null ? { left: Math.round((1 - w.utilization) * 100), sub: `${label} · ${leftTxt(w.resetsAt * 1000 - now)} 뒤 초기화` } : null;
+  const f = win(cl?.five, '5시간'), wk = win(cl?.week, '7일');
+  const stale = !liveQuota && cl ? ' · *마지막 확인값' : '';
+  let html = '';
+  html += f ? quotaRow('Claude 5시간', f.sub + stale, f.left, !!stale) : quotaRow('Claude 5시간', '사무실을 열면 읽어요', null);
+  html += wk ? quotaRow('Claude 7일', wk.sub + stale, wk.left, !!stale) : '';
+  if (cx && cx.used != null) {
+    const reset = cx.resetsAt ? leftTxt(cx.resetsAt * 1000 - now) + ' 뒤 초기화' : '';
+    const label = cx.window >= 10000 ? '주간' : cx.window >= 1440 ? '하루' : cx.window ? `${Math.round(cx.window / 60)}시간` : '';
+    html += quotaRow('Codex', [label, reset, '*맥 보고값'].filter(Boolean).join(' · '), Math.round(100 - cx.used), true);
+  } else html += quotaRow('Codex', '맥 보고 스크립트를 켜면 보여요', null);
+  html += quotaRow('ChatGPT (루에)', '웹 대화는 한도를 밖에서 읽을 수 없어요', null);
+  box.innerHTML = html + '<div class="sub" id="lane-note" hidden style="color:#b0533f;font-size:11px;margin-top:6px"></div><button id="lane-allow" class="allow" hidden>실시간 읽기 허용</button>';
+  document.getElementById('lane-allow').onclick = allowLive;
+  drawLaneNote();
+  const at = liveQuota?.claude?.at || cl?.at;
+  document.getElementById('quota-at').textContent = at ? ago(at, now) : '';
+}
+// 교대 깃발: 화면을 연 사람이 눌러야 관제탑(이음 대표)에게 알림이 간다. 같은 깃발은 한 번만.
+function flaggedList() { return (state?.sessions || []).map(s => ({ s, l: laneOf(s) })).filter(x => isFlag(x.l)); }
+function renderFlags() {
+  const box = document.getElementById('flags'); if (!box) return;
+  const list = flaggedList(), fresh = list.filter(x => (laneDocs[x.s.id] || {}).notified !== x.l.compacts);
+  box.innerHTML = list.length ? `<div class="flagbar"><span>🚩 교대 필요 ${list.length}명 · ${list.map(x => esc(roleName(x.s))).join(', ')}</span>${fresh.length && dbRef ? '<button type="button" id="flag-send">관제탑에 알리기</button>' : '<span>알림 보냄</span>'}</div>` : '';
+  const b = document.getElementById('flag-send'); if (b) b.onclick = () => sendFlags(fresh, b);
+}
+async function sendFlags(list, btn) {
+  btn.disabled = true;
+  const text = '[교대] ' + list.map(x => `${roleName(x.s)}: 압축 ${x.l.compacts}번 · 맥락 ${x.l.pct}% (${x.s.id})`).join(' / ') + ' → 교대 필요';
+  let ok = false;
+  try {
+    comments ||= await window.claude.use('comments');
+    if (comments && (await comments.canSendToClaude()) === 'available') {
+      const anchor = await comments.anchorFor(document.getElementById('taskbar'));
+      await comments.sendToClaude({ anchor, text }); ok = true;
+    }
+  } catch {}
+  if (!ok) { btn.disabled = false; say('알리지 못했어요. "사무실 갱신" 때 이음이 확인해요.', true); return; }
+  for (const x of list) { const d = { ...(laneDocs[x.s.id] || {}), notified: x.l.compacts }; laneDocs[x.s.id] = d; try { await dbRef.collection('lanes').doc(x.s.id).set(d); } catch {} }
+  say('관제탑에 교대 알림을 보냈어요.'); render();
 }
 drawMap(); setWide(store.get('vs-wide') === '1'); startData();
 setInterval(stamp, 30000);
 </script>
 
-<script type="module" src="gyuyeon.js?v=labels-soft-2"></script></body></html>
+<script type="module" src="gyuyeon.js?v=r3"></script>
+</body></html>

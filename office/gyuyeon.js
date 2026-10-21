@@ -5,7 +5,7 @@ const assets = { human: 'gyuyeon-human.png', squirrel: 'gyuyeon-squirrel.png' };
 let mode = 'human';
 try { if (localStorage.getItem('office-gyuyeon-mode') === 'squirrel') mode = 'squirrel'; } catch {}
 const avatar = document.createElement('button');
-avatar.type = 'button'; avatar.id = 'gyuyeon-avatar'; avatar.dataset.floor = '2F';
+avatar.type = 'button'; avatar.id = 'gyuyeon-avatar'; avatar.dataset.floor = '3F';
 avatar.className = 'gyuyeon-avatar';
 avatar.innerHTML = '<img alt=""><span class="gyuyeon-name">규연 <small>장식 캐릭터</small></span>';
 const image = avatar.querySelector('img');
@@ -28,6 +28,6 @@ image.onload = () => avatar.classList.add('ready');
 image.onerror = () => avatar.classList.remove('ready');
 world.appendChild(avatar);
 document.querySelector('.zoom').appendChild(toggle);
-const sync = () => { toggle.hidden = app.dataset.floor === '1F'; };
+const sync = () => { toggle.hidden = app.dataset.floor !== '*' && app.dataset.floor !== '3F'; };
 new MutationObserver(sync).observe(app, { attributes: true, attributeFilter: ['data-floor'] });
 render(); sync();
