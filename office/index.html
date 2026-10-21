@@ -53,6 +53,8 @@
   .pill .fl { background: var(--text); color: var(--panel); border-radius: 6px; padding: 1px 6px; font-weight: 700; font-size: 11px; }
   .live-pill { font-weight: 700; font-size: 11px; color: var(--green); }
   .live-pill.off { color: var(--muted); }
+  .refresh-btn { font: inherit; font-size: 11.5px; font-weight: 700; color: var(--text); cursor: pointer; }
+  .refresh-btn:disabled { opacity: .6; cursor: default; }
   .zoom { position: absolute; left: 14px; bottom: 14px; z-index: 5; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
   .zoom button { border: 0; background: var(--panel); color: var(--text); width: 34px; height: 32px; font-size: 16px; cursor: pointer; }
   .zoom button + button { border-top: 1px solid var(--line); }
@@ -207,7 +209,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
   <main id="stage">
     <div class="topbar">
       <div class="pill" id="title"><span class="fl">—</span><b>가상스튜디오</b></div>
-      <div class="pill live-pill off" id="live">● 불러오는 중</div>
+      <div style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
     </div>
     <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
@@ -718,16 +720,16 @@ async function notifyBoss(r) {
     return true;
   } catch (e) { return false; }
 }
-async function submit(kind, text) {
+async function submit(kind, text, to) {
   if (!dbRef) { say('여기서는 맡길 수 없어요. claude.ai 사무실에서 맡겨 주세요.', true); return; }
   text = (text || '').trim();
   if (kind === 'task' && !text) return;
   if (text.length > 240) { say('240자까지만 적을 수 있어요.', true); return; }
   if (CMD.test(text)) { say('명령어처럼 보이는 글은 받지 않아요. 하고 싶은 일을 말로 적어 주세요.', true); return; }
-  const t = target(), hold = RISK.test(text);
+  const t = to || target(), hold = RISK.test(text);
   const r = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), at: new Date().toISOString(), kind, text, to: t.id, toName: t.name, status: hold ? 'hold' : 'new' };
   try { await dbRef.collection('requests').doc(r.id).set(r); } catch { say('기록하지 못했어요. 잠시 뒤에 다시 눌러 주세요.', true); return; }
-  tb.text.value = '';
+  if (!to) tb.text.value = '';
   if (hold) { say('설치·삭제·돈·밖으로 보내기가 들어 있어서 대표실 앞에 세워 뒀어요. "맡긴 일"에서 확인하면 맡겨요.'); return; }
   say(await notifyBoss(r) ? `${t.name}에게 맡겼어요. 이음이 읽고 나눠 줄게요.` : '기록해 뒀어요. 이음이 다음에 확인할 때 나눠 줘요.');
 }
@@ -780,6 +782,15 @@ async function holdAnswer(id, ok, btn) {
     say(await notifyBoss({ ...r }) ? '확인했어요. 이음에게 맡겼어요.' : '확인했어요. 이음이 다음에 확인할 때 나눠 줘요.');
   } catch { say('바꾸지 못했어요. 잠시 뒤에 다시 눌러 주세요.', true); btn.disabled = false; }
 }
+// 사무실 갱신 버튼: 이음 대표에게 '사무실 갱신' 요청 (규연 10-21). 폰 앱에서는 claude.ai 사무실을 열어 거기서 누름.
+document.getElementById('refresh').onclick = async e => {
+  const b = e.currentTarget;
+  if (!dbRef) { window.open('https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n', '_blank', 'noopener'); return; }
+  b.disabled = true; b.textContent = '🔄 요청 중';
+  await submit('task', '사무실 갱신', { id: 'boss', name: '이음 대표' });
+  b.textContent = '🔄 요청함';
+  setTimeout(() => { b.disabled = false; b.textContent = '🔄 갱신'; }, 60000);
+};
 document.getElementById('tb-form').onsubmit = e => { e.preventDefault(); submit('task', tb.text.value); };
 document.querySelectorAll('.tb-quick button').forEach(b => b.onclick = () => submit(b.dataset.q, b.dataset.q === 'first' ? tb.text.value : ''));
 tb.clear.onclick = () => { selected = null; render(); };
