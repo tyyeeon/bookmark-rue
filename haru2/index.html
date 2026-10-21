@@ -163,7 +163,7 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
         <div class="agenda" id="agenda"><button class="handle" id="handle" type="button" aria-label="일정 패널 접기 또는 펼치기"></button><div class="agenda-head"><div class="agenda-title" id="selected-label">선택한 날짜</div><button class="small-link" id="agenda-add" type="button">＋ 추가</button></div><div id="agenda-list" aria-live="polite"></div></div>
       </section>
       <section class="view" id="weekly" aria-label="주간 일정"><div class="calendar week-calendar"><div class="cal-head"><button class="arrow" id="week-prev" type="button" aria-label="이전 주">‹</button><div class="month-title" id="week-label">주간</div><button class="arrow" id="week-next" type="button" aria-label="다음 주">›</button></div><div class="week-strip" id="week-strip"></div><div class="timeline" id="timeline"></div></div></section>
-      <section class="view" id="tasks" aria-label="오늘 할 일"><div class="calendar task-card"><div class="agenda-head"><div class="task-title-group"><h2 class="section-heading" id="task-date">오늘 할 일</h2><div class="today-tools" id="task-progress"></div></div><button class="small-link" id="task-add" type="button">＋ 추가</button></div><div id="task-list" aria-live="polite"></div></div><div class="agenda today-agenda"><div class="agenda-head"><h2 class="section-heading">오늘 일정</h2><button class="small-link" id="today-event-add" type="button">＋ 추가</button></div><div id="today-events" aria-live="polite"></div></div></section>
+      <section class="view" id="tasks" aria-label="할 일"><div class="calendar task-card"><div class="agenda-head"><div class="task-title-group"><h2 class="section-heading" id="task-date">할 일</h2><div class="today-tools" id="task-progress"></div></div><button class="small-link" id="task-add" type="button">＋ 추가</button></div><div id="task-list" aria-live="polite"></div></div><div class="agenda today-agenda"><div class="agenda-head"><h2 class="section-heading">오늘 일정</h2><button class="small-link" id="today-event-add" type="button">＋ 추가</button></div><div id="today-events" aria-live="polite"></div></div></section>
       <section class="view" id="settings" aria-label="설정"><h2 class="settings-heading">설정</h2><div class="settings-list">
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 1-4c-1-1 0-3 2-3h2a3 3 0 0 0 3-3c0-5-4-8-9-8Z"/><circle cx="7" cy="11" r=".7"/><circle cx="9" cy="7" r=".7"/><circle cx="14" cy="7" r=".7"/><circle cx="17" cy="10" r=".7"/></svg></span>테마</span><span>연두 잎사귀</span></div>
         <div class="settings-row"><span class="setting-label"><span class="setting-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg></span>시간대</span><span>대한민국 · KST</span></div>
@@ -177,7 +177,7 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
     <nav class="mobile-nav" id="mobile-nav" aria-label="주 메뉴">
       <button class="active" type="button" data-view="monthly" aria-current="page"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 11h16m-11 4h1m4 0h1"/></svg><span>월간</span></button>
       <button type="button" data-view="weekly"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 11h16M9 11v10m6-10v10"/></svg><span>주간</span></button>
-      <button type="button" data-view="tasks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span>오늘 할 일</span></button>
+      <button type="button" data-view="tasks"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg><span>할 일</span></button>
       <button type="button" data-view="settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 3-1 3-3 1v3l-2 2 2 2v3l3 1 1 3h6l1-3 3-1v-3l2-2-2-2V7l-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg><span>설정</span></button>
     </nav>
   </div>
@@ -196,6 +196,6 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script src="../haru/bridge.js?v=8"></script>
-<script src="../haru/app.js?v=8"></script>
+<script src="../haru/app.js?v=9"></script>
 </body>
 </html>
