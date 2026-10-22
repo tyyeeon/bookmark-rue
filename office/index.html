@@ -939,6 +939,7 @@ function renderSide(visible) {
 // 프로젝트 = 작업 이름. 빨강 = 막힘(답 기다림), 초록 = 작업 중, 회색 = 쉬는 중. 막힌 것부터.
 let proj = store.get('vs-proj') || '';
 const projOf = s => s.room === 'tower' ? '이음 대표' : roleName(s);
+let toolsEl = null;
 function renderProjects() {
   const g = new Map();
   for (const s of state.sessions) {
@@ -954,7 +955,8 @@ function renderProjects() {
   box.innerHTML = `<button class="pj ${proj ? '' : 'on'}" data-k="">전체 ${list.length}</button>` + list.map(o =>
     `<button class="pj ${proj === o.k ? 'on' : ''}" data-k="${esc(o.k)}" title="${o.stuck ? '막힘: 답 기다림' : o.go ? '작업 중' : '쉬는 중'}"><i class="${o.stuck ? 'stuck' : o.go ? 'go' : ''}"></i><span>${esc(o.k)}</span></button>`).join('');
   // 폰: 갱신·루에 버튼을 '전체' 옆 한 줄로 (규연 10-22)
-  const tools = document.getElementById('tools');
+  // innerHTML을 다시 쓰면 버튼 묶음이 문서에서 빠지므로 처음 잡은 노드를 계속 씀
+  const tools = toolsEl || (toolsEl = document.getElementById('tools'));
   if (matchMedia('(max-width: 900px)').matches) box.firstElementChild.after(tools);
   else document.querySelector('.topbar').append(tools);
   box.querySelectorAll('.pj').forEach(el => el.onclick = () => {
