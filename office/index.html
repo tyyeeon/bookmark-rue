@@ -47,6 +47,7 @@
   .projbar::-webkit-scrollbar { display: none; }
   .pj { flex: none; display: flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; font: inherit; font-size: 12px; color: var(--text); cursor: pointer; white-space: nowrap; max-width: 180px; }
   .pj span { overflow: hidden; text-overflow: ellipsis; }
+  .floor .short { display: none; font-style: normal; }
   .pj.on { border: 2px solid #67C8F2; padding: 4px 10px; background: #e9f6fd; }
   .pj i { width: 8px; height: 8px; border-radius: 50%; flex: none; background: #b8bec7; }
   .pj i.stuck { background: #E5534B; } .pj i.go { background: #3FB37F; }
@@ -138,6 +139,16 @@
     aside.left .floor { flex: 1; min-width: 96px; margin: 0; padding: 6px 8px; }
     aside.left .floor.on { padding: 5px 7px; }
     aside.left .floor .badge { width: 28px; height: 28px; font-size: 11px !important; }
+    aside.left .floor { flex: 1 1 auto; min-width: 0; position: relative; gap: 6px; padding: 6px 10px 6px 7px; }
+    aside.left .floor b { font-size: 13px; overflow: visible; }
+    aside.left .floor[data-f="*"] { flex: none; }
+    aside.left .floor .dot { position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; }
+    aside.left .floor .long { display: none; }
+    aside.left .floor .short { display: inline; }
+    .topbar { display: none; }
+    .projbar { top: 12px; }
+    .projbar #tools { display: contents; }
+    .projbar .pill { flex: none; border-radius: 999px; padding: 5px 11px; font-size: 12px; box-shadow: none; white-space: nowrap; }
     aside.right { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
   }
   .notice { position: absolute; left: 50%; top: 64px; transform: translateX(-50%); z-index: 6; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; max-width: min(420px, calc(100% - 32px)); box-shadow: 0 4px 16px #0000001a; }
@@ -252,7 +263,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
   <main id="stage">
     <div class="topbar">
       <div class="pill" id="title"><span class="fl">—</span><b>가상스튜디오</b></div>
-      <div style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><a class="pill refresh-btn" id="roster" href="https://chatgpt.com/c/6ad94cbb-a288-83ee-b52f-6a3ebd50da2d" target="_blank" rel="noopener" title="루에 호출 방 열기 · 거기에 &quot;근무표&quot;라고 치면 돼요" style="text-decoration:none">🦊 루에 요청</a><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
+      <div id="tools" style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><a class="pill refresh-btn" id="roster" href="https://chatgpt.com/c/6ad94cbb-a288-83ee-b52f-6a3ebd50da2d" target="_blank" rel="noopener" title="루에 호출 방 열기 · 거기에 &quot;근무표&quot;라고 치면 돼요" style="text-decoration:none">🦊 루에</a><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
     </div>
     <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
@@ -283,9 +294,9 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 const TW = 56, TH = 28, WALL = 64, PAD = 24, GAP = 26;
 const COLS = 24, ROWS = 13;
 const FLOORS = [
-  { id: '3F', name: '대표층', sub: '이음 · 규연 · 루에', color: '#67C8F2' },
-  { id: '2F', name: 'Claude층', sub: 'Claude 스레드 책상', color: '#EE9F8E' },
-  { id: '1F', name: 'Codex·루에층', sub: 'Codex 세션 · 루에 대화 책상', color: '#9CC8EE' },
+  { id: '3F', name: '대표층', short: '결재', sub: '이음 · 규연 · 루에', color: '#67C8F2' },
+  { id: '2F', name: 'Claude층', short: 'Claude', sub: 'Claude 스레드 책상', color: '#EE9F8E' },
+  { id: '1F', name: 'Codex·루에층', short: 'GPT', sub: 'Codex 세션 · 루에 대화 책상', color: '#9CC8EE' },
 ];
 const ROOMS = [
   { id: 'huddle',   floor: '3F', name: '소회의실',    x: 0,  y: 0, w: 3,  h: 7, color: '#F4F0F8', what: '짧은 논의 · 둘이 맞춰 보기' },
@@ -605,12 +616,12 @@ function fit() {
   const phone = matchMedia('(max-width: 900px)').matches;
   if (phone) {
     const avail = Math.max(320, innerHeight - document.getElementById('floors').offsetHeight - 96);
-    const k = Math.min((avail - 92) / h, 1.6 * stage.clientWidth / WORLD_W);
-    stage.style.height = Math.round(Math.min(avail, h * k + 100)) + 'px';
+    const k = Math.min((avail - 54) / h, 1.6 * stage.clientWidth / WORLD_W);
+    stage.style.height = Math.round(Math.min(avail, h * k + 62)) + 'px';
   } else stage.style.height = '';
   const r = stage.getBoundingClientRect();
-  view.k = phone ? Math.min((r.height - 92) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 88) / h);
-  view.x = (r.width - WORLD_W * view.k) / 2; view.y = 84 + (r.height - 88 - h * view.k) / 2 - top * view.k;
+  view.k = phone ? Math.min((r.height - 54) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 88) / h);
+  view.x = (r.width - WORLD_W * view.k) / 2; view.y = (phone ? 46 : 84) + (r.height - (phone ? 50 : 88) - h * view.k) / 2 - top * view.k;
   apply();
 }
 function zoomAt(f, cx, cy) {
@@ -654,12 +665,12 @@ function renderFloors() {
     return { ...f, n: ps.length, live: ps.some(s => s.state === 'working' || s.state === 'thinking') };
   });
   if (floor !== '*' && !FLOORS.some(f => f.id === floor)) floor = '*';
-  const all = { id: '*', name: '전체 보기', sub: '세 층 한 번에', color: C.ink, n: state.sessions.length, live: groups.some(g => g.live) };
+  const all = { id: '*', name: '전체 보기', short: '', sub: '세 층 한 번에', color: C.ink, n: state.sessions.length, live: groups.some(g => g.live) };
   let html = `<h2>🏢 층별 안내 <small>FLOOR GUIDE</small></h2>`;
   [all, ...groups].forEach(g => {
     html += `<div class="floor ${floor === g.id ? 'on' : ''}" data-f="${g.id}">
       <div class="badge" style="background:${g.color};font-size:${g.id === '*' ? 10 : 13}px">${g.id === '*' ? 'ALL' : g.id}</div>
-      <div class="meta"><b>${g.name}</b><span>${g.n ? `${g.n}명` : '빈 층'} · ${g.sub}</span></div>
+      <div class="meta"><b><span class="long">${g.name}</span><em class="short">${g.short}</em></b><span>${g.n ? `${g.n}명` : '빈 층'} · ${g.sub}</span></div>
       <div class="dot ${g.live ? 'live' : ''}"></div></div>`;
   });
   const box = document.getElementById('floors');
@@ -942,6 +953,10 @@ function renderProjects() {
   const box = document.getElementById('projbar');
   box.innerHTML = `<button class="pj ${proj ? '' : 'on'}" data-k="">전체 ${list.length}</button>` + list.map(o =>
     `<button class="pj ${proj === o.k ? 'on' : ''}" data-k="${esc(o.k)}" title="${o.stuck ? '막힘: 답 기다림' : o.go ? '작업 중' : '쉬는 중'}"><i class="${o.stuck ? 'stuck' : o.go ? 'go' : ''}"></i><span>${esc(o.k)}</span></button>`).join('');
+  // 폰: 갱신·루에 버튼을 '전체' 옆 한 줄로 (규연 10-22)
+  const tools = document.getElementById('tools');
+  if (matchMedia('(max-width: 900px)').matches) box.firstElementChild.after(tools);
+  else document.querySelector('.topbar').append(tools);
   box.querySelectorAll('.pj').forEach(el => el.onclick = () => {
     proj = proj === el.dataset.k ? '' : el.dataset.k; store.set('vs-proj', proj);
     if (proj) { // 그 프로젝트가 있는 층으로
@@ -1009,7 +1024,8 @@ async function loadFile() {
 }
 async function startData() {
   if (!window.claude) {
-    // 공개 앱: 맡기기는 claude.ai 사무실에서만
+    // 공개 앱: 맡기기는 claude.ai 사무실에서만. 한도는 여기서 못 읽으니 칸도 숨김(규연 10-22)
+    document.querySelector('.card.quota')?.remove();
     document.getElementById('taskbar').innerHTML = '<a class="tb-link" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">✍️ 일 맡기기 (claude.ai 사무실에서 열기)</a>';
     loadFile(); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); live.style.cursor = 'pointer'; live.title = '눌러서 새로 읽기'; live.onclick = () => { live.textContent = '● 새로 읽는 중'; loadFile(); }; return; }
   const db = window.claude?.use ? await window.claude.use('db') : null;
@@ -1177,7 +1193,6 @@ function renderQuota() {
     const label = cx.window >= 10000 ? '주간' : cx.window >= 1440 ? '하루' : cx.window ? `${Math.round(cx.window / 60)}시간` : '';
     html += quotaRow('Codex', [label, reset, '*맥 보고값'].filter(Boolean).join(' · '), Math.round(100 - cx.used), true);
   } else html += quotaRow('Codex', '맥 보고 스크립트를 켜면 보여요', null);
-  html += quotaRow('ChatGPT (루에)', '웹 대화는 한도를 밖에서 읽을 수 없어요', null);
   box.innerHTML = html + '<div class="sub" id="lane-note" hidden style="color:#b0533f;font-size:11px;margin-top:6px"></div><button id="lane-allow" class="allow" hidden>실시간 읽기 허용</button>';
   document.getElementById('lane-allow').onclick = allowLive;
   drawLaneNote();
