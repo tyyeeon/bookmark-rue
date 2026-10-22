@@ -263,7 +263,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
   <main id="stage">
     <div class="topbar">
       <div class="pill" id="title"><span class="fl">—</span><b>가상스튜디오</b></div>
-      <div id="tools" style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><a class="pill refresh-btn" id="roster" href="https://chatgpt.com/c/6ad94cbb-a288-83ee-b52f-6a3ebd50da2d" target="_blank" rel="noopener" title="루에 호출 방 열기 · 거기에 &quot;근무표&quot;라고 치면 돼요" style="text-decoration:none">🦊 루에</a><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
+      <div id="tools" style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><button class="pill refresh-btn" id="roster" type="button" title="이음에게 루에 층 갱신 요청 (전체도 같이 갱신)">🦊 루에</button><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
     </div>
     <div class="projbar" id="projbar"></div>
     <div id="world"><svg id="map"></svg><div id="people"></div></div>
@@ -688,7 +688,8 @@ const roleName = s => s.room === 'tower' || s.name === '이음' ? '이음 대표
 const ART = 1.5;
 const DESKS = {"3F":[{"id":"eum","chair":[566,279],"plate":[612,455]},{"id":"gyuyeon","chair":[832,411],"plate":[868,554]},{"id":"rue","chair":[1136,551],"plate":[1275,825]}],"2F":[{"id":"1","chair":[609,299],"plate":[464,443]},{"id":"2","chair":[831,410],"plate":[722,563]},{"id":"3","chair":[1081,543],"plate":[1192,624]},{"id":"4","chair":[577,529],"plate":[558,687]},{"id":"5","chair":[833,658],"plate":[815,818]},{"id":"6","chair":[1090,740],"plate":[1033,890]}],"1F":[{"id":"1","chair":[609,299],"plate":[464,443]},{"id":"2","chair":[832,410],"plate":[722,563]},{"id":"3","chair":[1082,543],"plate":[1192,624]},{"id":"4","chair":[577,529],"plate":[558,687]},{"id":"5","chair":[833,658],"plate":[815,818]},{"id":"6","chair":[1091,740],"plate":[1033,890]}]};
 const SPR = {"eum":{"work":[174,205,0.52],"rest":[194,211,0.52],"wait":[150,288,0.44]},"rue":{"work":[154,223,0.42],"rest":[172,250,0.42],"wait":[150,288,0.44]},"claude":{"work":[164,218,0.36],"rest":[166,240,0.36],"wait":[150,288,0.42]},"codex":{"work":[164,220,0.41],"rest":[170,241,0.41],"wait":[150,288,0.42]}};
-const QUEUE3F = [[700, 605], [585, 650], [585, 780]];
+// 결재 줄: 규연 책상 앞판 가운데에서 규연이 보는 방향(왼쪽 아래)으로 한 줄 (규연 10-22 "나를 보면서 줄을 서야죠")
+const QUEUE3F = [[745, 570], [665, 635], [585, 700]];
 const FG = {"1F":["428,278 495,242 618,306 624,342 620,381 582,415 439,353 428,345","661,408 722,357 853,424 863,452 858,501 817,536 677,471 660,464","898,537 963,486 1094,555 1102,630 1067,666 912,603 898,594","401,519 462,473 596,541 602,615 557,651 414,585 401,578","653,653 716,601 849,670 856,747 814,785 668,719 653,710","916,740 973,684 1095,748 1100,818 1065,852 931,786 916,781"],"2F":["428,278 495,242 618,306 624,342 620,381 582,415 439,353 428,345","661,408 722,357 853,424 863,452 858,501 817,536 677,471 660,464","898,537 963,486 1094,555 1102,630 1067,666 912,603 898,594","401,519 462,473 596,541 602,615 557,651 414,585 401,578","653,653 716,601 849,670 856,747 814,785 668,719 653,710","916,740 973,684 1095,748 1100,818 1065,852 931,786 916,781"],"3F":["405,272 465,250 658,314 662,367 635,395 584,418 407,335","473,241 529,266 529,297 473,273","719,412 767,397 890,446 892,496 851,523 720,468","779,393 821,413 821,443 779,425","956,543 1024,523 1253,590 1254,664 1198,694 1152,708 958,613","1037,509 1096,541 1096,574 1037,542"]};
 const at = (f, p) => [p[0] / ART, p[1] / ART + floorDy(f)];
 const kindOf = s => s.room === 'tower' ? 'eum' : /^rue/.test(s.id) ? 'rue' : /^codex/.test(s.id) ? 'codex' : 'claude';
@@ -772,7 +773,7 @@ function renderPeople(visible) {
   const line = queueLine();
   if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.dataset.floor = '3F'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
   q.hidden = !line.length || (floor !== '*' && floor !== '3F');
-  if (!q.hidden) { const [hx, hy] = at('3F', [585, 845]); q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}${line.length > QUEUE3F.length ? ` · ${QUEUE3F.length}명만 서 있음` : ''}</div>`; }
+  if (!q.hidden) { const [hx, hy] = at('3F', [505, 735]); q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}${line.length > QUEUE3F.length ? ` · ${QUEUE3F.length}명만 서 있음` : ''}</div>`; }
 }
 
 // ---------- 일 맡기기 ----------
@@ -858,6 +859,7 @@ function showPerson(id) {
     <div class="what">${esc(what)}</div>
     ${laneLine(s, true)}
     ${mine.length ? `<b style="font-size:11.5px">맡긴 일 ${mine.length}</b><ul>${mine.map(r => `<li><span>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</span><span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></li>`).join('')}</ul>` : ''}
+    ${kindOf(s) === 'rue' ? '<a class="go" href="https://chatgpt.com/c/6ad94cbb-a288-83ee-b52f-6a3ebd50da2d" target="_blank" rel="noopener">🦊 루에 호출 방 열기</a>' : ''}
     ${dbRef ? '<div class="sub" style="margin:8px 0 0">아래 칸에 쓰면 이 사람에게 맡겨져요.</div>' : ''}`, 'p:' + id);
 }
 function queueLine() {
@@ -888,15 +890,20 @@ async function holdAnswer(id, ok, btn) {
     say(await notifyBoss({ ...r }) ? '확인했어요. 이음에게 맡겼어요.' : '확인했어요. 이음이 다음에 확인할 때 나눠 줘요.');
   } catch { say('바꾸지 못했어요. 잠시 뒤에 다시 눌러 주세요.', true); btn.disabled = false; }
 }
-// 사무실 갱신 버튼: 이음 대표에게 '사무실 갱신' 요청 (규연 10-21). 폰 앱에서는 claude.ai 사무실을 열어 거기서 누름.
-document.getElementById('refresh').onclick = async e => {
-  const b = e.currentTarget;
-  if (!dbRef) { window.open('https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n', '_blank', 'noopener'); return; }
-  b.disabled = true; b.textContent = '🔄 요청 중';
-  await submit('task', '사무실 갱신', { id: 'boss', name: '이음 대표' });
-  b.textContent = '🔄 요청함';
-  setTimeout(() => { b.disabled = false; b.textContent = '🔄 갱신'; }, 60000);
-};
+// 갱신 버튼: 이음 대표에게 요청 (규연 10-21). 🦊 = 루에 층 갱신, 누르기만 하면 됨 — 이음이 루에 방을 읽고 전체도 같이 갱신 (규연 10-22).
+// 폰 앱에서는 이음을 직접 못 부르므로 claude.ai 사무실을 열어 거기서 누름.
+function askRefresh(id, label, text) {
+  document.getElementById(id).onclick = async e => {
+    const b = e.currentTarget;
+    if (!dbRef) { window.open('https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n', '_blank', 'noopener'); return; }
+    b.disabled = true; b.textContent = label + ' 요청 중';
+    await submit('task', text, { id: 'boss', name: '이음 대표' });
+    b.textContent = label + ' 요청함';
+    setTimeout(() => { b.disabled = false; b.textContent = label === '🦊' ? '🦊 루에' : '🔄 갱신'; }, 60000);
+  };
+}
+askRefresh('refresh', '🔄', '사무실 갱신');
+askRefresh('roster', '🦊', '루에 층 갱신');
 document.getElementById('tb-form').onsubmit = e => { e.preventDefault(); submit('task', tb.text.value); };
 document.querySelectorAll('.tb-quick button').forEach(b => b.onclick = () => submit(b.dataset.q, b.dataset.q === 'first' ? tb.text.value : ''));
 tb.clear.onclick = () => { selected = null; render(); };
@@ -1186,9 +1193,9 @@ function renderQuota() {
   const now = Date.now(), cl = liveQuota?.claude || snapQuota?.claude, cx = snapQuota?.codex;
   const win = (w, label) => w && w.utilization != null ? { left: Math.round((1 - w.utilization) * 100), sub: `${label} · ${leftTxt(w.resetsAt * 1000 - now)} 뒤 초기화` } : null;
   const f = win(cl?.five, '5시간'), wk = win(cl?.week, '7일');
-  const stale = !liveQuota && cl ? ' · *마지막 확인값' : '';
+  const stale = !liveQuota && cl ? ' · *갱신 때 값' : '';
   let html = '';
-  html += f ? quotaRow('Claude 5시간', f.sub + stale, f.left, !!stale) : quotaRow('Claude 5시간', '사무실을 열면 읽어요', null);
+  html += f ? quotaRow('Claude 5시간', f.sub + stale, f.left, !!stale) : quotaRow('Claude 5시간', '사무실 갱신 때 채워요', null);
   html += wk ? quotaRow('Claude 7일', wk.sub + stale, wk.left, !!stale) : '';
   if (cx && cx.used != null) {
     const reset = cx.resetsAt ? leftTxt(cx.resetsAt * 1000 - now) + ' 뒤 초기화' : '';
