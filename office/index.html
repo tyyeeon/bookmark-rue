@@ -279,7 +279,7 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
     </div>
   </main>
   <aside class="right">
-    <div class="card quota"><h2>계정 남은 한도 <small id="quota-at"></small></h2><div id="quota"></div></div>
+    <!-- 계정 남은 한도 칸은 뺌 (규연 10-22 "계정 남은한도는 없어도돼"). renderQuota는 칸이 없으면 건너뜀 -->
     <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><p class="snapshot-note">저장된 현황 · 실시간 상태와 다를 수 있어요.<br>상단의 마지막 갱신 시각을 확인해 주세요.</p><div id="flags"></div><div id="list"></div></div>
     <div class="card" id="rq-card"><h2>맡긴 일 <small id="rq-count"></small></h2><div id="rq-list"></div></div>
     <div class="card"><h2>활동 로그</h2><ul class="log" id="log"></ul></div>
