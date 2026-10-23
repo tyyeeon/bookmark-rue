@@ -1,7 +1,7 @@
 // Decorative owner avatar only. Never enters task/state/request data.
 const world = document.getElementById('world');
 const app = document.querySelector('.app');
-const assets = { human: 'gyuyeon-human.png', squirrel: 'gyuyeon-squirrel.png' };
+const assets = { human: 'gyuyeon-human.webp', squirrel: 'gyuyeon-squirrel.webp' };
 let mode = 'human';
 try { if (localStorage.getItem('office-gyuyeon-mode') === 'squirrel') mode = 'squirrel'; } catch {}
 const avatar = document.createElement('button');
