@@ -739,7 +739,7 @@ function renderPeople(visible) {
     el.style.left = anchor[0] + 'px'; el.style.top = anchor[1] + 'px';
     el.style.zIndex = (pose === 'wait' ? 4000 : 1000) + Math.round(anchor[1]);
     // 결재 줄에 선 사람은 규연 쪽을 보는 뒷모습(루에 10-22 queue 그림), 크기·발 기준은 wait와 같음
-    const sp = el.querySelector('.sprite'), src = `${kind}-${qi >= 0 ? 'queue' : pose}.png`, w = 300 * sc / ART;
+    const sp = el.querySelector('.sprite'), src = `${kind}-${qi >= 0 ? 'queue' : pose}.webp`, w = 300 * sc / ART;
     if (!sp.src.endsWith(src)) sp.src = src;
     Object.assign(sp.style, { width: w + 'px', left: -px0 * sc / ART + 'px', top: -py0 * sc / ART + 'px' });
     const b = el.querySelector('.bubble');
@@ -1236,5 +1236,5 @@ drawMap(); setWide(store.get('vs-wide') === '1'); startData();
 setInterval(stamp, 30000);
 </script>
 
-<script type="module" src="gyuyeon.js?v=r3"></script>
+<script type="module" src="gyuyeon.js?v=r4"></script>
 </body></html>
