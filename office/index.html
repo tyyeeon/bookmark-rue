@@ -774,7 +774,8 @@ function renderPeople(visible) {
   const line = queueLine();
   if (!q) { q = document.createElement('div'); q.id = 'queue'; q.className = 'queue'; q.dataset.floor = '3F'; q.onclick = e => { e.stopPropagation(); showQueue(); }; host.appendChild(q); }
   q.hidden = !line.length || (floor !== '*' && floor !== '3F');
-  if (!q.hidden) { const [hx, hy] = at('3F', [505, 735]); q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}${line.length > QUEUE3F.length ? ` · ${QUEUE3F.length}명만 서 있음` : ''}</div>`; }
+  // 3자리 넘친 사람은 '+N'으로, 눌러서 전체 목록 (규연 10-23 "컨펌받아야 되는 건 내 앞에 줄 서게")
+  if (!q.hidden) { const [hx, hy] = at('3F', [505, 735]); const extra = line.filter(t => t.ask).length - QUEUE3F.length; q.innerHTML = `<div class="qhead" style="left:${hx}px;top:${hy}px">결재 줄 ${line.length}${extra > 0 ? ` · +${extra}` : ''}</div>`; }
 }
 
 // ---------- 일 맡기기 ----------
