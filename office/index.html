@@ -5,7 +5,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="관제탑">
 <meta name="robots" content="noindex"><link rel="apple-touch-icon" href="apple-touch-icon.png?v=1"><link rel="icon" href="icon-512.png">
 </head><body>
+<meta charset="utf-8">
 <title>관제탑</title>
+<script>try{document.documentElement.dataset.theme='light'}catch{}</script>
 <link rel="stylesheet" href="gyuyeon.css?v=r3">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -258,9 +260,28 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
 .plate.boss{border-color:#edb6a1;cursor:default}
 .queue .qhead{z-index:6500}
 </style>
-<div class="app">
+<style>
+/* 새 관제 UI(루에 디자인) 안에 기존 사무실을 끼우는 자리. 사무실 그림·좌표·캐릭터 로직은 그대로 */
+html, body { height: auto; }
+body { overflow: auto; margin: 0; background: #f7f8f5; }
+luminode-dashboard { display: block; }
+#officeHost, #officeSide { --bg:#f8f5f3; --panel:#fffdfb; --line:#e5e5e9; --stage:#edf3f9; --accent:#d58e7b; --muted:#7a8193; --text:#1f2430; --card:#ffffff; --card-line:#d6e0e7; --green:#22a35a; --blue:#3b6fd8; --amber:#d89a1e; color: var(--text); font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif; letter-spacing: 0; }
+#officeHost { width: 100%; height: 100%; }
+#officeHost .app, #officeHost .app.wide { display: block; height: 100%; position: relative; }
+#officeHost #stage { position: absolute; inset: 0; height: auto !important; }
+#officeHost #floors, #officeHost #title, #officeHost .hint, #officeHost #zwide, #officeHost .pj { display: none !important; }
+#officeHost .zoom { left: auto; right: 10px; bottom: 10px; flex-direction: row; }
+#officeHost .zoom button + button { border-top: 0; border-left: 1px solid var(--line); }
+#officeHost .projbar { pointer-events: none; }
+#officeHost .projbar #tools { pointer-events: auto; }
+@media (max-width: 620px) { #officeHost .projbar, #officeHost .zoom, #officeHost .topbar { display: none !important; } }
+#officeSide aside.right { display: block; border: 0; background: none; padding: 0; overflow: visible; }
+#officeSide .taskbar { position: static; transform: none; width: auto; margin: 0 0 12px; }
+</style>
+<luminode-dashboard id="studio">
+  <div id="officeHost" slot="office"><div class="app wide">
   <aside class="left" id="floors"></aside>
-  <main id="stage">
+<main id="stage">
     <div class="topbar">
       <div class="pill" id="title"><span class="fl">—</span><b>가상스튜디오</b></div>
       <div id="tools" style="display:flex;gap:6px;pointer-events:auto"><button class="pill refresh-btn" id="refresh" type="button" title="이음에게 사무실 갱신 요청">🔄 갱신</button><button class="pill refresh-btn" id="roster" type="button" title="이음에게 루에 층 갱신 요청 (전체도 같이 갱신)">🦊 루에</button><div class="pill live-pill off" id="live">● 불러오는 중</div></div>
@@ -271,23 +292,32 @@ aside { background:linear-gradient(180deg,var(--panel),var(--bg)); }
     <div class="pop" id="pop" hidden></div>
     <div class="notice" id="notice" hidden><p></p></div>
     <div class="hint">"사무실 갱신"이라고 말하면 새로 채워요 · 드래그로 이동</div>
+  </main>
+  </div></div>
+  <div id="officeSide" slot="side">
     <div class="taskbar" id="taskbar">
       <div class="tb-top"><span class="tb-to">받는 사람: <b id="tb-to">이음 대표</b> <button id="tb-clear" type="button" hidden aria-label="이음 대표에게로 돌리기">✕</button></span>
         <span class="tb-quick"><button type="button" data-q="pause">잠깐 멈춰</button><button type="button" data-q="first">이거 먼저</button><button type="button" data-q="ask">끝났어?</button></span></div>
       <form class="tb-form" id="tb-form"><input id="tb-text" maxlength="240" autocomplete="off" placeholder="예: 오늘 회의록 정리해" aria-label="맡길 일"><button type="submit">맡기기</button></form>
       <div class="tb-msg" id="tb-msg" role="status"></div>
     </div>
-  </main>
   <aside class="right">
     <!-- 계정 남은 한도 칸은 뺌 (규연 10-22 "계정 남은한도는 없어도돼"). renderQuota는 칸이 없으면 건너뜀 -->
     <div class="card"><h2>사무실 사람들 <small id="count"></small></h2><p class="snapshot-note">저장된 현황 · 실시간 상태와 다를 수 있어요.<br>상단의 마지막 갱신 시각을 확인해 주세요.</p><div id="flags"></div><div id="list"></div></div>
     <div class="card" id="rq-card"><h2>맡긴 일 <small id="rq-count"></small></h2><div id="rq-list"></div></div>
     <div class="card"><h2>활동 로그</h2><ul class="log" id="log"></ul></div>
     <div class="card"><h2>어디서 무엇을 하나</h2><div class="legend" id="legend"></div></div>
-  </aside>
-</div>
+  </aside>  
+  </div>
+</luminode-dashboard>
 
 <script>
+const CHAN = 'chan_0199asxZSC643NDqDCKJfNri';
+const threadUrl = t => `https://claude.ai/code/project/${CHAN}?thread=${encodeURIComponent(t)}`;
+// 새 관제 UI(dashboard.js·studio-adapter.js)와 기존 사무실 사이의 연결점
+window.studio = { snap: null, db: null, floor0: null, on: {},
+  gotSnapshot(v) { this.snap = v; this.on.snapshot?.(v); },
+  gotDb(d) { this.db = d; this.on.db?.(d); } };
 
 // ---------- 지도 ----------
 // 세 층짜리 건물(규연 10-21 증축). 방 좌표는 각 층 안에서의 칸 좌표.
@@ -620,6 +650,7 @@ function fit() {
     stage.style.height = Math.round(Math.min(avail, h * k + 62)) + 'px';
   } else stage.style.height = '';
   const r = stage.getBoundingClientRect();
+  if (document.getElementById('officeHost')) { view.k = Math.min(r.width / WORLD_W, r.height / h) * .98; view.x = (r.width - WORLD_W * view.k) / 2; view.y = (r.height - h * view.k) / 2 - top * view.k; apply(); return; }
   view.k = phone ? Math.min((r.height - 54) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 88) / h);
   view.x = (r.width - WORLD_W * view.k) / 2; view.y = (phone ? 46 : 84) + (r.height - (phone ? 50 : 88) - h * view.k) / 2 - top * view.k;
   apply();
@@ -635,6 +666,8 @@ addEventListener('pointermove', e => { if (!drag) return; view.x = e.clientX - d
 addEventListener('pointerup', () => { drag = null; stage.classList.remove('drag'); });
 stage.addEventListener('dblclick', fit);
 const center = () => { const r = stage.getBoundingClientRect(); return [r.width / 2, r.height / 2]; };
+window.studio.fit = fit;
+window.studio.setFloor = f => { floor = f; store.set('vs-cloud-floor3', f); if (state) render(); fit(); };
 document.getElementById('zin').onclick = () => zoomAt(1.2, ...center());
 document.getElementById('zout').onclick = () => zoomAt(1 / 1.2, ...center());
 document.getElementById('zfit').onclick = fit;
@@ -860,6 +893,7 @@ function showPerson(id) {
     <div class="sub"><span class="chip ${s.state}">${STATE_KO[s.state]}</span> ${esc(room)} · ${ago(s.lastAt, state.now)}</div>
     <div class="what">${esc(what)}</div>
     ${laneLine(s, true)}
+    ${s.thread ? `<a class="go" href="${threadUrl(s.thread)}" target="_blank" rel="noopener">🚪 이 방 열기</a>` : ''}
     ${mine.length ? `<b style="font-size:11.5px">맡긴 일 ${mine.length}</b><ul>${mine.map(r => `<li><span>${esc(r.text || QUICK[r.kind] || '맡긴 일')}</span><span class="chip ${esc(r.status)}">${KO[r.status] || esc(r.status)}</span></li>`).join('')}</ul>` : ''}
     ${kindOf(s) === 'rue' ? '<a class="go" href="https://chatgpt.com/c/6ad94cbb-a288-83ee-b52f-6a3ebd50da2d" target="_blank" rel="noopener">🦊 루에 호출 방 열기</a>' : ''}
     ${dbRef ? '<div class="sub" style="margin:8px 0 0">아래 칸에 쓰면 이 사람에게 맡겨져요.</div>' : ''}`, 'p:' + id);
@@ -1011,7 +1045,7 @@ function fromSnapshot(v) {
     id: p.id, project: p.floor || 'plan', name: p.name || '제목 없는 작업', isSubagent: false,
     // 3층(대표층)은 이음 대표·루에 대표·규연 총괄만(규연 10-20). Claude 스레드는 2층, Codex·루에 대화창은 1층(규연 10-21 증축)
     room: homeRoom(p), state: p.state || 'waiting', bubble: p.bubble || '', ask: String(p.ask || '').slice(0, 16),
-    toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, snapState: p.state || 'waiting', lane: p.lane && typeof p.lane === 'object' ? p.lane : null, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
+    thread: p.thread || '', toolCount: 0, lastAt: Date.parse(p.lastAt) || 0, snapState: p.state || 'waiting', lane: p.lane && typeof p.lane === 'object' ? p.lane : null, color: /^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : '',
   })).sort((a, b) => b.lastAt - a.lastAt);
   // 색 구분: Claude는 주황, Codex는 파스텔 블루(이음·루에는 그림)
   sessions.forEach(x => { if (!/^rue/.test(x.id)) x.color = /^codex/.test(x.id) ? '#9CC8EE' : '#EE9F8E'; });
@@ -1030,7 +1064,7 @@ async function loadFile() {
   try {
     const v = await (await fetch('data.json?t=' + Date.now(), { cache: 'no-store' })).json();
     reqs = v.requests || [];
-    notice.hidden = true; snapAt = Date.parse(v.at) || 0; state = fromSnapshot(v); render(); stamp();
+    notice.hidden = true; snapAt = Date.parse(v.at) || 0; state = fromSnapshot(v); render(); stamp(); window.studio.gotSnapshot(v);
   } catch { live.textContent = '● 불러올 수 없음'; }
 }
 async function startData() {
@@ -1039,16 +1073,17 @@ async function startData() {
     document.querySelector('.card.quota')?.remove();
     document.getElementById('taskbar').innerHTML = '<a class="tb-link" href="https://claude.ai/artifact/S5gQbxim4p8CeTrLJEWU8n" target="_blank" rel="noopener">✍️ 일 맡기기 (claude.ai 사무실에서 열기)</a>';
     loadFile(); document.addEventListener('visibilitychange', () => { if (!document.hidden) loadFile(); }); live.style.cursor = 'pointer'; live.title = '눌러서 새로 읽기'; live.onclick = () => { live.textContent = '● 새로 읽는 중'; loadFile(); }; return; }
-  const db = window.claude?.use ? await window.claude.use('db') : null;
-  if (!db) { live.textContent = '● 불러올 수 없음'; showNotice('저장된 사무실 상태를 읽지 못했어요. claude.ai에 로그인한 상태로 열어 주세요.'); return; }
-  dbRef = db;
+  let db = null;
+  try { db = window.claude?.use ? await window.claude.use('db') : null; } catch {}
+  if (!db) { loadFile(); return; } // db가 없으면 같은 폴더의 data.json을 읽음(미리보기·폰 앱)
+  dbRef = db; window.studio.gotDb(db);
   db.collection('requests').onSnapshot(qs => { reqs = qs.docs.map(d => d.data()); if (state) render(); }, () => {});
   db.doc('snapshot/current').onSnapshot((d) => {
     if (!d.exists) { live.textContent = '● 아직 비어 있음'; showNotice('아직 채워진 상태가 없어요. 이음에게 "사무실 갱신"이라고 말하면 지금 상태로 채워요.'); return; }
     const v = d.data();
     notice.hidden = true;
     snapAt = Date.parse(v.at) || 0;
-    state = fromSnapshot(v); render(); stamp(); startLanes();
+    state = fromSnapshot(v); render(); stamp(); startLanes(); window.studio.gotSnapshot(v);
   }, () => { live.textContent = '● 불러올 수 없음'; });
   db.collection('lanes').onSnapshot(qs => { for (const d of qs.docs) laneDocs[d.id] = d.data(); lanesLoaded(); if (state) render(); }, () => lanesLoaded());
 }
@@ -1233,9 +1268,10 @@ async function sendFlags(list, btn) {
   for (const x of list) { const d = { ...(laneDocs[x.s.id] || {}), notified: x.l.compacts }; laneDocs[x.s.id] = d; try { await dbRef.collection('lanes').doc(x.s.id).set(d); } catch {} }
   say('관제탑에 교대 알림을 보냈어요.'); render();
 }
-drawMap(); setWide(store.get('vs-wide') === '1'); startData();
+drawMap(); setWide(true); window.studio.setFloor(window.studio.floor0 || '3F'); startData();
 setInterval(stamp, 30000);
 </script>
 
 <script type="module" src="gyuyeon.js?v=r4"></script>
+<script type="module" src="studio-adapter.js?v=1"></script>
 </body></html>
