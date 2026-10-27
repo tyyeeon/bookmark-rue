@@ -894,12 +894,12 @@ function parseDeltas(t) {
 function applyDeltas(emo, d) { const n = { ...emo }; if (d) for (const e of EMO) n[e.k] = clamp((n[e.k] || 0) + (d[e.k] || 0), 0, 100); return n; }
 
 const ERR = {
-  not_granted: "API 키가 맞지 않아요. 메뉴의 루에 키 설정에서 다시 넣어 주세요.",
+  not_granted: "API 키가 맞지 않아요. 메뉴의 AI 키 설정에서 다시 넣어 주세요.",
   sampling_disabled: "이 계정에서는 Claude를 쓸 수 없어요.",
   rate_limited: "사용량 한도에 걸렸어요. 잠시 뒤 다시 시도해 주세요.",
   session_expired: "로그인이 만료됐어요. 다시 로그인해 주세요.",
-  refused: "루에가 이 장면은 쓰지 않았어요. 방향을 조금 바꿔서 다시 보내 주세요.",
-  oa_error: "루에 쪽 연결에 문제가 생겼어요. 다시 시도해 주세요.",
+  refused: "AI가 이 장면은 쓰지 않았어요. 방향을 조금 바꿔서 다시 보내 주세요.",
+  oa_error: "AI 쪽 연결에 문제가 생겼어요. 다시 시도해 주세요.",
   empty_completion: "빈 답이 왔어요. 다시 시도해 주세요.",
   prompt_too_large: "대화가 너무 길어요. 대화를 정리한 뒤 다시 시도해 주세요.",
 };
@@ -909,18 +909,32 @@ const ERR = {
 const OA = {
   key() { try { return localStorage.getItem("cm.key") || ""; } catch { return ""; } },
   model() { try { return localStorage.getItem("cm.model") || ""; } catch { return ""; } },
+  // Claude 키(sk-ant-)면 Claude, 아니면 OpenAI.
+  isClaude(key) { return /^sk-ant-/.test(key ?? this.key()); },
+  name() { return this.isClaude() ? "Claude" : "OpenAI"; },
   async listModels(key) {
+    if (this.isClaude(key)) {
+      const r = await fetch("https://api.anthropic.com/v1/models?limit=100", { headers: this.claudeHeaders(key) });
+      if (!r.ok) throw new Error("키 확인 실패 (" + r.status + ")");
+      const j = await r.json();
+      return j.data.map(m => m.id).filter(id => /^claude-/.test(id));
+    }
     const r = await fetch("https://api.openai.com/v1/models", { headers: { Authorization: "Bearer " + key } });
     if (!r.ok) throw new Error("키 확인 실패 (" + r.status + ")");
     const j = await r.json();
     return j.data.map(m => m.id).filter(id => /^gpt|^o\d|^chatgpt/.test(id)).sort();
   },
+  claudeHeaders(key) {
+    return { "x-api-key": key, "anthropic-version": "2026-10-21", "anthropic-dangerous-direct-browser-access": "true" };
+  },
   async setup() {
-    const key = (prompt("OpenAI API 키를 붙여 넣으세요. 이 기기의 이 페이지에만 저장돼요.", this.key()) || "").trim();
+    const key = (prompt("AI API 키를 붙여 넣으세요 (Claude 또는 OpenAI). 이 기기의 이 페이지에만 저장돼요.", this.key()) || "").trim();
     if (!key) return false;
     let models;
     try { models = await this.listModels(key); } catch (e) { alert(e.message); return false; }
-    const pref = models.find(m => /6\.1.*sol/i.test(m)) || models.find(m => /sol/i.test(m)) || models[models.length - 1];
+    const pref = this.isClaude(key)
+      ? (models.find(m => m === "claude-opus-5-5") || models[0])
+      : (models.find(m => /6\.1.*sol/i.test(m)) || models.find(m => /sol/i.test(m)) || models[models.length - 1]);
     const pick = (prompt("쓸 모델 이름을 적어 주세요. 쓸 수 있는 모델:\n" + models.join(", "), pref) || "").trim();
     if (!pick) return false;
     try { localStorage.setItem("cm.key", key); localStorage.setItem("cm.model", pick); } catch {}
@@ -928,9 +942,10 @@ const OA = {
   },
   // 사용량 추정: 앱이 보낸 대화량을 이 기기에서만 센다. 단가는 추정치.
   PRICE: { in: 2, out: 10, krw: 1400 },
+  CLAUDE_PRICE: { in: 4, out: 20, krw: 1400 },
   usage() { try { const u = JSON.parse(localStorage.getItem("cm.usage") || "{}"); const m = new Date().toISOString().slice(0, 7); return u.m === m ? u : { m, in: 0, out: 0, n: 0 }; } catch { return { m: "", in: 0, out: 0, n: 0 }; } },
-  track(u) { if (!u) return; const x = this.usage(); x.in += u.prompt_tokens || 0; x.out += u.completion_tokens || 0; x.n += 1; try { localStorage.setItem("cm.usage", JSON.stringify(x)); } catch {} },
-  usageText() { const u = this.usage(), P = this.PRICE; const won = Math.round((u.in * P.in + u.out * P.out) / 1e6 * P.krw);
+  track(u) { if (!u) return; const x = this.usage(); x.in += u.prompt_tokens || u.input_tokens || 0; x.out += u.completion_tokens || u.output_tokens || 0; x.n += 1; try { localStorage.setItem("cm.usage", JSON.stringify(x)); } catch {} },
+  usageText() { const u = this.usage(), P = this.isClaude() ? this.CLAUDE_PRICE : this.PRICE; const won = Math.round((u.in * P.in + u.out * P.out) / 1e6 * P.krw);
     return "이번 달 약 " + won.toLocaleString() + "원 · 답장 " + u.n + "번 (추정)"; },
   toMsgs(input) { return typeof input === "string" ? [{ role: "user", content: input }] : input.map(m => ({ role: m.role, content: m.content })); },
   err(status, body) {
@@ -939,6 +954,7 @@ const OA = {
     return e;
   },
   async call(input, opts = {}, json = false) {
+    if (this.isClaude()) return this.callClaude(input, opts, json);
     const body = { model: this.model(), messages: this.toMsgs(input), stream: !json };
     if (!json) body.stream_options = { include_usage: true };
     if (json) body.response_format = { type: "json_object" };
@@ -970,9 +986,46 @@ const OA = {
     if (!text) { const x = new Error("empty"); x.code = "empty_completion"; throw x; }
     return { text, truncated: fin === "length" };
   },
+  async callClaude(input, opts = {}, json = false) {
+    const body = {
+      model: this.model(), max_tokens: json ? 16000 : 64000, stream: true, messages: this.toMsgs(input),
+      output_config: { effort: "low" },
+    };
+    const headers = { "Content-Type": "application/json", ...this.claudeHeaders(this.key()) };
+    // Opus 5.5 / Sonnet 5.5: 안전 분류기가 거절하면 서버가 다른 모델로 대신 답하게 한다.
+    if (/^claude-(opus-5-5|sonnet-5-5|opus-5$|fable-5-1)/.test(body.model)) { body.fallbacks = "default"; headers["anthropic-beta"] = "server-side-fallback-2026-07-01"; }
+    let r;
+    try {
+      r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: opts.signal, headers, body: JSON.stringify(body) });
+    } catch (e) { if (e.name === "AbortError") { const x = new Error("cancelled"); x.code = "cancelled"; throw x; } throw this.err(0, String(e)); }
+    if (!r.ok) { const t = await r.text(); const e = this.err(r.status, t); if (r.status === 403) e.code = "not_granted"; throw e; }
+    const rd = r.body.getReader(), dec = new TextDecoder();
+    let buf = "", text = "", stop = null; const use = { input_tokens: 0, output_tokens: 0 };
+    try {
+      for (;;) {
+        const { done, value } = await rd.read(); if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+          if (!line.startsWith("data:")) continue;
+          let j; try { j = JSON.parse(line.slice(5).trim()); } catch { continue; }
+          if (j.type === "message_start" && j.message && j.message.usage) { const u = j.message.usage; use.input_tokens += (u.input_tokens || 0) + (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0); }
+          else if (j.type === "content_block_delta" && j.delta && j.delta.type === "text_delta") { text += j.delta.text; if (!json) opts.onText && opts.onText({ text, delta: j.delta.text }); }
+          else if (j.type === "message_delta") { if (j.delta && j.delta.stop_reason) stop = j.delta.stop_reason; if (j.usage) use.output_tokens = j.usage.output_tokens || use.output_tokens; }
+          else if (j.type === "error") throw this.err(529, JSON.stringify(j.error || j));
+        }
+      }
+    } catch (e) { if (e.name === "AbortError") { const x = new Error("cancelled"); x.code = "cancelled"; x.text = text; throw x; } throw e; }
+    this.track(use);
+    if (stop === "refusal") { const x = new Error("refused"); x.code = "refused"; throw x; }
+    if (!text) { const x = new Error("empty"); x.code = "empty_completion"; throw x; }
+    return { text, truncated: stop === "max_tokens" };
+  },
   sampler() {
     const f = (input, opts) => this.call(input, opts);
-    f.json = async (input, opts) => { const { text } = await this.call(input, opts, true); return JSON.parse(text); };
+    // Claude에는 JSON 모드가 없어서 답에서 첫 { ... } 덩어리를 꺼낸다.
+    f.json = async (input, opts) => { const { text } = await this.call(input, opts, true); const a = text.indexOf("{"), b = text.lastIndexOf("}"); return JSON.parse(a >= 0 && b > a ? text.slice(a, b + 1) : text); };
     return f;
   },
 };
@@ -1273,7 +1326,7 @@ function render() {
 }
 
 function backendBanner() {
-  if (S.backend === "local") return h("div", { class: "banner" }, "루에가 답을 쓰는 첫마디예요. 이야기는 이 기기에만 저장돼요.");
+  if (S.backend === "local") return h("div", { class: "banner" }, "내 AI가 답을 쓰는 첫마디예요. 이야기는 이 기기에만 저장돼요.");
   return null;
 }
 
@@ -1552,9 +1605,9 @@ function viewChat() {
     h("button", { onclick: () => { S.menu = false; openMem(); } }, "기억 노트"),
     h("button", { onclick: () => { S.menu = false; S.sheet = true; render(); } }, "관계 기록"),
     h("button", { onclick: () => { cycleTheme(); } }, "안쪽 화면: " + THEMES[S.theme] + " (눌러서 바꾸기)"),
-    h("div", { class: "mlabel", text: "답변: 루에 · " + (OA.model() || "키 없음") }),
-    h("button", { onclick: async () => { S.menu = false; render(); if (await OA.setup()) { S.sample = OA.sampler(); toast("루에 키를 저장했어요."); } render(); } }, "루에 키·모델 설정"),
-    S.showUsage ? h("div", { class: "mlabel", text: OA.usageText() + " · 정확한 금액은 OpenAI 사용량 페이지" })
+    h("div", { class: "mlabel", text: "답변: " + (OA.key() ? OA.name() + " · " + OA.model() : "키 없음") }),
+    h("button", { onclick: async () => { S.menu = false; render(); if (await OA.setup()) { S.sample = OA.sampler(); toast("AI 키를 저장했어요."); } render(); } }, "AI 키·모델 설정"),
+    S.showUsage ? h("div", { class: "mlabel", text: OA.usageText() + " · 정확한 금액은 " + OA.name() + " 사용량 페이지" })
       : h("button", { onclick: () => { S.showUsage = true; render(); } }, "사용량 보기"),
     h("div", { class: "sep" }),
     S.confirmReset
