@@ -907,8 +907,8 @@ const ERR = {
 
 // ---------- 루에(OpenAI) engine: standalone test build ----------
 const OA = {
-  key() { try { return localStorage.getItem("oa.key") || ""; } catch { return ""; } },
-  model() { try { return localStorage.getItem("oa.model") || ""; } catch { return ""; } },
+  key() { try { return localStorage.getItem("cm.key") || ""; } catch { return ""; } },
+  model() { try { return localStorage.getItem("cm.model") || ""; } catch { return ""; } },
   async listModels(key) {
     const r = await fetch("https://api.openai.com/v1/models", { headers: { Authorization: "Bearer " + key } });
     if (!r.ok) throw new Error("키 확인 실패 (" + r.status + ")");
@@ -923,7 +923,7 @@ const OA = {
     const pref = models.find(m => /6\.1.*sol/i.test(m)) || models.find(m => /sol/i.test(m)) || models[models.length - 1];
     const pick = (prompt("쓸 모델 이름을 적어 주세요. 쓸 수 있는 모델:\n" + models.join(", "), pref) || "").trim();
     if (!pick) return false;
-    try { localStorage.setItem("oa.key", key); localStorage.setItem("oa.model", pick); } catch {}
+    try { localStorage.setItem("cm.key", key); localStorage.setItem("cm.model", pick); } catch {}
     return true;
   },
   // 사용량 추정: 앱이 보낸 대화량을 이 기기에서만 센다. 단가는 추정치.
