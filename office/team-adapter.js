@@ -1,8 +1,11 @@
 // 업무 현황(team-studio, 루에 1028 디자인)과 실제 데이터를 잇는 어댑터. 화면은 루에 것 그대로, 여기는 데이터·기능만.
 // 데이터는 새 관제 UI와 같은 스냅샷(projects)·db projectState를 쓴다(studio-adapter.js가 만든 build()를 같이 씀).
 import './team-studio/studio.js';
+import './our-studio/dashboard.js';
 import { build, write } from './studio-adapter.js';
 const team = document.getElementById('team');
+const ours = document.getElementById('ours');  // 우리 스튜디오(루에 1028 인테리어 화면) — 같은 모델을 쓴다
+let selectedId = null;
 const studio = window.studio;
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 const OWNER_ID = { '이음': 'eum', '루에': 'rue', '규연': 'gyu' };
@@ -31,26 +34,37 @@ function model() {
     connection: refreshing ? { state: 'loading' } : at ? { state: 'ready', updatedAt: fmt.format(at) } : { state: 'unconnected' },
   };
 }
-const push = () => { team.model = model(); };
+const push = () => {
+  const m = model(); team.model = m;
+  const open = m.projects.filter(p => !p.archived);
+  if (!open.some(p => p.id === selectedId)) selectedId = (open.find(p => p.status === '진행 중') || open[0])?.id || null;
+  ours.model = { ...m, selectedId };
+};
 const prev = studio.afterPush; studio.afterPush = () => { prev?.(); push(); };
-if (studio.snap) push(); else team.model = { projects: [], members: [], viewerId: 'gyu', demo: false, connection: { state: 'loading' } };
+if (studio.snap) push(); else ours.model = team.model = { projects: [], members: [], viewerId: 'gyu', demo: false, connection: { state: 'loading' } };
 
-team.addEventListener('studio-action', async ({ detail: d }) => {
+for (const el of [team, ours]) el.addEventListener('studio-action', async ({ detail: d }) => {
+  if (d.type === 'select') { selectedId = d.projectId; push(); return; }
+  if (d.type === 'review' && el === ours) {  // 우리 스튜디오의 컨펌 확인: 방 링크가 있으면 그 방을 연다
+    const link = model().projects.flatMap(p => p.approvals || []).find(x => x.id === d.approvalId)?.link;
+    if (link) window.open(link, '_blank', 'noopener'); else el.notify('이 컨펌은 열 방 주소가 없어요.');
+    return;
+  }
   if (d.type === 'refresh') {
     if (refreshing) return;
-    if (Date.now() - refreshedAt < 60000) { team.notify('방금 갱신을 요청했어요. 잠시 뒤에 다시 열어 보세요.'); return; }
+    if (Date.now() - refreshedAt < 60000) { el.notify('방금 갱신을 요청했어요. 잠시 뒤에 다시 열어 보세요.'); return; }
     refreshing = true; push();
     let ok = false; try { ok = await studio.requestRefresh?.(); } catch {}
     refreshing = false; refreshedAt = Date.now(); push();
-    team.notify(ok ? '이음에게 갱신을 요청했어요. 끝나면 이 화면을 새로 열어 주세요.' : '여기서는 요청할 수 없어요. claude.ai 사무실에서 눌러 주세요.');
-  } else if (d.type === 'archive') write(d.projectId, { archived: true }, '프로젝트를 보관했어요.', team);
-  else if (d.type === 'restore') write(d.projectId, { archived: false }, '프로젝트를 다시 열었어요.', team);
-  else if (d.type === 'create') write('u-' + Date.now().toString(36), { custom: true, ...d.values, icon: '✳', color: 'mint', archived: false }, `${d.values.name} 프로젝트를 만들었어요.`, team);
+    el.notify(ok ? '이음에게 갱신을 요청했어요. 끝나면 이 화면을 새로 열어 주세요.' : '여기서는 요청할 수 없어요. claude.ai 사무실에서 눌러 주세요.');
+  } else if (d.type === 'archive') write(d.projectId, { archived: true }, '프로젝트를 보관했어요.', el);
+  else if (d.type === 'restore') write(d.projectId, { archived: false }, '프로젝트를 다시 열었어요.', el);
+  else if (d.type === 'create') write('u-' + Date.now().toString(36), { custom: true, ...d.values, icon: '✳', color: 'mint', archived: false }, `${d.values.name} 프로젝트를 만들었어요.`, el);
   // review: 방 링크가 있으면 버튼이 곧바로 방을 연다
 });
 
-// 화면 전환(업무 현황 · 프로젝트·사무실)
-const views = { team: document.getElementById('view-team'), office: document.getElementById('view-office') };
+// 화면 전환(업무 현황 · 우리 스튜디오 · 사무실)
+const views = { team: document.getElementById('view-team'), ours: document.getElementById('view-ours'), office: document.getElementById('view-office') };
 function show(tab) {
   if (!views[tab]) tab = 'team';
   for (const [k, el] of Object.entries(views)) el.hidden = k !== tab;
@@ -60,4 +74,4 @@ function show(tab) {
   if (tab === 'office') requestAnimationFrame(() => studio.fit?.());
 }
 document.querySelectorAll('.page-nav button').forEach(b => b.onclick = () => show(b.dataset.tab));
-show(store.get('vs-tab') === 'office' ? 'office' : 'team');
+show(['office', 'ours'].includes(store.get('vs-tab')) ? store.get('vs-tab') : 'team');

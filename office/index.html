@@ -283,8 +283,9 @@ luminode-dashboard { display: block; }
 body.wide-tab .page-nav{max-width:600px}
 [hidden]{display:none!important}
 </style>
-<nav class="page-nav" aria-label="화면 선택"><button type="button" data-tab="team" aria-current="page">◫ 업무 현황</button><button type="button" data-tab="office">⌂ 프로젝트·사무실</button></nav>
+<nav class="page-nav" aria-label="화면 선택"><button type="button" data-tab="team" aria-current="page">◫ 업무 현황</button><button type="button" data-tab="ours">✧ 우리 스튜디오</button><button type="button" data-tab="office">⌂ 사무실</button></nav>
 <section id="view-team"><team-studio id="team"></team-studio></section>
+<section id="view-ours" hidden><our-studio id="ours" compact-nav></our-studio></section>
 <section id="view-office" hidden>
 <luminode-dashboard id="studio">
   <div id="officeHost" slot="office"><div class="app wide">
@@ -1284,5 +1285,5 @@ setInterval(stamp, 30000);
 
 <script type="module" src="gyuyeon.js?v=r4"></script>
 <script type="module" src="studio-adapter.js?v=2"></script>
-<script type="module" src="team-adapter.js?v=2"></script>
+<script type="module" src="team-adapter.js?v=3"></script>
 </body></html>
