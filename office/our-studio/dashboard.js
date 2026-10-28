@@ -35,6 +35,7 @@ export class LuminodeDashboard extends HTMLElement {
         </div>
         <div class="interior-top"><button class="interior-project" data-picker><span class="tiny-star">✳</span><span>${e(p?.name||'프로젝트 선택')}</span><small>⌄</small></button><button class="interior-refresh" data-refresh ${connection.state==='loading'?'disabled':''} aria-label="업무 기록 새로고침">↻</button></div>
         <div class="interior-sync" role="status">${e(freshness)}</div>
+        <div class="interior-others">${projects.filter(x=>!x.archived&&x.id!==selectedId).sort((a,b)=>(b.status==='진행 중')-(a.status==='진행 중')||(b.status==='컨펌 필요')-(a.status==='컨펌 필요')).slice(0,2).map(x=>`<button data-pick-other="${e(x.id)}"><span>${e(x.icon)}</span><span>${e(x.name)}</span></button>`).join('')}</div>
         <div class="interior-hint"><span>✧</span> 이름표 · 게시판 · 편지함을 눌러봐요</div>
       </main><dialog id="modal" aria-labelledby="modal-title"></dialog><div id="toast" role="status" hidden></div>`;
     this.bind();
@@ -84,6 +85,7 @@ export class LuminodeDashboard extends HTMLElement {
     const root=this.shadowRoot;
     root.querySelector('[data-picker]').onclick=()=>this.showSheet('projects');
     root.querySelector('[data-refresh]').onclick=()=>this.action('refresh');
+    root.querySelectorAll('[data-pick-other]').forEach(b=>b.onclick=()=>this.action('select',{projectId:b.dataset.pickOther}));  // 이음 패치
     root.querySelectorAll('[data-sheet]').forEach(b=>b.onclick=()=>this.showSheet(b.dataset.sheet));
     root.querySelectorAll('[data-person]').forEach(b=>b.onclick=()=>this.showSheet('person',b.dataset.person));
   }

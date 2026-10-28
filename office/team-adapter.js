@@ -74,4 +74,4 @@ function show(tab) {
   if (tab === 'office') requestAnimationFrame(() => studio.fit?.());
 }
 document.querySelectorAll('.page-nav button').forEach(b => b.onclick = () => show(b.dataset.tab));
-show(['office', 'ours'].includes(store.get('vs-tab')) ? store.get('vs-tab') : 'team');
+show(store.get('vs-tab') === 'ours' ? 'ours' : 'team');  // 사무실(3D) 탭은 규연 요청(10/28)으로 뺌. 화면 코드는 숨긴 채 남겨 둠(일 맡기기 요청이 여기를 거침)
