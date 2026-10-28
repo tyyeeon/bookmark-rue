@@ -24,19 +24,20 @@ function push() {
   if (!projects.some(p => p.id === selectedId && !p.archived)) selectedId = projects.find(p => !p.archived)?.id ?? null;
   const at = Date.parse(studio.snap?.at) || 0;
   ui.model = { projects, selectedId, demo: false, note: at ? `저장된 현황 · ${ago(at)} 기준` : '아직 채워진 현황이 없어요', footer: studio.db ? '함께 만드는 작업 공간' : '보기 전용 · 바꾸기는 claude.ai 사무실에서' };
+  studio.afterPush?.();
 }
 studio.on.snapshot = push;
 studio.on.db = db => { db.collection('projectState').onSnapshot(qs => { overrides = Object.fromEntries(qs.docs.map(d => [d.id, d.data()])); push(); }, () => {}); };
 if (studio.db) studio.on.db(studio.db);
 
-async function write(id, data, ok) {
-  if (!studio.db) { ui.notify('바꾸기는 claude.ai 사무실에서만 할 수 있어요.'); push(); return; }
+async function write(id, data, ok, target = ui) {
+  if (!studio.db) { target.notify('바꾸기는 claude.ai 사무실에서만 할 수 있어요.'); push(); return; }
   if (pending) return; pending = true;
   try {
     const ref = studio.db.collection('projectState').doc(id);
     await ref.set({ ...(overrides[id] || {}), ...data, updatedAt: new Date().toISOString() });
-    overrides[id] = { ...(overrides[id] || {}), ...data }; ui.notify(ok);
-  } catch { ui.notify('저장하지 못했어요. 잠시 뒤에 다시 눌러 주세요.'); }
+    overrides[id] = { ...(overrides[id] || {}), ...data }; target.notify(ok);
+  } catch { target.notify('저장하지 못했어요. 잠시 뒤에 다시 눌러 주세요.'); }
   pending = false; push();
 }
 ui.addEventListener('studio-action', ({ detail: d }) => {
@@ -52,3 +53,5 @@ ui.addEventListener('studio-render', () => requestAnimationFrame(() => studio.fi
 studio.floor0 = ui.floor;
 studio.setFloor(ui.floor);
 if (studio.snap) push(); else ui.model = { projects: [], selectedId: null, demo: false, note: '불러오는 중' };
+
+export { build, write, push };
