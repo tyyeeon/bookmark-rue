@@ -277,7 +277,15 @@ luminode-dashboard { display: block; }
 @media (max-width: 620px) { #officeHost .projbar, #officeHost .zoom, #officeHost .topbar { display: none !important; } }
 #officeSide aside.right { display: block; border: 0; background: none; padding: 0; overflow: visible; }
 #officeSide .taskbar { position: static; transform: none; width: auto; margin: 0 0 12px; }
+.page-nav{height:52px;display:flex;gap:6px;padding:9px 18px;align-items:center;max-width:460px;margin:auto;background:#fbfaf4;border-bottom:1px solid #e3e7d7;font:11px -apple-system,BlinkMacSystemFont,sans-serif}
+.page-nav button{flex:1;text-align:center;border:0;background:none;color:#9ba88c;padding:8px;border-radius:9px;font:inherit;cursor:pointer}
+.page-nav button[aria-current]{background:#e9efdf;color:#6d855a;font-weight:600}
+body.wide-tab .page-nav{max-width:600px}
+[hidden]{display:none!important}
 </style>
+<nav class="page-nav" aria-label="화면 선택"><button type="button" data-tab="team" aria-current="page">◫ 업무 현황</button><button type="button" data-tab="office">⌂ 프로젝트·사무실</button></nav>
+<section id="view-team"><team-studio id="team"></team-studio></section>
+<section id="view-office" hidden>
 <luminode-dashboard id="studio">
   <div id="officeHost" slot="office"><div class="app wide">
   <aside class="left" id="floors"></aside>
@@ -310,6 +318,7 @@ luminode-dashboard { display: block; }
   </aside>  
   </div>
 </luminode-dashboard>
+</section>
 
 <script>
 const CHAN = 'chan_0199asxZSC643NDqDCKJfNri';
@@ -650,7 +659,7 @@ function fit() {
     stage.style.height = Math.round(Math.min(avail, h * k + 62)) + 'px';
   } else stage.style.height = '';
   const r = stage.getBoundingClientRect();
-  if (document.getElementById('officeHost')) { view.k = Math.min(r.width / WORLD_W, r.height / h) * .98; view.x = (r.width - WORLD_W * view.k) / 2; view.y = (r.height - h * view.k) / 2 - top * view.k; apply(); return; }
+  if (document.getElementById('officeHost')) { view.k = Math.min(phone ? 1.5 * r.width / WORLD_W : r.width / WORLD_W, r.height / h) * .98; view.x = (r.width - WORLD_W * view.k) / 2; view.y = (r.height - h * view.k) / 2 - top * view.k; apply(); return; }
   view.k = phone ? Math.min((r.height - 54) / h, 1.6 * r.width / WORLD_W) : Math.min(r.width / WORLD_W, (r.height - 88) / h);
   view.x = (r.width - WORLD_W * view.k) / 2; view.y = (phone ? 46 : 84) + (r.height - (phone ? 50 : 88) - h * view.k) / 2 - top * view.k;
   apply();
@@ -940,6 +949,7 @@ function askRefresh(id, label, text) {
 }
 askRefresh('refresh', '🔄', '사무실 갱신');
 askRefresh('roster', '🦊', '루에 층 갱신');
+window.studio.requestRefresh = async () => { if (!dbRef) return false; await submit('task', '사무실 갱신', { id: 'boss', name: '이음 대표' }); return true; };
 document.getElementById('tb-form').onsubmit = e => { e.preventDefault(); submit('task', tb.text.value); };
 document.querySelectorAll('.tb-quick button').forEach(b => b.onclick = () => submit(b.dataset.q, b.dataset.q === 'first' ? tb.text.value : ''));
 tb.clear.onclick = () => { selected = null; render(); };
@@ -1273,5 +1283,6 @@ setInterval(stamp, 30000);
 </script>
 
 <script type="module" src="gyuyeon.js?v=r4"></script>
-<script type="module" src="studio-adapter.js?v=1"></script>
+<script type="module" src="studio-adapter.js?v=2"></script>
+<script type="module" src="team-adapter.js?v=1"></script>
 </body></html>
