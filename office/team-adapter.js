@@ -18,11 +18,13 @@ function model() {
   // 이음이 "진행 중"인 방이 있으면 그걸 현재 작업으로, 없으면 비워 둔다(기록 없는 상태는 추정하지 않음)
   let eumNow = null;
   for (const p of projects) { if (p.archived) continue; const t = (p.tasks || []).find(t => t.status === '진행 중' && t.ownerId === 'eum'); if (t) { eumNow = { projectId: p.id, taskId: t.id }; break; } }
+  let rueNow = null;  // 루에도 같은 규칙: 기록에 "진행 중"으로 적힌 루에 업무가 있으면 그것, 없으면 비움
+  for (const p of projects) { if (p.archived) continue; const t = (p.tasks || []).find(t => t.status === '진행 중' && t.ownerId === 'rue'); if (t) { rueNow = { projectId: p.id, taskId: t.id }; break; } }
   const at = Date.parse(studio.snap?.at) || 0;
   return {
     projects, viewerId: 'gyu', demo: false,
     members: [
-      { id: 'rue', name: '루에', image: 'rue-work.webp', current: null },
+      { id: 'rue', name: '루에', image: 'rue-work.webp', current: rueNow },
       { id: 'eum', name: '이음', image: 'eum-work.webp', current: eumNow },
       { id: 'gyu', name: '규연', image: 'gyuyeon-human.webp', current: null },
     ],
