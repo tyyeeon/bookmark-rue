@@ -25,7 +25,12 @@ dialog{font:inherit;letter-spacing:-.025em;color:var(--ink);border:1px solid #ff
 :host([compact-nav]) .interior-app{height:calc(100dvh - 52px)}
 :host([compact-nav]) .interior-plane{width:100%;height:100%}
 
-/* 이음 패치: 선택한 프로젝트 아래 다른 프로젝트 두 개 바로가기 */
-.interior-others{position:absolute;z-index:3;left:17px;top:calc(max(18px,env(safe-area-inset-top)) + 70px);display:flex;flex-direction:column;gap:5px;align-items:flex-start;max-width:calc(100% - 40px)}
-.interior-others button{display:flex;align-items:center;gap:6px;max-width:100%;padding:6px 10px;border:1px solid #fff7e37a;border-radius:11px;background:#fff9e8c4;backdrop-filter:blur(10px);box-shadow:0 3px 11px #73512c12;color:#7c724c;font-size:10px}
-.interior-others button span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 이음 패치: 프로젝트 2~3개를 한 화면에 같이 보기 — 바닥 쪽에 두어 사람 얼굴을 가리지 않음 */
+.interior-others{position:absolute;z-index:3;left:12px;right:12px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 42px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.interior-others button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;padding:8px 9px;border:1px solid #fff7e37a;border-radius:13px;background:#fff9e8de;backdrop-filter:blur(10px);box-shadow:0 4px 14px #73512c18;color:#6f6745;text-align:left}
+.interior-others button[aria-current]{border-color:#b9a77a;background:#fffbefef;box-shadow:0 0 0 2px #c7b48266,0 4px 14px #73512c18}
+.interior-others b{display:flex;gap:4px;max-width:100%;font-size:11px;font-weight:650}
+.interior-others b span:last-child,.interior-others small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.interior-others small{font-size:9px;color:#8f8763}
+.interior-others .status{font-size:8px;padding:2px 5px}
+.interior-others .other-confirm{position:absolute;right:6px;top:6px;font-style:normal;font-size:8px;color:#fff9e6;background:#c5936f;border-radius:7px;padding:1px 5px}

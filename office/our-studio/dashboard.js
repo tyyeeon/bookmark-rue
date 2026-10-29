@@ -1,7 +1,7 @@
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const e = escapeHTML;
 const asset = name => new URL(`./assets/${name}`, import.meta.url).href;
-const style = new URL('./dashboard.css', import.meta.url).href;
+const style = new URL('./dashboard.css?v=2', import.meta.url).href;
 const statusClass = s => ({'진행 중':'working','컨펌 필요':'review','완료':'done','대기':'waiting','미확인':'unknown'}[s] || 'unknown');
 const badge = s => `<span class="status ${statusClass(s)}"><i></i>${e(s)}</span>`;
 const avatar = name => `<span class="avatar ${name==='이음'?'lilac':name==='규연'?'peach':'mint'}">${e(name?.slice(0,1)||'?')}</span>`;
@@ -35,7 +35,7 @@ export class LuminodeDashboard extends HTMLElement {
         </div>
         <div class="interior-top"><button class="interior-project" data-picker><span class="tiny-star">✳</span><span>${e(p?.name||'프로젝트 선택')}</span><small>⌄</small></button><button class="interior-refresh" data-refresh ${connection.state==='loading'?'disabled':''} aria-label="업무 기록 새로고침">↻</button></div>
         <div class="interior-sync" role="status">${e(freshness)}</div>
-        <div class="interior-others">${projects.filter(x=>!x.archived&&x.id!==selectedId).sort((a,b)=>(b.status==='진행 중')-(a.status==='진행 중')||(b.status==='컨펌 필요')-(a.status==='컨펌 필요')).slice(0,2).map(x=>`<button data-pick-other="${e(x.id)}"><span>${e(x.icon)}</span><span>${e(x.name)}</span></button>`).join('')}</div>
+        <div class="interior-others">${[p,...projects.filter(x=>!x.archived&&x.id!==selectedId).sort((a,b)=>(b.status==='진행 중')-(a.status==='진행 중')||(b.status==='컨펌 필요')-(a.status==='컨펌 필요'))].filter(Boolean).slice(0,3).map(x=>{const now=(x.tasks||[]).find(t=>t.status==='진행 중')||(x.tasks||[]).find(t=>t.status!=='완료');const n=(x.approvals||[]).length;return `<button data-pick-other="${e(x.id)}" ${x.id===selectedId?'aria-current="true"':''}><b><span>${e(x.icon)}</span><span>${e(x.name)}</span></b>${badge(x.status)}<small>${e(x.next||now?.next||now?.title||'확인된 작업 없음')}</small>${n?`<em class="other-confirm">컨펌 ${n}</em>`:''}</button>`;}).join('')}</div>
         <div class="interior-hint"><span>✧</span> 이름표 · 게시판 · 편지함을 눌러봐요</div>
       </main><dialog id="modal" aria-labelledby="modal-title"></dialog><div id="toast" role="status" hidden></div>`;
     this.bind();
