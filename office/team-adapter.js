@@ -1,7 +1,7 @@
 // 업무 현황(team-studio, 루에 1028 디자인)과 실제 데이터를 잇는 어댑터. 화면은 루에 것 그대로, 여기는 데이터·기능만.
 // 데이터는 새 관제 UI와 같은 스냅샷(projects)·db projectState를 쓴다(studio-adapter.js가 만든 build()를 같이 씀).
 import './team-studio/studio.js';
-import './our-studio/dashboard.js';
+import './our-studio/dashboard.js?v=2';  // 카드 변경 캐시 무효화
 import { build, write } from './studio-adapter.js';
 const team = document.getElementById('team');
 const ours = document.getElementById('ours');  // 우리 스튜디오(루에 1028 인테리어 화면) — 같은 모델을 쓴다
