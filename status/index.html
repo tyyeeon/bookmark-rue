@@ -16,7 +16,7 @@
 :root{--ink:#1c3155;--ink2:#425573;--muted:#6f819d;--blue:#2f5589;--line:#d3deee;--glass:rgba(255,255,255,.74);--green:#1f7d5f;--green-bg:#cdeedd;--wait:#92611a;--wait-bg:#fdeec9;--done:#5d7192;--done-bg:#e3e9f3;--warn:#9a5d0b;--warn-bg:#fdecc4;--navy:#24466f}
 *{box-sizing:border-box}
 html{background:#e9f0fb}
-body{margin:0;color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;background:linear-gradient(rgba(244,248,254,.5),rgba(244,248,254,.3)),url(bg-home.jpg) center top/cover no-repeat #e4ecf9;background-attachment:fixed;-webkit-tap-highlight-color:transparent}
+body{margin:0;color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;background:linear-gradient(rgba(244,248,254,.16),rgba(244,248,254,0)),url(bg-home.jpg) center top/cover no-repeat #e4ecf9;background-attachment:fixed;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #93c8ff;outline-offset:2px}
 a{color:inherit;text-decoration:none}
@@ -145,6 +145,20 @@ svg{display:block}
 .toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#273c59;color:#fff;padding:11px 17px;border-radius:14px;font-size:13px;z-index:30;box-shadow:0 12px 25px #0003;max-width:90vw}
 .linkbtn{display:inline-flex;margin-top:8px;padding:11px 16px;border-radius:14px;background:#e1ebf8;border:1px solid #c9d9ec;color:#2d5584;font-weight:700}
 .linkbtn.danger{background:#fdeaea;border-color:#f0c6c6;color:#a33}
+
+/* 유리(glassmorphism) 레이어: 반투명 + 뒤 배경 흐림 + 테두리 빛 */
+:root{--glass:linear-gradient(150deg,rgba(255,255,255,.62),rgba(255,255,255,.2));--glassLine:rgba(255,255,255,.85);--glassShadow:0 12px 34px rgba(62,104,170,.18),inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 2px rgba(110,150,215,.28),inset 0 0 22px rgba(255,255,255,.3)}
+.card,.panel,.seg,.note,.tabs,.calShell .panel{background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(1.5);backdrop-filter:blur(20px) saturate(1.5);border:1px solid var(--glassLine);box-shadow:var(--glassShadow)}
+.tabs{background:linear-gradient(150deg,rgba(255,255,255,.75),rgba(255,255,255,.35))}
+.chip{background:linear-gradient(150deg,rgba(255,255,255,.7),rgba(255,255,255,.28));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--glassLine);box-shadow:0 6px 16px rgba(62,104,170,.12),inset 0 1px 1px rgba(255,255,255,.95)}
+.seg button.on,.chip.on,.tabs button.on{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 52%),linear-gradient(110deg,#24466f,#5d82b5);border:1px solid rgba(255,255,255,.55);box-shadow:0 8px 20px rgba(48,86,150,.4),inset 0 1px 1px rgba(255,255,255,.6),inset 0 -2px 4px rgba(20,50,100,.3);color:#fff}
+.thumb{border:1px solid rgba(255,255,255,.7);box-shadow:0 8px 20px rgba(40,70,130,.3),inset 0 0 0 1px rgba(255,255,255,.3)}
+.primary{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 52%),linear-gradient(110deg,#24466f,#6687b6);box-shadow:0 12px 26px rgba(48,86,150,.42),inset 0 1px 2px rgba(255,255,255,.7),inset 0 -2px 4px rgba(20,50,100,.3)}
+.iconbtn{background:linear-gradient(150deg,rgba(255,255,255,.8),rgba(255,255,255,.35));-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glassLine);box-shadow:0 6px 16px rgba(62,104,170,.14),inset 0 1px 1px rgba(255,255,255,.95)}
+.hero .iconbtn{background:#0b1a3a66;border-color:rgba(255,255,255,.35);box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}
+.nav{bottom:calc(10px + env(safe-area-inset-bottom))}
+.nav nav{background:linear-gradient(150deg,rgba(255,255,255,.78),rgba(255,255,255,.4));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--glassLine);border-radius:26px;box-shadow:0 14px 34px rgba(62,104,170,.26),inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 2px rgba(110,150,215,.28);padding:8px 6px}
+.warn{box-shadow:inset 0 1px 1px rgba(255,255,255,.7)}
 </style></head><body>
 <section id="splash" hidden></section>
 <div id="app" hidden>
