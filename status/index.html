@@ -16,7 +16,7 @@
 :root{--ink:#1c3155;--ink2:#425573;--muted:#6f819d;--blue:#2f5589;--line:#d3deee;--glass:rgba(255,255,255,.74);--green:#1f7d5f;--green-bg:#cdeedd;--wait:#92611a;--wait-bg:#fdeec9;--done:#5d7192;--done-bg:#e3e9f3;--warn:#9a5d0b;--warn-bg:#fdecc4;--navy:#24466f}
 *{box-sizing:border-box}
 html{background:#e9f0fb}
-body{margin:0;color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;background:radial-gradient(ellipse at 75% -5%,#fff 0,transparent 55%),linear-gradient(160deg,#e4ecf9,#f5f8fd 50%,#dfe9f8);background-attachment:fixed;-webkit-tap-highlight-color:transparent}
+body{margin:0;color:var(--ink);font-family:'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;line-height:1.5;min-height:100vh;background:linear-gradient(rgba(244,248,254,.5),rgba(244,248,254,.3)),url(bg-home.jpg) center top/cover no-repeat #e4ecf9;background-attachment:fixed;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #93c8ff;outline-offset:2px}
 a{color:inherit;text-decoration:none}
@@ -29,7 +29,7 @@ svg{display:block}
 /* splash */
 #splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:max(32px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 38%,#fff 0,rgba(255,255,255,0) 52%),linear-gradient(180deg,#dde8f8,#f3f7fd 55%,#d9e5f6)}
 #splash .brand{font-size:30px}
-#splash .art{width:min(92vw,400px);height:auto;margin-top:-8px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 7%,#000 72%,transparent 100%),linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent 0,#000 7%,#000 72%,transparent 100%),linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%);mask-composite:intersect}
+#splash .art{width:min(100vw,440px);height:auto;margin:-6px 0 -10px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 6%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0,#000 10%,#000 90%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent 0,#000 6%,#000 70%,transparent 100%),linear-gradient(to right,transparent 0,#000 10%,#000 90%,transparent 100%);mask-composite:intersect}
 #splash .acct{color:#2d4a74;font-weight:500;font-size:14px;padding:8px 12px}
 #splash .eyebrow{font-size:11px;letter-spacing:.32em;color:#60759b}
 #splash h1{margin:0;font-size:30px;letter-spacing:-.04em}
@@ -62,7 +62,7 @@ svg{display:block}
 .thumb svg,.thumb img,.heroSvg,.heroSvg img,.heroSvg svg{width:100%;height:100%;object-fit:cover;display:block}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid #d4dff0;background:#ffffffa9;color:#536b94;position:relative}
 .iconbtn.badge:after{content:'';position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#2f7de1;border:1.5px solid #fff}
-.hero .iconbtn{background:#ffffff26;border-color:transparent;color:#fff}
+.hero .iconbtn{background:#0b1a3a66;border-color:transparent;color:#fff}
 .hero .iconbtn.badge:after{border-color:#1b2f5e}
 .topIcons{display:flex;gap:10px;align-items:center}
 .plus{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:#2d5584}
@@ -99,7 +99,7 @@ svg{display:block}
 /* detail */
 .hero{position:relative;margin:calc(-1 * max(18px,env(safe-area-inset-top))) calc(-1 * max(16px,env(safe-area-inset-right))) 0 calc(-1 * max(16px,env(safe-area-inset-left)));padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 68px max(16px,env(safe-area-inset-left));color:#fff;border-radius:0 0 26px 26px;overflow:hidden;background:#12285a}
 .hero .heroSvg{position:absolute;inset:0}
-.hero:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0b1a3a55,#0b1a3acc)}
+.hero:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#0b1a3a99,#0b1a3acc)}
 .hero>*{position:relative;z-index:1}
 .heroTop{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
 .back{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:#ffffff26}
@@ -172,8 +172,9 @@ const I={
  warn:'<svg class="ic" viewBox="0 0 24 24"><path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.5v.01"/></svg>'
 };
 /* 표지: 시안의 분위기만 따온 간단한 그림 */
+function heroCover(id){return id==='plan'?'<img src="hero-plan.jpg" alt="" width="1400" height="467">':cover(id)}
 function cover(id){
- if(id==='plan'||id==='ai'||id==='app')return '<img src="cover-'+id+'.jpg" alt="" width="282" height="288">';
+ if(id==='plan'||id==='ai'||id==='app')return '<img src="cover-'+id+'.jpg" alt="" width="560" height="640">';
  if(id==='plan_svg')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1f45"/><stop offset="1" stop-color="#30508d"/></linearGradient></defs><rect width="100" height="100" fill="url(#g1)"/>'+[[14,38],[41,28],[68,38]].map(a=>'<path d="M'+a[0]+' 100V'+(a[1]+16)+'Q'+a[0]+' '+a[1]+' '+(a[0]+9)+' '+(a[1]-8)+'Q'+(a[0]+18)+' '+a[1]+' '+(a[0]+18)+' '+(a[1]+16)+'V100z" fill="#5d86c9" opacity=".55"/><path d="M'+(a[0]+4)+' 100V'+(a[1]+18)+'Q'+(a[0]+4)+' '+(a[1]+6)+' '+(a[0]+9)+' '+(a[1]-1)+'Q'+(a[0]+14)+' '+(a[1]+6)+' '+(a[0]+14)+' '+(a[1]+18)+'V100z" fill="#e4a15a" opacity=".5"/>').join('')+'</svg>';
  if(id==='ai')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="g2" cx=".6" cy=".55" r=".8"><stop offset="0" stop-color="#7fb4ea"/><stop offset=".5" stop-color="#27508f"/><stop offset="1" stop-color="#0c1d45"/></radialGradient></defs><rect width="100" height="100" fill="url(#g2)"/>'+[18,28,38,48].map((r,i)=>'<ellipse cx="62" cy="56" rx="'+r+'" ry="'+(r*0.6)+'" transform="rotate(-28 62 56)" fill="none" stroke="#cfe6ff" stroke-opacity="'+(0.55-i*0.1)+'" stroke-width="1.6"/>').join('')+'</svg>';
  if(id==='app')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3f7c"/><stop offset=".6" stop-color="#8d7fb0"/><stop offset="1" stop-color="#f0b48f"/></linearGradient></defs><rect width="100" height="100" fill="url(#g3)"/>'+[[4,40,14],[18,26,12],[32,48,10],[44,18,14],[60,36,12],[74,50,10],[86,30,12]].map(b=>'<rect x="'+b[0]+'" y="'+(100-b[1]-12)+'" width="'+b[2]+'" height="'+(b[1]+12)+'" fill="#1a2650" opacity=".88"/>').join('')+'</svg>';
@@ -270,7 +271,7 @@ function viewDetail(id){
  else if(tab==='할 일')body=panelOf(p,'tasks','다음 할 일')+panelOf(p,'threads','진행 목록');
  else if(tab==='진행 목록')body=panelOf(p,'threads','진행 목록');
  else body='<div class="panel"><h3>파일</h3><div class="empty">아직 이 프로젝트에 연결된 파일이 없어요.<br>인계 문서와 자료는 Drive의 Cloude 폴더에 있어요.</div></div>';
- return '<div class="hero"><div class="heroSvg">'+cover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
+ return '<div class="hero"><div class="heroSvg">'+heroCover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
   +'<div class="heroName"><span style="display:flex;align-items:center;gap:8px">'+I.folder+esc(short(p.name))+'</span><span class="sel"><select data-status="'+esc(p.id)+'" class="'+statusCls(p.status)+'" aria-label="상태 바꾸기 (이 기기에만 저장)">'+['진행중','대기','완료'].map(s=>'<option '+(s===p.status?'selected':'')+'>'+s+'</option>').join('')+'</select></span></div><div class="heroScope">'+esc(p.scope)+'</div></div>'
   +'<div class="tabs">'+['개요','할 일','진행 목록','파일'].map(t=>'<button class="'+(tab===t?'on':'')+'" data-tab="'+t+'">'+t+'</button>').join('')+'</div>'+body;
 }
@@ -293,7 +294,7 @@ function viewMore(){
   +'<div class="panel"><h3>시작 화면</h3><button class="linkbtn" data-splash>시작 화면 다시 보기</button></div>';
 }
 function viewSplash(){
- return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="splash-art.jpg" alt="" width="810" height="910"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button><button class="acct" data-soon="계정">계정으로 계속하기</button>';
+ return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="splash-art.jpg" alt="" width="840" height="928"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button><button class="acct" data-soon="계정">계정으로 계속하기</button>';
 }
 
 /* 라우팅 */
