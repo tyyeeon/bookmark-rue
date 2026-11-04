@@ -174,6 +174,11 @@ body{background:radial-gradient(circle at 12% 8%,rgba(110,150,240,.42),transpare
 #app,#splash{background:linear-gradient(155deg,rgba(255,255,255,.34),rgba(255,255,255,.07) 48%,rgba(255,255,255,.2));-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 26px 70px rgba(48,86,160,.30),inset 0 3px 2px rgba(255,255,255,.98),inset 0 -3px 8px rgba(96,136,210,.30),inset 0 0 60px rgba(255,255,255,.22)}
 .nav nav{background:linear-gradient(150deg,rgba(255,255,255,.55),rgba(255,255,255,.16))}
 .seg:not(.x){background:linear-gradient(150deg,rgba(255,255,255,.5),rgba(255,255,255,.14))}
+/* 프로젝트 탭: 펼친 목록은 카드 전체 너비로 */
+body.exp .cardBody{display:contents}
+body.exp .cardGrid .thumb{grid-column:1;grid-row:1;position:static}
+body.exp .cardGrid .cardHead{grid-column:2;grid-row:1;align-self:center}
+body.exp .cardGrid .rowToggle,body.exp .cardGrid .rowBody{grid-column:1/-1}
 </style></head><body>
 <section id="splash" hidden></section>
 <div id="app" hidden>
@@ -338,7 +343,7 @@ function render(){
  const splashEl=$('#splash'),appEl=$('#app'),navw=$('#navwrap');
  if(h==='splash'||(!lsGet(SEEN)&&h==='')){splashEl.innerHTML=viewSplash();splashEl.hidden=false;appEl.hidden=true;navw.hidden=true;return}
  splashEl.hidden=true;appEl.hidden=false;navw.hidden=false;
- let r='home',html='';expandAll=(h==='projects');
+ let r='home',html='';expandAll=(h==='projects');document.body.classList.toggle('exp',expandAll);
  if(h.startsWith('p/')){r='projects';html=viewDetail(decodeURIComponent(h.slice(2)))}
  else if(h==='cal'){r='cal';seg='cal';html=viewHub(false)}
  else if(h==='projects'){r='projects';seg='projects';html=viewHub(true)}
