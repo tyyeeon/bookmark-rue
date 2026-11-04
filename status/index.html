@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="프로젝트 진행">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<title>프로젝트 진행</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+html{background:var(--bg)}
+body{margin:0}
+/* 폰 한 손 현황판: 프로젝트 카드 = 다음 할 일(큰 글씨) + 스레드별 진행 목록. 상태는 왼쪽 색 띠 */
+:root{
+  --bg:#f3f4f6; --card:#ffffff; --fg:#1b2230; --muted:#5a6475; --line:#d9dde4; --soft:#f6f7f9;
+  --accent:#2f5d8a;
+  --go:#2f7d55; --go-bg:#e3f2ea; --wait:#a5661b; --wait-bg:#fbefdc; --done:#5f6878; --done-bg:#e8eaee;
+  --stale:#b4472f; --stale-bg:#fbe6e0;
+  --display:"Gowun Batang","Nanum Myeongjo",serif;
+  --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --card:#1a202a; --fg:#e9edf4; --muted:#a2abba; --line:#2b3340; --soft:#202733; --accent:#86b3e0;
+  --go:#7fd1a4; --go-bg:#1d3a2b; --wait:#f0b468; --wait-bg:#3d2c14; --done:#aab2bf; --done-bg:#2a313c;
+  --stale:#f08a72; --stale-bg:#42221b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --card:#1a202a; --fg:#e9edf4; --muted:#a2abba; --line:#2b3340; --soft:#202733; --accent:#86b3e0;
+  --go:#7fd1a4; --go-bg:#1d3a2b; --wait:#f0b468; --wait-bg:#3d2c14; --done:#aab2bf; --done-bg:#2a313c;
+  --stale:#f08a72; --stale-bg:#42221b; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:720px;margin:0 auto;padding-block:max(24px,env(safe-area-inset-top,0px)) max(40px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:8px 16px;flex-wrap:wrap}
+h1{font-family:var(--display);font-size:1.6rem;margin:0;text-wrap:balance}
+.sub{color:var(--muted);font-size:.85rem;margin:0;font-variant-numeric:tabular-nums}
+.list{display:grid;gap:16px}
+.card{--st:var(--done);background:var(--card);border:1px solid var(--line);border-left:6px solid var(--st);border-radius:8px;padding:16px;display:grid;gap:14px;min-width:0}
+.card.s-진행중{--st:var(--go)} .card.s-대기{--st:var(--wait)} .card.s-완료{--st:var(--done)}
+.top{display:grid;grid-template-columns:1fr auto;align-items:start;gap:4px 10px}
+.name{font-weight:700;font-size:1.25rem;line-height:1.3;min-width:0;overflow-wrap:anywhere}
+.scope{grid-column:1 / -1;color:var(--muted);font-size:.85rem}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;padding:3px 11px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.pill.s-진행중{color:var(--go);background:var(--go-bg)}
+.pill.s-대기{color:var(--wait);background:var(--wait-bg)}
+.pill.s-완료{color:var(--done);background:var(--done-bg)}
+.label{font-size:.75rem;font-weight:600;color:var(--muted);letter-spacing:.08em;margin-bottom:6px}
+.next{display:grid;gap:4px}
+.next .ln{font-size:1.08rem;font-weight:500;overflow-wrap:anywhere}
+.when{font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.threads{display:grid;gap:0;border-top:1px solid var(--line)}
+.threads .label{margin:12px 0 2px}
+.th{display:grid;gap:2px;padding:10px 0;border-top:1px solid var(--line);min-width:0}
+.th:first-of-type{border-top:0}
+.th b{font-size:.95rem;font-weight:600}
+.th span{color:var(--fg);opacity:.88;font-size:.95rem;overflow-wrap:anywhere}
+.th .when{color:var(--accent)}
+.meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;color:var(--muted);font-size:.8rem;font-variant-numeric:tabular-nums}
+.ago{font-weight:600;padding:1px 8px;border-radius:999px;background:var(--soft)}
+.ago.stale{color:var(--stale);background:var(--stale-bg)}
+.empty{color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:18px}
+footer{color:var(--muted);font-size:.8rem}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>프로젝트 진행</h1>
+    <p class="sub" id="today"></p>
+  </header>
+  <div class="list" id="list">
+    <div class="empty">현황을 불러오는 중이에요. 프로젝트(plan·AI·APP) 줄이 여기에 나와요.</div>
+  </div>
+  <footer>프로젝트마다 한 줄. 일이 끝날 때마다 그 줄만 고쳐요.</footer>
+</div>
+
+<script>
+const ORDER=["plan","ai","app"];
+const STALE_DAYS=3;
+const list=document.getElementById("list");
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+// 날짜·시간(11/06, 13:00, 12/3, c162 같은 일정 번호는 그대로)을 굵게
+const WHEN=/(\d{1,2}\/\d{1,2}(?:[~\-]\d{1,2})?(?:\s?\d{1,2}:\d{2})?|\d{1,2}:\d{2})/g;
+function rich(parent,text){
+  let last=0,m;WHEN.lastIndex=0;
+  while((m=WHEN.exec(text))){
+    if(m.index>last)parent.append(text.slice(last,m.index));
+    parent.append(el("span","when",m[0])); last=m.index+m[0].length;
+  }
+  if(last<text.length)parent.append(text.slice(last));
+}
+function daysAgo(s){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||"")); if(!m)return null;
+  const a=Date.UTC(+m[1],+m[2]-1,+m[3]);
+  const n=new Date(); const b=Date.UTC(n.getFullYear(),n.getMonth(),n.getDate());
+  return Math.round((b-a)/864e5);
+}
+function threadRows(note){
+  const rows=String(note).split("\n").map(s=>s.replace(/^\s*[·•\-]\s*/,"").trim()).filter(Boolean);
+  const box=el("div","threads"); box.append(el("div","label","스레드별 진행"));
+  for(const r of rows){
+    const row=el("div","th"); const i=r.indexOf(":");
+    if(i>0&&i<26){row.append(el("b",null,r.slice(0,i).trim())); const t=el("span"); rich(t,r.slice(i+1).trim()); row.append(t)}
+    else{const t=el("span"); rich(t,r); row.append(t)}
+    box.append(row);
+  }
+  return box;
+}
+function render(rows){
+  list.replaceChildren();
+  if(!rows.length){list.append(el("div","empty","아직 줄이 없어요. 각 프로젝트가 첫 줄을 쓰면 여기에 보여요."));return}
+  rows.sort((a,b)=>{const i=ORDER.indexOf(a.id),j=ORDER.indexOf(b.id);return (i<0?99:i)-(j<0?99:j)});
+  for(const r of rows){
+    const d=r.d, st=String(d.status||"대기");
+    const c=el("article","card s-"+st);
+    const top=el("div","top");
+    top.append(el("div","name",String(d.name||r.id)), el("span","pill s-"+st, st));
+    if(d.scope) top.append(el("div","scope",String(d.scope)));
+    c.append(top);
+    const nx=el("div","next"); nx.append(el("div","label","다음 할 일"));
+    for(const ln of String(d.next||"—").split("\n").filter(Boolean)){const p=el("div","ln"); rich(p,ln); nx.append(p)}
+    c.append(nx);
+    if(d.note) c.append(threadRows(d.note));
+    const meta=el("div","meta");
+    const n=daysAgo(d.updated);
+    meta.append("마지막 수정 "+String(d.updated||"—"));
+    if(n!=null){const stale=n>=STALE_DAYS; meta.append(el("span","ago"+(stale?" stale":""), n<=0?"오늘":n+"일 전"+(stale?" · 갱신 필요":"")))}
+    if(d.by) meta.append(el("span",null,String(d.by)));
+    c.append(meta);
+    list.append(c);
+  }
+}
+(function(){const n=new Date();document.getElementById("today").textContent=(n.getMonth()+1)+"/"+n.getDate()+" 기준"})();
+(async()=>{
+  const fail=()=>list.replaceChildren(el("div","empty","현황을 못 불러왔어요. 잠시 뒤 다시 열어 주세요."));
+  try{
+    const r=await fetch("data.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok)throw new Error(r.status);
+    const j=await r.json();
+    render((j.projects||[]).map(p=>({id:p.id,d:p})));
+  }catch(e){fail()}
+})();
+</script>
+</body></html>
