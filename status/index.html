@@ -159,6 +159,7 @@ svg{display:block}
 .nav{bottom:calc(10px + env(safe-area-inset-bottom))}
 .nav nav{background:linear-gradient(150deg,rgba(255,255,255,.78),rgba(255,255,255,.4));-webkit-backdrop-filter:blur(22px) saturate(1.5);backdrop-filter:blur(22px) saturate(1.5);border:1px solid var(--glassLine);border-radius:26px;box-shadow:0 14px 34px rgba(62,104,170,.26),inset 0 1.5px 1px rgba(255,255,255,.95),inset 0 -1px 2px rgba(110,150,215,.28);padding:8px 6px}
 .warn{box-shadow:inset 0 1px 1px rgba(255,255,255,.7)}
+.cardGrid .thumb{align-self:start;height:104px;position:sticky;top:12px}
 </style></head><body>
 <section id="splash" hidden></section>
 <div id="app" hidden>
@@ -243,9 +244,10 @@ function listHtml(p,k,who){return p[k].length?p[k].map((_,i)=>itemHtml(p,k,i,who
 function addForm(p,k){return '<form class="add" data-add="'+esc(p.id)+'|'+k+'"><input aria-label="새 항목" placeholder="새 항목 (이 기기에만 저장)"><button type="submit" aria-label="항목 추가">'+I.plus+'</button></form>'}
 
 const short=n=>String(n).replace(/\s*\(.*\)\s*$/,'')||n;
+let expandAll=false;const closed=new Set();
 function cardHtml(p){
  const n=daysAgo(p.updated);
- const row=(k,label,icon)=>{const id=p.id+'|'+k,on=open.has(id);return '<button class="rowToggle" data-toggle="'+esc(id)+'" aria-expanded="'+on+'">'+icon+'<span>'+label+'</span><span class="frac">'+stat(p,k)+'</span>'+I.chev+'</button>'+(on?'<div class="rowBody">'+listHtml(p,k)+'</div>':'')};
+ const row=(k,label,icon)=>{const id=p.id+'|'+k,on=expandAll?!closed.has(id):open.has(id);return '<button class="rowToggle" data-toggle="'+esc(id)+'" aria-expanded="'+on+'">'+icon+'<span>'+label+'</span><span class="frac">'+stat(p,k)+'</span>'+I.chev+'</button>'+(on?'<div class="rowBody">'+listHtml(p,k)+'</div>':'')};
  return '<article class="card"><div class="cardGrid"><a class="thumb" href="#/p/'+esc(p.id)+'" aria-label="'+esc(short(p.name))+' 열기">'+cover(p.id)+'</a><div class="cardBody"><a class="cardHead" href="#/p/'+esc(p.id)+'"><div class="cardMain"><div class="nameRow"><span class="pname">'+I.folder+esc(short(p.name))+'</span>'+pill(p.status)+'</div><div class="scope">'+esc(p.scope)+'</div></div>'+I.right+'</a>'
   +row('tasks','다음 할 일',I.check)+row('threads','진행 목록',I.layers)+'</div></div>'
   +(n!=null&&n>=3?'<div class="warn">'+I.warn+'3일 이상 수정 없음 ('+esc(p.updated.slice(5).replace('-','/'))+' 이후)</div>':'')+'</article>';
@@ -256,7 +258,7 @@ function viewHub(onlyList){
  const f=data.filter(p=>filter==='전체'||p.status===filter);
  const c=s=>s==='전체'?data.length:data.filter(p=>p.status===s).length;
  let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div>'+TOPICONS+'</header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 관리합니다.')+'</p>';
- h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
+ if(!onlyList)h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
  if(seg==='cal'&&!onlyList)return h+viewCal();
  h+='<div class="chips">'+['전체','진행중','대기','완료'].map(s=>'<button class="chip '+(filter===s?'on':'')+'" data-filter="'+s+'">'+s+' '+c(s)+'</button>').join('')+'</div>';
  if(!loaded)return h+'<div class="panel empty">현황을 불러오는 중이에요.</div>';
@@ -322,7 +324,7 @@ function render(){
  const splashEl=$('#splash'),appEl=$('#app'),navw=$('#navwrap');
  if(h==='splash'||(!lsGet(SEEN)&&h==='')){splashEl.innerHTML=viewSplash();splashEl.hidden=false;appEl.hidden=true;navw.hidden=true;return}
  splashEl.hidden=true;appEl.hidden=false;navw.hidden=false;
- let r='home',html='';
+ let r='home',html='';expandAll=(h==='projects');
  if(h.startsWith('p/')){r='projects';html=viewDetail(decodeURIComponent(h.slice(2)))}
  else if(h==='cal'){r='cal';seg='cal';html=viewHub(false)}
  else if(h==='projects'){r='projects';seg='projects';html=viewHub(true)}
@@ -343,9 +345,9 @@ document.addEventListener('click',e=>{
  if(t.hasAttribute('data-splash')){location.hash='#/splash';return}
  if(t.hasAttribute('data-reset')){if(!resetArmed){resetArmed=true;keepScroll(render);return}lsDel(OVKEY);resetArmed=false;build(rawRows);keepScroll(render);toast('이 기기에서 바꾼 내용을 지웠어요.');return}
  if(t.dataset.check){const[id,k,i]=t.dataset.check.split('|');const p=data.find(x=>x.id===id);p[k][+i].done=!p[k][+i].done;save();keepScroll(render);return}
- if(t.dataset.toggle){const k=t.dataset.toggle;open.has(k)?open.delete(k):open.add(k);keepScroll(render);return}
+ if(t.dataset.toggle){const k=t.dataset.toggle,S=expandAll?closed:open;S.has(k)?S.delete(k):S.add(k);keepScroll(render);return}
  if(t.dataset.filter){filter=t.dataset.filter;keepScroll(render);return}
- if(t.dataset.seg){seg=t.dataset.seg;if(seg==='projects'&&location.hash==='#/projects')return;location.hash=seg==='cal'?'#/cal':'#/';return}
+ if(t.dataset.seg){seg=t.dataset.seg;location.hash=seg==='cal'?'#/cal':'#/';return}
  if(t.dataset.tab){tab=t.dataset.tab;keepScroll(render);return}
  if(t.dataset.date){selDate=t.dataset.date;keepScroll(render);return}
  if(t.dataset.month!=null){const d=Number(t.dataset.month);if(d===0)shown=new Date();else shown=new Date(shown.getFullYear(),shown.getMonth()+d,1);selDate=iso(shown.getFullYear(),shown.getMonth()+1,d===0?shown.getDate():1);keepScroll(render)}
