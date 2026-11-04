@@ -194,7 +194,8 @@ function cover(id){
  if(id==='app')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3f7c"/><stop offset=".6" stop-color="#8d7fb0"/><stop offset="1" stop-color="#f0b48f"/></linearGradient></defs><rect width="100" height="100" fill="url(#g3)"/>'+[[4,40,14],[18,26,12],[32,48,10],[44,18,14],[60,36,12],[74,50,10],[86,30,12]].map(b=>'<rect x="'+b[0]+'" y="'+(100-b[1]-12)+'" width="'+b[2]+'" height="'+(b[1]+12)+'" fill="#1a2650" opacity=".88"/>').join('')+'</svg>';
  return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#27508f"/></svg>';
 }
-const TOPICONS='<div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="계정" aria-label="계정"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18c1.2-2.4 3-3.4 5.5-3.4s4.3 1 5.5 3.4"/></svg></button></div>';
+const REFRESH='<button class="iconbtn" data-refresh aria-label="새로고침"><svg class="ic" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg></button>';
+const TOPICONS='<div class="topIcons">'+REFRESH+'<button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="계정" aria-label="계정"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18c1.2-2.4 3-3.4 5.5-3.4s4.3 1 5.5 3.4"/></svg></button></div>';
 /* 데이터: data.json(관제탑이 고침) + 이 기기에서 바꾼 내용(체크·추가·상태) */
 const OVKEY='luminode-hub-overlay-v1',SEEN='luminode-hub-seen-v1';
 let data=[],loaded=false,failed=false,filter='전체',seg='projects',tab='할 일',open=new Set(),addOpen=new Set(),resetArmed=false;
@@ -255,7 +256,7 @@ function viewHub(onlyList){
  const f=data.filter(p=>filter==='전체'||p.status===filter);
  const c=s=>s==='전체'?data.length:data.filter(p=>p.status===s).length;
  let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div>'+TOPICONS+'</header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 관리합니다.')+'</p>';
- if(!onlyList)h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
+ h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
  if(seg==='cal'&&!onlyList)return h+viewCal();
  h+='<div class="chips">'+['전체','진행중','대기','완료'].map(s=>'<button class="chip '+(filter===s?'on':'')+'" data-filter="'+s+'">'+s+' '+c(s)+'</button>').join('')+'</div>';
  if(!loaded)return h+'<div class="panel empty">현황을 불러오는 중이에요.</div>';
@@ -285,7 +286,7 @@ function viewDetail(id){
  else if(tab==='할 일')body=panelOf(p,'tasks','다음 할 일')+panelOf(p,'threads','진행 목록');
  else if(tab==='진행 목록')body=panelOf(p,'threads','진행 목록');
  else body='<div class="panel"><h3>파일</h3><div class="empty">아직 이 프로젝트에 연결된 파일이 없어요.<br>인계 문서와 자료는 Drive의 Cloude 폴더에 있어요.</div></div>';
- return '<div class="hero"><div class="heroSvg">'+heroCover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
+ return '<div class="hero"><div class="heroSvg">'+heroCover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons">'+REFRESH+'<button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
   +'<div class="heroName"><span style="display:flex;align-items:center;gap:8px">'+I.folder+esc(short(p.name))+'</span><span class="sel"><select data-status="'+esc(p.id)+'" class="'+statusCls(p.status)+'" aria-label="상태 바꾸기 (이 기기에만 저장)">'+['진행중','대기','완료'].map(s=>'<option '+(s===p.status?'selected':'')+'>'+s+'</option>').join('')+'</select></span></div><div class="heroScope">'+esc(p.scope)+'</div></div>'
   +'<div class="tabs">'+['개요','할 일','진행 목록','파일'].map(t=>'<button class="'+(tab===t?'on':'')+'" data-tab="'+t+'">'+t+'</button>').join('')+'</div>'+body;
 }
@@ -332,8 +333,9 @@ function render(){
 }
 const keepScroll=fn=>{const y=window.scrollY;fn();window.scrollTo(0,y)};
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-soon],[data-addtoggle],[data-go],[data-check],[data-toggle],[data-filter],[data-seg],[data-tab],[data-date],[data-month],[data-start],[data-reset],[data-splash]');
+ const t=e.target.closest('[data-refresh],[data-soon],[data-addtoggle],[data-go],[data-check],[data-toggle],[data-filter],[data-seg],[data-tab],[data-date],[data-month],[data-start],[data-reset],[data-splash]');
  if(!t)return;
+ if(t.hasAttribute('data-refresh')){toast('새로 불러오는 중…');setTimeout(()=>{location.href=location.pathname+'?v='+Date.now()+(location.hash||'')},250);return}
  if(t.dataset.soon){toast(t.dataset.soon+' 기능은 아직 없어요.');return}
  if(t.dataset.addtoggle){const k=t.dataset.addtoggle;addOpen.has(k)?addOpen.delete(k):addOpen.add(k);keepScroll(render);return}
  if(t.dataset.go){location.hash=t.dataset.go;window.scrollTo(0,0);return}
@@ -343,7 +345,7 @@ document.addEventListener('click',e=>{
  if(t.dataset.check){const[id,k,i]=t.dataset.check.split('|');const p=data.find(x=>x.id===id);p[k][+i].done=!p[k][+i].done;save();keepScroll(render);return}
  if(t.dataset.toggle){const k=t.dataset.toggle;open.has(k)?open.delete(k):open.add(k);keepScroll(render);return}
  if(t.dataset.filter){filter=t.dataset.filter;keepScroll(render);return}
- if(t.dataset.seg){seg=t.dataset.seg;location.hash=seg==='cal'?'#/cal':'#/';return}
+ if(t.dataset.seg){seg=t.dataset.seg;if(seg==='projects'&&location.hash==='#/projects')return;location.hash=seg==='cal'?'#/cal':'#/';return}
  if(t.dataset.tab){tab=t.dataset.tab;keepScroll(render);return}
  if(t.dataset.date){selDate=t.dataset.date;keepScroll(render);return}
  if(t.dataset.month!=null){const d=Number(t.dataset.month);if(d===0)shown=new Date();else shown=new Date(shown.getFullYear(),shown.getMonth()+d,1);selDate=iso(shown.getFullYear(),shown.getMonth()+1,d===0?shown.getDate():1);keepScroll(render)}
