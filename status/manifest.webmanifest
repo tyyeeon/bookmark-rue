@@ -1,0 +1,22 @@
+{
+ "name": "프로젝트 진행",
+ "short_name": "프로젝트",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#e9f0fb",
+ "theme_color": "#e9f0fb",
+ "icons": [
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "apple-touch-icon.png",
+   "sizes": "180x180",
+   "type": "image/png"
+  }
+ ]
+}
