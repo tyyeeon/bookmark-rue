@@ -27,9 +27,9 @@ svg{display:block}
 .brand small{display:block;font-family:Arial,sans-serif;letter-spacing:.5em;font-size:9px;margin-top:5px}
 
 /* splash */
-#splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;padding:max(32px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 38%,#fff 0,rgba(255,255,255,0) 52%),linear-gradient(180deg,#dde8f8,#f3f7fd 55%,#d9e5f6)}
+#splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:max(32px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 38%,#fff 0,rgba(255,255,255,0) 52%),linear-gradient(180deg,#dde8f8,#f3f7fd 55%,#d9e5f6)}
 #splash .brand{font-size:30px}
-#splash .art{width:min(60vw,260px);height:auto;border-radius:27%;box-shadow:0 22px 50px #2a4f8a40,0 0 0 1px #ffffff99}
+#splash .art{width:min(92vw,400px);height:auto;-webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 62%,transparent 100%)}
 #splash .eyebrow{font-size:11px;letter-spacing:.32em;color:#60759b}
 #splash h1{margin:0;font-size:30px;letter-spacing:-.04em}
 #splash p{margin:0;color:var(--ink2);font-size:14px}
@@ -56,7 +56,14 @@ svg{display:block}
 .card{background:var(--glass);border:1px solid #d6e1f0;border-radius:22px;box-shadow:0 14px 30px #5a789a1a,inset 0 1px 0 #fff;padding:12px;display:grid;gap:8px;min-width:0}
 .cardHead{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:center;padding:2px}
 .thumb{width:88px;height:96px;border-radius:14px;overflow:hidden;position:relative;background:#16315a}
-.thumb svg,.heroSvg{width:100%;height:100%}
+.thumb svg,.thumb img,.heroSvg,.heroSvg img,.heroSvg svg{width:100%;height:100%;object-fit:cover;display:block}
+.iconbtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid #d4dff0;background:#ffffffa9;color:#536b94;position:relative}
+.iconbtn.dot:after{content:'';position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#2f7de1;border:1.5px solid #fff}
+.hero .iconbtn{background:#ffffff26;border-color:transparent;color:#fff}
+.hero .iconbtn.dot:after{border-color:#1b2f5e}
+.topIcons{display:flex;gap:10px;align-items:center}
+.plus{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:#2d5584}
+.plus:hover{background:#e6eef9}
 .cardMain{min-width:0;display:grid;gap:5px}
 .nameRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .pname{display:flex;align-items:center;gap:6px;font-size:20px;font-weight:700;letter-spacing:-.04em}
@@ -163,14 +170,16 @@ const I={
 };
 /* 표지: 시안의 분위기만 따온 간단한 그림 */
 function cover(id){
- if(id==='plan')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1f45"/><stop offset="1" stop-color="#30508d"/></linearGradient></defs><rect width="100" height="100" fill="url(#g1)"/>'+[[14,38],[41,28],[68,38]].map(a=>'<path d="M'+a[0]+' 100V'+(a[1]+16)+'Q'+a[0]+' '+a[1]+' '+(a[0]+9)+' '+(a[1]-8)+'Q'+(a[0]+18)+' '+a[1]+' '+(a[0]+18)+' '+(a[1]+16)+'V100z" fill="#5d86c9" opacity=".55"/><path d="M'+(a[0]+4)+' 100V'+(a[1]+18)+'Q'+(a[0]+4)+' '+(a[1]+6)+' '+(a[0]+9)+' '+(a[1]-1)+'Q'+(a[0]+14)+' '+(a[1]+6)+' '+(a[0]+14)+' '+(a[1]+18)+'V100z" fill="#e4a15a" opacity=".5"/>').join('')+'</svg>';
+ if(id==='plan'||id==='ai'||id==='app')return '<img src="cover-'+id+'.jpg" alt="" width="282" height="288">';
+ if(id==='plan_svg')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1f45"/><stop offset="1" stop-color="#30508d"/></linearGradient></defs><rect width="100" height="100" fill="url(#g1)"/>'+[[14,38],[41,28],[68,38]].map(a=>'<path d="M'+a[0]+' 100V'+(a[1]+16)+'Q'+a[0]+' '+a[1]+' '+(a[0]+9)+' '+(a[1]-8)+'Q'+(a[0]+18)+' '+a[1]+' '+(a[0]+18)+' '+(a[1]+16)+'V100z" fill="#5d86c9" opacity=".55"/><path d="M'+(a[0]+4)+' 100V'+(a[1]+18)+'Q'+(a[0]+4)+' '+(a[1]+6)+' '+(a[0]+9)+' '+(a[1]-1)+'Q'+(a[0]+14)+' '+(a[1]+6)+' '+(a[0]+14)+' '+(a[1]+18)+'V100z" fill="#e4a15a" opacity=".5"/>').join('')+'</svg>';
  if(id==='ai')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="g2" cx=".6" cy=".55" r=".8"><stop offset="0" stop-color="#7fb4ea"/><stop offset=".5" stop-color="#27508f"/><stop offset="1" stop-color="#0c1d45"/></radialGradient></defs><rect width="100" height="100" fill="url(#g2)"/>'+[18,28,38,48].map((r,i)=>'<ellipse cx="62" cy="56" rx="'+r+'" ry="'+(r*0.6)+'" transform="rotate(-28 62 56)" fill="none" stroke="#cfe6ff" stroke-opacity="'+(0.55-i*0.1)+'" stroke-width="1.6"/>').join('')+'</svg>';
  if(id==='app')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3f7c"/><stop offset=".6" stop-color="#8d7fb0"/><stop offset="1" stop-color="#f0b48f"/></linearGradient></defs><rect width="100" height="100" fill="url(#g3)"/>'+[[4,40,14],[18,26,12],[32,48,10],[44,18,14],[60,36,12],[74,50,10],[86,30,12]].map(b=>'<rect x="'+b[0]+'" y="'+(100-b[1]-12)+'" width="'+b[2]+'" height="'+(b[1]+12)+'" fill="#1a2650" opacity=".88"/>').join('')+'</svg>';
  return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#27508f"/></svg>';
 }
+const TOPICONS='<div class="topIcons"><button class="iconbtn dot" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="계정" aria-label="계정"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18c1.2-2.4 3-3.4 5.5-3.4s4.3 1 5.5 3.4"/></svg></button></div>';
 /* 데이터: data.json(관제탑이 고침) + 이 기기에서 바꾼 내용(체크·추가·상태) */
 const OVKEY='luminode-hub-overlay-v1',SEEN='luminode-hub-seen-v1';
-let data=[],loaded=false,failed=false,filter='전체',seg='projects',tab='개요',open=new Set(),resetArmed=false;
+let data=[],loaded=false,failed=false,filter='전체',seg='projects',tab='개요',open=new Set(),addOpen=new Set(),resetArmed=false;
 let shown=new Date(),selDate=iso(shown.getFullYear(),shown.getMonth()+1,shown.getDate());
 const lines=v=>String(v||'').split('\n').map(x=>x.replace(/^\s*[·•]\s*/,'').trim()).filter(Boolean);
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -226,7 +235,7 @@ function cardHtml(p){
 function viewHub(onlyList){
  const f=data.filter(p=>filter==='전체'||p.status===filter);
  const c=s=>s==='전체'?data.length:data.filter(p=>p.status===s).length;
- let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div></header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 확인해요.')+'</p>';
+ let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div>'+TOPICONS+'</header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 확인해요.')+'</p>';
  if(!onlyList)h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
  if(seg==='cal'&&!onlyList)return h+viewCal();
  h+='<div class="chips">'+['전체','진행중','대기','완료'].map(s=>'<button class="chip '+(filter===s?'on':'')+'" data-filter="'+s+'">'+s+' '+c(s)+'</button>').join('')+'</div>';
@@ -253,10 +262,10 @@ function viewDetail(id){
  const n=daysAgo(p.updated);
  let body='';
  if(tab==='개요')body='<div class="panel"><h3>개요</h3><dl class="kv"><dt>범위</dt><dd>'+esc(p.scope)+'</dd><dt>상태</dt><dd>'+pill(p.status)+'</dd><dt>다음 할 일</dt><dd>'+stat(p,'tasks')+' 완료</dd><dt>진행 목록</dt><dd>'+stat(p,'threads')+' 완료</dd><dt>마지막 수정</dt><dd>'+esc(p.updated||'—')+(n!=null?' ('+(n<=0?'오늘':n+'일 전')+')':'')+(p.by?' · '+esc(p.by):'')+'</dd></dl></div>'+(n!=null&&n>=3?'<div class="warn" style="margin-bottom:14px">'+I.warn+'3일 이상 수정 없음 ('+esc(p.updated.slice(5).replace('-','/'))+' 이후)</div>':'')+'<div class="panel"><h3>다음 할 일 <span class="frac">'+stat(p,'tasks')+'</span></h3>'+listHtml(p,'tasks')+'</div>';
- else if(tab==='할 일')body='<div class="panel"><h3>다음 할 일 <span class="frac">'+stat(p,'tasks')+'</span></h3>'+listHtml(p,'tasks')+addForm(p,'tasks')+'</div>';
- else if(tab==='진행 목록')body='<div class="panel"><h3>스레드별 진행 목록 <span class="frac">'+stat(p,'threads')+'</span></h3>'+listHtml(p,'threads')+addForm(p,'threads')+'</div>';
+ else if(tab==='할 일')body='<div class="panel"><h3>다음 할 일 ('+stat(p,'tasks')+')<button class="plus" data-addtoggle="tasks" aria-label="항목 추가">'+I.plus+'</button></h3>'+listHtml(p,'tasks')+(addOpen.has('tasks')?addForm(p,'tasks'):'')+'</div>';
+ else if(tab==='진행 목록')body='<div class="panel"><h3>진행 목록 ('+stat(p,'threads')+')<button class="plus" data-addtoggle="threads" aria-label="항목 추가">'+I.plus+'</button></h3>'+listHtml(p,'threads')+(addOpen.has('threads')?addForm(p,'threads'):'')+'</div>';
  else body='<div class="panel"><h3>파일</h3><div class="empty">아직 이 프로젝트에 연결된 파일이 없어요.<br>인계 문서와 자료는 Drive의 Cloude 폴더에 있어요.</div></div>';
- return '<div class="hero"><div class="heroSvg">'+cover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a></div>'
+ return '<div class="hero"><div class="heroSvg">'+cover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn dot" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
   +'<div class="heroName"><span style="display:flex;align-items:center;gap:8px">'+I.folder+esc(p.name)+'</span><span class="sel"><select data-status="'+esc(p.id)+'" class="'+statusCls(p.status)+'" aria-label="상태 바꾸기 (이 기기에만 저장)">'+['진행중','대기','완료'].map(s=>'<option '+(s===p.status?'selected':'')+'>'+s+'</option>').join('')+'</select></span></div><div class="heroScope">'+esc(p.scope)+'</div></div>'
   +'<div class="tabs">'+['개요','할 일','진행 목록','파일'].map(t=>'<button class="'+(tab===t?'on':'')+'" data-tab="'+t+'">'+t+'</button>').join('')+'</div>'+body;
 }
@@ -279,7 +288,7 @@ function viewMore(){
   +'<div class="panel"><h3>시작 화면</h3><button class="linkbtn" data-splash>시작 화면 다시 보기</button></div>';
 }
 function viewSplash(){
- return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="icon-512.png" alt="프로젝트 앱 아이콘" width="260" height="260"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button>';
+ return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="splash-art.jpg" alt="" width="810" height="730"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button>';
 }
 
 /* 라우팅 */
@@ -303,8 +312,10 @@ function render(){
 }
 const keepScroll=fn=>{const y=window.scrollY;fn();window.scrollTo(0,y)};
 document.addEventListener('click',e=>{
- const t=e.target.closest('[data-go],[data-check],[data-toggle],[data-filter],[data-seg],[data-tab],[data-date],[data-month],[data-start],[data-reset],[data-splash]');
+ const t=e.target.closest('[data-soon],[data-addtoggle],[data-go],[data-check],[data-toggle],[data-filter],[data-seg],[data-tab],[data-date],[data-month],[data-start],[data-reset],[data-splash]');
  if(!t)return;
+ if(t.dataset.soon){toast(t.dataset.soon+' 기능은 아직 없어요.');return}
+ if(t.dataset.addtoggle){const k=t.dataset.addtoggle;addOpen.has(k)?addOpen.delete(k):addOpen.add(k);keepScroll(render);return}
  if(t.dataset.go){location.hash=t.dataset.go;window.scrollTo(0,0);return}
  if(t.hasAttribute('data-start')){lsSet(SEEN,'1');location.hash='#/';return}
  if(t.hasAttribute('data-splash')){location.hash='#/splash';return}
