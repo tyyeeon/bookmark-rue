@@ -54,9 +54,11 @@ svg{display:block}
 .grid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
 @media(min-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.card{background:var(--glass);border:1px solid #d6e1f0;border-radius:22px;box-shadow:0 14px 30px #5a789a1a,inset 0 1px 0 #fff;padding:12px;display:grid;gap:8px;min-width:0}
-.cardHead{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:12px;align-items:center;padding:2px}
-.thumb{width:96px;height:96px;border-radius:14px;overflow:hidden;position:relative;background:#16315a}
+.card{background:var(--glass);border:1px solid #d6e1f0;border-radius:20px;box-shadow:0 12px 26px #5a789a1a,inset 0 1px 0 #fff;padding:9px;display:grid;gap:8px;min-width:0}
+.cardGrid{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:stretch}
+.cardBody{min-width:0;display:grid;gap:0;align-content:start}
+.cardHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center;padding:2px 0 4px}
+.thumb{display:block;width:96px;min-height:104px;height:100%;border-radius:14px;overflow:hidden;position:relative;background:#16315a}
 .thumb svg,.thumb img,.heroSvg,.heroSvg img,.heroSvg svg{width:100%;height:100%;object-fit:cover;display:block}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid #d4dff0;background:#ffffffa9;color:#536b94;position:relative}
 .iconbtn.badge:after{content:'';position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#2f7de1;border:1.5px solid #fff}
@@ -67,13 +69,13 @@ svg{display:block}
 .plus:hover{background:#e6eef9}
 .cardMain{min-width:0;display:grid;gap:5px}
 .nameRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pname{display:flex;align-items:center;gap:6px;font-size:20px;font-weight:700;letter-spacing:-.04em}
+.pname{display:flex;align-items:center;gap:6px;font-size:19px;font-weight:700;letter-spacing:-.04em}
 .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--green-bg);color:var(--green);white-space:nowrap}
 .pill.wait{background:var(--wait-bg);color:var(--wait)}
 .pill.done{background:var(--done-bg);color:var(--done)}
-.scope{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.scope{font-size:12.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chev{color:#6a7f9f}
-.rowToggle{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px 7px 16px;border-radius:12px;color:#2f4a72;font-weight:600;font-size:14px;text-align:left}
+.rowToggle{display:flex;align-items:center;gap:10px;width:100%;padding:5px 4px 5px 8px;border-radius:12px;color:#2f4a72;font-weight:600;font-size:13.5px;text-align:left}
 .rowToggle:hover{background:#ffffff80}
 .rowToggle .frac{margin-left:auto;font-variant-numeric:tabular-nums;color:#385a8c;font-weight:600}
 .rowToggle .chev{transition:transform .15s}
@@ -136,7 +138,7 @@ svg{display:block}
 
 /* nav */
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;padding:0 max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left));pointer-events:none}
-.nav nav{pointer-events:auto;width:100%;max-width:560px;display:grid;grid-template-columns:repeat(5,1fr);background:#ffffffef;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #dbe5f2;border-radius:24px 24px 0 0;box-shadow:0 -6px 22px #526c8a1f;padding:8px 6px calc(10px + env(safe-area-inset-bottom))}
+.nav nav{pointer-events:auto;width:100%;max-width:560px;display:grid;grid-template-columns:repeat(5,1fr);background:#ffffffef;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid #dbe5f2;border-radius:24px 24px 0 0;box-shadow:0 -6px 22px #526c8a1f;padding:8px 6px calc(2px + env(safe-area-inset-bottom))}
 .nav button{display:grid;justify-items:center;gap:3px;padding:6px 0;color:#71819d;font-size:11.5px;font-weight:500}
 .nav button.on{color:#2557a3;font-weight:700}
 .nav button.on .ic{stroke-width:2.2}
@@ -228,8 +230,8 @@ const short=n=>String(n).replace(/\s*\(.*\)\s*$/,'')||n;
 function cardHtml(p){
  const n=daysAgo(p.updated);
  const row=(k,label,icon)=>{const id=p.id+'|'+k,on=open.has(id);return '<button class="rowToggle" data-toggle="'+esc(id)+'" aria-expanded="'+on+'">'+icon+'<span>'+label+'</span><span class="frac">'+stat(p,k)+'</span>'+I.chev+'</button>'+(on?'<div class="rowBody">'+listHtml(p,k)+'</div>':'')};
- return '<article class="card"><a class="cardHead" href="#/p/'+esc(p.id)+'"><div class="thumb">'+cover(p.id)+'</div><div class="cardMain"><div class="nameRow"><span class="pname">'+I.folder+esc(short(p.name))+'</span>'+pill(p.status)+'</div><div class="scope">'+esc(p.scope)+'</div></div>'+I.right+'</a>'
-  +row('tasks','다음 할 일',I.check)+row('threads','진행 목록',I.layers)
+ return '<article class="card"><div class="cardGrid"><a class="thumb" href="#/p/'+esc(p.id)+'" aria-label="'+esc(short(p.name))+' 열기">'+cover(p.id)+'</a><div class="cardBody"><a class="cardHead" href="#/p/'+esc(p.id)+'"><div class="cardMain"><div class="nameRow"><span class="pname">'+I.folder+esc(short(p.name))+'</span>'+pill(p.status)+'</div><div class="scope">'+esc(p.scope)+'</div></div>'+I.right+'</a>'
+  +row('tasks','다음 할 일',I.check)+row('threads','진행 목록',I.layers)+'</div></div>'
   +(n!=null&&n>=3?'<div class="warn">'+I.warn+'3일 이상 수정 없음 ('+esc(p.updated.slice(5).replace('-','/'))+' 이후)</div>':'')+'</article>';
 }
 
