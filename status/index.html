@@ -29,7 +29,8 @@ svg{display:block}
 /* splash */
 #splash{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:max(32px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(40px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));background:radial-gradient(circle at 50% 38%,#fff 0,rgba(255,255,255,0) 52%),linear-gradient(180deg,#dde8f8,#f3f7fd 55%,#d9e5f6)}
 #splash .brand{font-size:30px}
-#splash .art{width:min(92vw,400px);height:auto;-webkit-mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 50% 52% at 50% 50%,#000 62%,transparent 100%)}
+#splash .art{width:min(92vw,400px);height:auto;margin-top:-8px;-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 7%,#000 72%,transparent 100%),linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(to bottom,transparent 0,#000 7%,#000 72%,transparent 100%),linear-gradient(to right,transparent 0,#000 12%,#000 88%,transparent 100%);mask-composite:intersect}
+#splash .acct{color:#2d4a74;font-weight:500;font-size:14px;padding:8px 12px}
 #splash .eyebrow{font-size:11px;letter-spacing:.32em;color:#60759b}
 #splash h1{margin:0;font-size:30px;letter-spacing:-.04em}
 #splash p{margin:0;color:var(--ink2);font-size:14px}
@@ -54,13 +55,13 @@ svg{display:block}
 @media(min-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(min-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .card{background:var(--glass);border:1px solid #d6e1f0;border-radius:22px;box-shadow:0 14px 30px #5a789a1a,inset 0 1px 0 #fff;padding:12px;display:grid;gap:8px;min-width:0}
-.cardHead{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:12px;align-items:center;padding:2px}
-.thumb{width:88px;height:96px;border-radius:14px;overflow:hidden;position:relative;background:#16315a}
+.cardHead{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:12px;align-items:center;padding:2px}
+.thumb{width:96px;height:96px;border-radius:14px;overflow:hidden;position:relative;background:#16315a}
 .thumb svg,.thumb img,.heroSvg,.heroSvg img,.heroSvg svg{width:100%;height:100%;object-fit:cover;display:block}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid #d4dff0;background:#ffffffa9;color:#536b94;position:relative}
-.iconbtn.dot:after{content:'';position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#2f7de1;border:1.5px solid #fff}
+.iconbtn.badge:after{content:'';position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#2f7de1;border:1.5px solid #fff}
 .hero .iconbtn{background:#ffffff26;border-color:transparent;color:#fff}
-.hero .iconbtn.dot:after{border-color:#1b2f5e}
+.hero .iconbtn.badge:after{border-color:#1b2f5e}
 .topIcons{display:flex;gap:10px;align-items:center}
 .plus{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:#2d5584}
 .plus:hover{background:#e6eef9}
@@ -70,9 +71,9 @@ svg{display:block}
 .pill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:3px 11px;border-radius:999px;background:var(--green-bg);color:var(--green);white-space:nowrap}
 .pill.wait{background:var(--wait-bg);color:var(--wait)}
 .pill.done{background:var(--done-bg);color:var(--done)}
-.scope{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere}
+.scope{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .chev{color:#6a7f9f}
-.rowToggle{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:12px;color:#2f4a72;font-weight:600;font-size:14px;text-align:left}
+.rowToggle{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px 7px 16px;border-radius:12px;color:#2f4a72;font-weight:600;font-size:14px;text-align:left}
 .rowToggle:hover{background:#ffffff80}
 .rowToggle .frac{margin-left:auto;font-variant-numeric:tabular-nums;color:#385a8c;font-weight:600}
 .rowToggle .chev{transition:transform .15s}
@@ -176,10 +177,10 @@ function cover(id){
  if(id==='app')return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d3f7c"/><stop offset=".6" stop-color="#8d7fb0"/><stop offset="1" stop-color="#f0b48f"/></linearGradient></defs><rect width="100" height="100" fill="url(#g3)"/>'+[[4,40,14],[18,26,12],[32,48,10],[44,18,14],[60,36,12],[74,50,10],[86,30,12]].map(b=>'<rect x="'+b[0]+'" y="'+(100-b[1]-12)+'" width="'+b[2]+'" height="'+(b[1]+12)+'" fill="#1a2650" opacity=".88"/>').join('')+'</svg>';
  return '<svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"><rect width="100" height="100" fill="#27508f"/></svg>';
 }
-const TOPICONS='<div class="topIcons"><button class="iconbtn dot" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="계정" aria-label="계정"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18c1.2-2.4 3-3.4 5.5-3.4s4.3 1 5.5 3.4"/></svg></button></div>';
+const TOPICONS='<div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="계정" aria-label="계정"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="10" r="3"/><path d="M6.5 18c1.2-2.4 3-3.4 5.5-3.4s4.3 1 5.5 3.4"/></svg></button></div>';
 /* 데이터: data.json(관제탑이 고침) + 이 기기에서 바꾼 내용(체크·추가·상태) */
 const OVKEY='luminode-hub-overlay-v1',SEEN='luminode-hub-seen-v1';
-let data=[],loaded=false,failed=false,filter='전체',seg='projects',tab='개요',open=new Set(),addOpen=new Set(),resetArmed=false;
+let data=[],loaded=false,failed=false,filter='전체',seg='projects',tab='할 일',open=new Set(),addOpen=new Set(),resetArmed=false;
 let shown=new Date(),selDate=iso(shown.getFullYear(),shown.getMonth()+1,shown.getDate());
 const lines=v=>String(v||'').split('\n').map(x=>x.replace(/^\s*[·•]\s*/,'').trim()).filter(Boolean);
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -223,10 +224,11 @@ function itemHtml(p,k,i,who){
 function listHtml(p,k,who){return p[k].length?p[k].map((_,i)=>itemHtml(p,k,i,who)).join(''):'<div class="empty">등록된 항목이 없어요.</div>'}
 function addForm(p,k){return '<form class="add" data-add="'+esc(p.id)+'|'+k+'"><input aria-label="새 항목" placeholder="새 항목 (이 기기에만 저장)"><button type="submit" aria-label="항목 추가">'+I.plus+'</button></form>'}
 
+const short=n=>String(n).replace(/\s*\(.*\)\s*$/,'')||n;
 function cardHtml(p){
  const n=daysAgo(p.updated);
  const row=(k,label,icon)=>{const id=p.id+'|'+k,on=open.has(id);return '<button class="rowToggle" data-toggle="'+esc(id)+'" aria-expanded="'+on+'">'+icon+'<span>'+label+'</span><span class="frac">'+stat(p,k)+'</span>'+I.chev+'</button>'+(on?'<div class="rowBody">'+listHtml(p,k)+'</div>':'')};
- return '<article class="card"><a class="cardHead" href="#/p/'+esc(p.id)+'"><div class="thumb">'+cover(p.id)+'</div><div class="cardMain"><div class="nameRow"><span class="pname">'+I.folder+esc(p.name)+'</span>'+pill(p.status)+'</div><div class="scope">'+esc(p.scope)+'</div></div>'+I.right+'</a>'
+ return '<article class="card"><a class="cardHead" href="#/p/'+esc(p.id)+'"><div class="thumb">'+cover(p.id)+'</div><div class="cardMain"><div class="nameRow"><span class="pname">'+I.folder+esc(short(p.name))+'</span>'+pill(p.status)+'</div><div class="scope">'+esc(p.scope)+'</div></div>'+I.right+'</a>'
   +row('tasks','다음 할 일',I.check)+row('threads','진행 목록',I.layers)
   +(n!=null&&n>=3?'<div class="warn">'+I.warn+'3일 이상 수정 없음 ('+esc(p.updated.slice(5).replace('-','/'))+' 이후)</div>':'')+'</article>';
 }
@@ -235,7 +237,7 @@ function cardHtml(p){
 function viewHub(onlyList){
  const f=data.filter(p=>filter==='전체'||p.status===filter);
  const c=s=>s==='전체'?data.length:data.filter(p=>p.status===s).length;
- let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div>'+TOPICONS+'</header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 확인해요.')+'</p>';
+ let h='<header class="top"><div class="brand">LUMINODE<small>STUDIO</small></div>'+TOPICONS+'</header><h1 class="pageTitle">'+(seg==='cal'&&!onlyList?'일정':'프로젝트 허브')+'</h1><p class="pageSub">'+(seg==='cal'&&!onlyList?'프로젝트의 날짜가 있는 할 일을 달력에서 봐요.':'프로젝트 · 일정 · 할 일을 한곳에서 관리합니다.')+'</p>';
  if(!onlyList)h+='<div class="seg"><button class="'+(seg==='cal'?'on':'')+'" data-seg="cal">'+I.cal+'일정</button><button class="'+(seg==='projects'?'on':'')+'" data-seg="projects">'+I.folder+'프로젝트</button></div>';
  if(seg==='cal'&&!onlyList)return h+viewCal();
  h+='<div class="chips">'+['전체','진행중','대기','완료'].map(s=>'<button class="chip '+(filter===s?'on':'')+'" data-filter="'+s+'">'+s+' '+c(s)+'</button>').join('')+'</div>';
@@ -256,17 +258,18 @@ function viewCal(){
   +'<section class="panel"><h3 class="agendaTitle">'+Number(selDate.slice(5,7))+'월 '+Number(selDate.slice(8))+'일<small>'+day.length+'개</small></h3>'
   +(day.length?day.map(x=>itemHtml(x.p,'tasks',x.i,true)).join(''):'<div class="empty">이 날짜에 등록된 일정이 없어요.<br>점이 찍힌 날을 눌러 보세요.</div>')+'</section></div>';
 }
+function panelOf(p,k,title){return '<div class="panel"><h3>'+title+' ('+stat(p,k)+')<button class="plus" data-addtoggle="'+k+'" aria-label="항목 추가">'+I.plus+'</button></h3>'+listHtml(p,k)+(addOpen.has(k)?addForm(p,k):'')+'</div>'}
 function viewDetail(id){
  const p=data.find(x=>x.id===id);
  if(!p)return '<header class="top"><a class="back" href="#/" aria-label="뒤로" style="color:inherit">'+I.back+'</a></header><div class="panel empty" style="margin-top:20px">'+(loaded?'프로젝트를 찾지 못했어요.':'불러오는 중이에요.')+'</div>';
  const n=daysAgo(p.updated);
  let body='';
  if(tab==='개요')body='<div class="panel"><h3>개요</h3><dl class="kv"><dt>범위</dt><dd>'+esc(p.scope)+'</dd><dt>상태</dt><dd>'+pill(p.status)+'</dd><dt>다음 할 일</dt><dd>'+stat(p,'tasks')+' 완료</dd><dt>진행 목록</dt><dd>'+stat(p,'threads')+' 완료</dd><dt>마지막 수정</dt><dd>'+esc(p.updated||'—')+(n!=null?' ('+(n<=0?'오늘':n+'일 전')+')':'')+(p.by?' · '+esc(p.by):'')+'</dd></dl></div>'+(n!=null&&n>=3?'<div class="warn" style="margin-bottom:14px">'+I.warn+'3일 이상 수정 없음 ('+esc(p.updated.slice(5).replace('-','/'))+' 이후)</div>':'')+'<div class="panel"><h3>다음 할 일 <span class="frac">'+stat(p,'tasks')+'</span></h3>'+listHtml(p,'tasks')+'</div>';
- else if(tab==='할 일')body='<div class="panel"><h3>다음 할 일 ('+stat(p,'tasks')+')<button class="plus" data-addtoggle="tasks" aria-label="항목 추가">'+I.plus+'</button></h3>'+listHtml(p,'tasks')+(addOpen.has('tasks')?addForm(p,'tasks'):'')+'</div>';
- else if(tab==='진행 목록')body='<div class="panel"><h3>진행 목록 ('+stat(p,'threads')+')<button class="plus" data-addtoggle="threads" aria-label="항목 추가">'+I.plus+'</button></h3>'+listHtml(p,'threads')+(addOpen.has('threads')?addForm(p,'threads'):'')+'</div>';
+ else if(tab==='할 일')body=panelOf(p,'tasks','다음 할 일')+panelOf(p,'threads','진행 목록');
+ else if(tab==='진행 목록')body=panelOf(p,'threads','진행 목록');
  else body='<div class="panel"><h3>파일</h3><div class="empty">아직 이 프로젝트에 연결된 파일이 없어요.<br>인계 문서와 자료는 Drive의 Cloude 폴더에 있어요.</div></div>';
- return '<div class="hero"><div class="heroSvg">'+cover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn dot" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
-  +'<div class="heroName"><span style="display:flex;align-items:center;gap:8px">'+I.folder+esc(p.name)+'</span><span class="sel"><select data-status="'+esc(p.id)+'" class="'+statusCls(p.status)+'" aria-label="상태 바꾸기 (이 기기에만 저장)">'+['진행중','대기','완료'].map(s=>'<option '+(s===p.status?'selected':'')+'>'+s+'</option>').join('')+'</select></span></div><div class="heroScope">'+esc(p.scope)+'</div></div>'
+ return '<div class="hero"><div class="heroSvg">'+cover(p.id)+'</div><div class="heroTop"><a class="back" href="#/" aria-label="뒤로">'+I.back+'</a><div class="topIcons"><button class="iconbtn badge" data-soon="알림" aria-label="알림"><svg class="ic" viewBox="0 0 24 24"><path d="M6 17h12l-1.5-2V11a4.5 4.5 0 0 0-9 0v4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></button><button class="iconbtn" data-soon="더보기 메뉴" aria-label="메뉴">'+I.more.replace('<svg class="ic" viewBox="0 0 24 24">','<svg class="ic" viewBox="0 0 24 24" style="transform:rotate(90deg)">')+'</button></div></div>'
+  +'<div class="heroName"><span style="display:flex;align-items:center;gap:8px">'+I.folder+esc(short(p.name))+'</span><span class="sel"><select data-status="'+esc(p.id)+'" class="'+statusCls(p.status)+'" aria-label="상태 바꾸기 (이 기기에만 저장)">'+['진행중','대기','완료'].map(s=>'<option '+(s===p.status?'selected':'')+'>'+s+'</option>').join('')+'</select></span></div><div class="heroScope">'+esc(p.scope)+'</div></div>'
   +'<div class="tabs">'+['개요','할 일','진행 목록','파일'].map(t=>'<button class="'+(tab===t?'on':'')+'" data-tab="'+t+'">'+t+'</button>').join('')+'</div>'+body;
 }
 function viewTodo(){
@@ -288,7 +291,7 @@ function viewMore(){
   +'<div class="panel"><h3>시작 화면</h3><button class="linkbtn" data-splash>시작 화면 다시 보기</button></div>';
 }
 function viewSplash(){
- return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="splash-art.jpg" alt="" width="810" height="730"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button>';
+ return '<div class="brand">LUMINODE<small>STUDIO</small></div><img class="art" src="splash-art.jpg" alt="" width="810" height="910"><div><div class="eyebrow">PROJECT &amp; SCHEDULE</div><h1>프로젝트</h1><p>프로젝트 · 일정 · 할 일을 한곳에서</p></div><button class="primary" data-start>시작하기 →</button><button class="acct" data-soon="계정">계정으로 계속하기</button>';
 }
 
 /* 라우팅 */
@@ -337,7 +340,7 @@ document.addEventListener('change',e=>{
  const s=e.target.closest('[data-status]');if(!s)return;
  data.find(x=>x.id===s.dataset.status).status=s.value;save();keepScroll(render);toast('상태를 '+s.value+'로 바꿨어요 (이 기기에만 저장)');
 });
-window.addEventListener('hashchange',()=>{tab=(location.hash.startsWith('#/p/')?tab:'개요');render()});
+window.addEventListener('hashchange',()=>{tab=(location.hash.startsWith('#/p/')?tab:'할 일');render()});
 let rawRows=[];
 render();
 (async()=>{
