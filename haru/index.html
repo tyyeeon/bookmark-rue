@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="하루">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <script>try{var t=localStorage.getItem('haru-look');if(t==='green'||t==='moon')document.documentElement.dataset.theme=t;}catch(_){}</script>
-<link rel="stylesheet" href="styles.css?v=21">
+<link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -135,10 +135,10 @@
   </main>
 
   <nav class="nav" id="nav" aria-label="주 메뉴">
-    <button type="button" data-view="cal">달력</button>
-    <button type="button" data-view="proj">프로젝트</button>
-    <button type="button" data-view="sched">일정</button>
-    <button type="button" data-view="set">설정</button>
+    <button type="button" data-view="cal"><img class="nic" src="img/ic/m-cal.png" alt=""><span>달력</span></button>
+    <button type="button" data-view="proj"><img class="nic" src="img/ic/m-proj.png" alt=""><span>프로젝트</span></button>
+    <button type="button" data-view="sched"><img class="nic" src="img/ic/m-sched.png" alt=""><span>일정</span></button>
+    <button type="button" data-view="set"><img class="nic" src="img/ic/m-set.png" alt=""><span>설정</span></button>
   </nav>
 </div>
 
@@ -176,6 +176,6 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="bridge.js?v=20"></script>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=23"></script>
 </body>
 </html>
