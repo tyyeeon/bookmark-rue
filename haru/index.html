@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="하루">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <script>try{var t=localStorage.getItem('haru-look');if(t==='green'||t==='moon')document.documentElement.dataset.theme=t;}catch(_){}</script>
-<link rel="stylesheet" href="styles.css?v=32">
+<link rel="stylesheet" href="styles.css?v=33">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -95,18 +95,18 @@
         <h2 class="page-title">설정</h2>
         <div class="scroll set-list">
           <div class="card set-card">
-            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-start.png" alt=""><img class="set-img-g" src="img/ic/set-start-g.png" alt=""><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></span>
-            <div class="set-main"><b>시작 화면</b>
-              <div class="seg seg-3 mini" id="set-start">
-                <button type="button" data-start="cal">달력</button><button type="button" data-start="proj">프로젝트</button><button type="button" data-start="sched">일정</button>
+            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-theme.png" alt=""><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></span>
+            <div class="set-main"><b>테마</b>
+              <div class="seg seg-2 mini" id="set-look">
+                <button type="button" data-look="green">녹색 유리</button><button type="button" data-look="moon">달빛 유리</button>
               </div>
             </div>
           </div>
           <div class="card set-card">
-            <span class="set-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></span>
-            <div class="set-main"><b>테마</b>
-              <div class="seg seg-2 mini" id="set-look">
-                <button type="button" data-look="green">녹색 유리</button><button type="button" data-look="moon">달빛 유리</button>
+            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-start.png" alt=""><img class="set-img-g" src="img/ic/set-start-g.png" alt=""><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4m8-4v4M4 10h16"/></svg></span>
+            <div class="set-main"><b>시작 화면</b>
+              <div class="seg seg-3 mini" id="set-start">
+                <button type="button" data-start="cal">달력</button><button type="button" data-start="proj">프로젝트</button><button type="button" data-start="sched">일정</button>
               </div>
             </div>
           </div>
