@@ -139,7 +139,7 @@ function projects() {
   return [...map.values()];
 }
 const md = s => { const m = String(s || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/); return m ? `${+m[2]}/${+m[3]}` : (s || '—'); };
-const pimg = name => { const k = name.toLowerCase(); return `img/p-${['plan', 'ai', 'app'].includes(k) ? k : 'default'}-${look()}.webp`; };
+const pimg = name => { const k0 = name.toLowerCase(), k = ['plan', 'ai', 'app'].includes(k0) ? k0 : 'default'; return `img/p-${k}-${look()}.${look() === 'moon' && k !== 'default' ? 'png' : 'webp'}`; };
 const countHtml = items => {
   const n = k => items.filter(i => i.st === k).length;
   return ['on', 'wait', 'done'].filter(k => n(k)).map(k => `<span class="${k}">${k === 'on' ? '진행' : k === 'wait' ? '대기' : '완료'} ${n(k)}</span>`).join('<i class="sep">·</i>') || '<span class="done">세부 일 없음</span>';
@@ -165,7 +165,7 @@ function renderDetail() {
   const nexts = p.items.filter(i => i.next).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
   $('d-body').innerHTML =
     `<div class="card dhead"><img class="pimg" src="${pimg(p.name)}" alt=""><div><b>${esc(p.name)}</b> ${stImg(main)}<p>${esc(p.items.map(i => i.name).join(' · '))}</p></div></div>` +
-    `<section class="card sec"><h4>세부 일 <span class="c">${p.items.length}</span></h4>${p.items.map(i => subHtml(i)).join('')}</section>` +
+    `<section class="card sec"><h4>진행 목록 <span class="c">${p.items.length}</span></h4>${p.items.map(i => subHtml(i)).join('')}</section>` +
     `<section class="card sec"><h4>다음 할 일 <span class="c">${nexts.length}</span></h4>${nexts.length ? nexts.map(i => `<div class="next"><span class="d">${esc(md(i.date))}</span><span>${esc(i.next)} <small style="color:var(--sub)">· ${esc(i.name)}</small></span></div>`).join('') : '<p class="empty">적어 둔 다음 할 일이 없어요.</p>'}</section>`;
 }
 
