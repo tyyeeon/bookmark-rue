@@ -591,3 +591,5 @@ html.haru-sa .app{height:100%}
 [data-theme="moon"] .card{background:rgba(255,255,255,.58)}
 [data-theme="moon"] .row,[data-theme="moon"] .pbody{background:rgba(255,255,255,.68)}
 [data-theme="moon"] .nav{background:rgba(255,255,255,.62)}
+/* 아래 메뉴를 화면 끝 쪽으로 더 내림(홈 막대와 겹치지 않을 만큼만) */
+html.haru-sa .app{padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px))}
