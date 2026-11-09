@@ -1,6 +1,6 @@
 'use strict';
 (()=>{
-const $=id=>document.getElementById(id), groups=['전체','규연','숲녘','연가당'], colors={'규연':'#ff980e','숲녘':'#50c59a','연가당':'#ad62ef'};
+const $=id=>document.getElementById(id), groups=['전체','규연','Ella'], colors={'규연':'#3fa868','Ella':'#3d7fe0','숲녘':'#3d7fe0','연가당':'#3fa868'};
 const icons={monthly:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1"/>',weekly:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18m-12 0v10m6-10v10"/>',tasks:'<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',settings:'<path d="m9 3-1 3-3 1v3l-2 2 2 2v3l3 1 1 3h6l1-3 3-1v-3l2-2-2-2V7l-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/>'};
 const icon=n=>`<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${icons[n]}</svg>`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
