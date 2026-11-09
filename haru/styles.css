@@ -487,3 +487,8 @@ body[data-view="sched"] .top .brand{white-space:nowrap}
 html,body{background:var(--bg-end,var(--page))}
 .bg,[data-theme="green"] .bg{top:0;left:0;right:0;bottom:auto;height:calc(100lvh + 140px);background:var(--bg) center top/100% auto no-repeat,var(--bg-end)}
 @media (min-width:700px){.bg,[data-theme="green"] .bg{background-size:cover}}
+/* 달빛 시작 화면 = 루에 시안 01 그대로 (가운데 유리판·글자·버튼까지 그림), 버튼은 그림 위에 투명하게 겹침 */
+[data-theme="moon"] .cover{container-type:size;padding:0;background:url(img/cover-moon-ui.webp) center bottom/cover no-repeat,#123f7c}
+[data-theme="moon"] .cover-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0;padding:0;border:0}
+[data-theme="moon"] .cover-btn{--wi:max(100cqw,calc(100cqh * .4617));--hi:calc(var(--wi) * 2.166);position:absolute;left:50%;transform:translateX(-50%);width:calc(var(--wi) * .588);height:calc(var(--hi) * .0586);bottom:calc(var(--hi) * .0604);border:0;border-image:none;background:transparent;box-shadow:none;color:transparent;font-size:0;border-radius:999px}
+[data-theme="moon"] .cover-btn:active{background:rgba(255,255,255,.14)}
