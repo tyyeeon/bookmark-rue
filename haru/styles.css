@@ -229,3 +229,31 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 }
 
 #s-list{padding-bottom:84px}
+
+/* 녹색 유리(테마1) — 루에 시안: 칸 없는 달력, 색 막대 일정, 줄마다 유리 알약, 진한 청록 알약 */
+[data-theme="green"] .brand::after{content:"";display:block;width:34px;height:2px;margin-top:8px;border-radius:2px;background:#27b3a6}
+[data-theme="green"] .month{gap:0}
+[data-theme="green"] .day{border:0;border-top:1px solid rgba(255,255,255,.75);border-radius:0;background:transparent;padding:5px 3px}
+[data-theme="green"] .day.today{border-radius:14px;border:1px solid rgba(255,255,255,.9);background:linear-gradient(160deg,#5fd0c0,#0f857c);box-shadow:0 6px 16px rgba(10,110,100,.3)}
+[data-theme="green"] .day.sun .num{color:#1aa3b8}
+[data-theme="green"] .weekdays .sun{color:#1aa3b8}
+[data-theme="green"] .chip{background:none!important;color:var(--ink);border-left:3px solid var(--g-gy);border-radius:0;padding:0 0 0 4px;font-weight:500}
+[data-theme="green"] .chip.Ella{border-left-color:var(--g-el)}
+[data-theme="green"] .day.today .chip{color:#fff}
+[data-theme="green"] .daycard{background:transparent;border:0;box-shadow:none;padding:0}
+[data-theme="green"] .row{margin:6px 0;border:1px solid var(--edge);border-radius:16px;background:rgba(255,255,255,.55)}
+[data-theme="green"] .tm{border-left:1px solid rgba(120,160,160,.3);border-right:1px solid rgba(120,160,160,.3);padding:0 10px;text-align:center}
+[data-theme="green"] .sub{position:relative;padding-left:20px;margin:6px 0;border:1px solid var(--edge);border-radius:16px;background:rgba(255,255,255,.5)}
+[data-theme="green"] .sub::before{content:"";position:absolute;left:8px;top:12px;bottom:12px;width:4px;border-radius:3px;background:#2cc0ae}
+[data-theme="green"] .pbody{padding:0 8px 10px}
+[data-theme="green"] .st.on{background:linear-gradient(180deg,#22b3a4,#0f857c);color:#fff}
+[data-theme="green"] .st.wait{background:rgba(255,255,255,.7);color:var(--sub);border:1px solid rgba(120,150,150,.45)}
+[data-theme="green"] .counts .on{background:transparent;color:var(--sub);padding:0}
+[data-theme="green"] .counts .wait{background:transparent;color:#b86b14;padding:0}
+[data-theme="green"] .sec h4::before,[data-theme="green"] .daycard h4::before{content:"";width:4px;height:16px;border-radius:2px;background:#22b3a4}
+[data-theme="green"] .sec h4{display:flex;align-items:center;gap:8px}
+[data-theme="green"] .daycard h4::before{background:#4cc35a}
+[data-theme="green"] .pill-btn#reload{background:linear-gradient(180deg,#22b3a4,#0f857c);color:#fff;border-color:transparent}
+[data-theme="green"] .gchip{background:transparent;border-color:transparent}
+[data-theme="green"] .gchip .dot{width:4px;height:12px;border-radius:2px}
+[data-theme="green"] .gchip.on{background:var(--accent);color:#fff}
