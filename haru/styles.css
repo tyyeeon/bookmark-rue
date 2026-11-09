@@ -283,3 +283,8 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 [data-theme="green"] .chip{text-align:left}
 .cal-head .groups{padding:3px;border-radius:999px;background:var(--glass-2);border:1px solid var(--edge)}
 [data-theme="green"] .cal-head .groups{background:transparent;border:0}
+/* 설정 유리 아이콘 (루에 테마2 설정 시안에서 자름) */
+.set-img{display:none}
+[data-theme="moon"] .set-ico:has(.set-img){background:none;box-shadow:none;border:0;padding:0;overflow:hidden}
+[data-theme="moon"] .set-ico .set-img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+[data-theme="moon"] .set-ico:has(.set-img) svg{display:none}
