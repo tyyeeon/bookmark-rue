@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="하루">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <script>try{var t=localStorage.getItem('haru-look');if(t==='green'||t==='moon')document.documentElement.dataset.theme=t;}catch(_){}</script>
-<link rel="stylesheet" href="styles.css?v=26">
+<link rel="stylesheet" href="styles.css?v=27">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -38,10 +38,13 @@
           <button class="icon-btn" id="m-prev" type="button" aria-label="이전 달">‹</button>
           <h2 id="m-label">2026년 11월</h2>
           <button class="icon-btn" id="m-next" type="button" aria-label="다음 달">›</button>
+          <button class="cal-add" id="cal-add" type="button">＋ 일정</button>
           <div class="groups" data-groups></div>
         </div>
-        <div class="weekdays" aria-hidden="true"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span class="sun">일</span></div>
-        <div class="month" id="month"></div>
+        <div class="cal-card">
+          <div class="weekdays" aria-hidden="true"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span class="sun">일</span></div>
+          <div class="month" id="month"></div>
+        </div>
       </div>
     </section>
 
@@ -74,6 +77,7 @@
           <button type="button" data-tab="day">일간</button>
           <button type="button" data-tab="todo">할 일</button>
         </div>
+        <div class="sched-card">
         <div class="strip-wrap" id="strip-wrap">
           <button class="icon-btn" id="w-prev" type="button" aria-label="이전 주">‹</button>
           <div class="strip" id="strip"></div>
@@ -81,6 +85,7 @@
         </div>
         <div class="scroll" id="s-list"></div>
         <button class="fab" id="fab" type="button" aria-label="일정 추가">＋ 일정</button>
+        </div>
       </div>
     </section>
 
@@ -106,12 +111,12 @@
             </div>
           </div>
           <div class="card set-card">
-            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-reload.png" alt=""><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></span>
+            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-reload.png" alt=""><img class="set-img-g" src="img/ic/set-reload-g.png" alt=""><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></span>
             <div class="set-main row-between"><div><b>새로고침</b><small id="last-sync">아직 불러오지 않았어요</small></div>
-              <button class="pill-btn" id="reload" type="button">↻ 새로고침</button></div>
+              <button class="pill-btn" id="reload" type="button">새로고침</button></div>
           </div>
           <div class="card set-card">
-            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-manage.png" alt=""><svg viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3Z"/></svg></span>
+            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-manage.png" alt=""><img class="set-img-g" src="img/ic/set-manage-g.png" alt=""><svg viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3Z"/></svg></span>
             <div class="set-main"><div class="fold-head"><b>관리</b><button class="sfold" type="button" data-sfold aria-expanded="true" aria-label="관리 접기"></button></div>
               <div class="set-line"><span>그룹 버튼 보이기</span><button class="switch" id="sw-groups" type="button" role="switch" aria-checked="true"><i></i></button></div>
               <div class="set-line"><span>삭제된 일정 복원</span><button class="pill-btn small" id="trash-btn" type="button"><span id="trash-count">0</span> ›</button></div>
@@ -120,7 +125,7 @@
             </div>
           </div>
           <div class="card set-card">
-            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-info.png" alt=""><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>
+            <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-info.png" alt=""><img class="set-img-g" src="img/ic/set-info-g.png" alt=""><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>
             <div class="set-main"><div class="fold-head"><b>정보</b><button class="sfold" type="button" data-sfold aria-expanded="true" aria-label="정보 접기"></button></div>
               <div class="set-line"><span>시간대</span><em>KST</em></div>
               <div class="set-line"><span>한 주의 시작</span><em>월요일</em></div>
@@ -176,6 +181,6 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="bridge.js?v=20"></script>
-<script src="app.js?v=26"></script>
+<script src="app.js?v=27"></script>
 </body>
 </html>

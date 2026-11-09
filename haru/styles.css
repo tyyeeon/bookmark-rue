@@ -320,3 +320,134 @@ body[data-view="sched"] .top .brand{white-space:nowrap}
 @media (min-width:700px){.bg{background-size:cover}}
 [data-theme="moon"] .bg::after{background:linear-gradient(105deg,rgba(214,236,250,.8) 0%,rgba(214,236,250,.45) 30%,rgba(214,236,250,0) 55%) top/100% 200px no-repeat}
 [data-theme="moon"] .top{padding-bottom:22px}
+
+/* ===== 녹색 유리 시안 맞춤 3 (11/09, 루에 테마1 화면 01~12 기준) ===== */
+.cal-card,.sched-card{display:contents}
+.cal-add,.go-all,.day .cnt{display:none}
+[data-theme="green"]{
+  --ink:#10306a; --sub:#5a6f8c; --faint:#8fa3b8;
+  --accent:#0a8a80; --accent-2:#26c3b4;
+  --bg:url(img/bg-green-ui.webp); --cover:url(img/cover-green-ui.webp);
+  --bg-fill:#bff5ec; --page:#c4f3ea;
+  --glass:rgba(255,255,255,.34); --glass-2:rgba(255,255,255,.5); --glass-3:rgba(255,255,255,.72);
+}
+[data-theme="green"] .bg{background:var(--bg) center top/100% auto no-repeat,var(--bg-fill)}
+[data-theme="green"] .bg::after{display:none}
+[data-theme="green"] .cover{background:var(--cover) center top/100% auto no-repeat,#86e2dc}
+[data-theme="green"] .cover h1{font-size:72px;color:#0c2c66;font-weight:800}
+[data-theme="green"] .cover p{color:#13306a;font-size:15px;letter-spacing:.02em}
+[data-theme="green"] .cover-btn{width:min(74%,300px);height:64px;font-size:22px;background:linear-gradient(170deg,#1fb9ad,#0a6f72 70%);border:2px solid rgba(255,255,255,.75);box-shadow:0 14px 30px rgba(10,90,90,.32),inset 0 1px 0 rgba(255,255,255,.6)}
+[data-theme="green"] .brand{color:#0c2c66;font-size:34px;font-weight:800}
+/* 판: 시안처럼 바탕 위에 바로 카드 (달력·일정은 안쪽 카드만 유리) */
+[data-theme="green"] #v-cal .panel,[data-theme="green"] #v-sched .panel,[data-theme="green"] #v-proj .panel,[data-theme="green"] #v-detail .panel{background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+[data-theme="green"] .cal-card,[data-theme="green"] .sched-card{flex:1;min-height:0;display:flex;flex-direction:column;position:relative;background:rgba(255,255,255,.4);border:1.5px solid rgba(255,255,255,.9);border-radius:28px;box-shadow:0 10px 30px rgba(30,120,110,.14),inset 0 1px 0 rgba(255,255,255,.8);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}
+[data-theme="green"] .page-title{font-size:30px;font-weight:800;color:#0c2c66;margin:4px 6px 14px}
+/* 달력 */
+[data-theme="green"] .cal-head{padding:6px 2px 14px;gap:2px;align-items:center}
+[data-theme="green"] .cal-head h2{font-size:25px;font-weight:800;color:#0c2c66}
+[data-theme="green"] .cal-head .icon-btn{border:0;background:none;width:20px;height:28px;font-size:24px;color:#0c2c66}
+[data-theme="green"] .cal-add{display:block;border:0;background:none;font-size:13px;font-weight:700;color:#0c2c66;padding:0 2px 0 6px;white-space:nowrap}
+[data-theme="green"] .cal-head .groups{align-self:flex-end;gap:2px;margin-bottom:-2px}
+[data-theme="green"] .gchip[data-group="전체"]{display:none}
+[data-theme="green"] .gchip{padding:2px 4px;font-size:12px;border:0;background:none;color:#0c2c66;border-radius:8px}
+[data-theme="green"] .gchip .dot{width:4px!important;height:14px!important;border-radius:2px;background:var(--g-gy)!important}
+[data-theme="green"] .gchip .dot.g-Ella{background:var(--g-el)!important}
+[data-theme="green"] .gchip.on{background:rgba(255,255,255,.75);color:#0c2c66}
+[data-theme="green"] .cal-card{padding:6px 8px 8px}
+[data-theme="green"] .weekdays{font-size:15px;color:#0c2c66;padding:12px 0 12px;border-bottom:1px solid rgba(255,255,255,.85)}
+[data-theme="green"] .weekdays .sun{color:#1aa9c4}
+[data-theme="green"] .day{border-top:0;border-bottom:1px solid rgba(255,255,255,.8);padding:6px 3px}
+[data-theme="green"] .day .num{font-size:16px;font-weight:600;display:flex;justify-content:space-between;align-items:baseline}
+[data-theme="green"] .day.out .num{color:#8fa0b6}
+[data-theme="green"] .day.out{opacity:1}
+[data-theme="green"] .day.sun .num{color:#0c2c66}
+[data-theme="green"] .day.today{background:linear-gradient(150deg,#3fcfbf,#0c8f87 60%,#0a7a78);border:1.5px solid rgba(255,255,255,.85);border-radius:14px}
+[data-theme="green"] .day.today .cnt{display:inline;font-size:11px;font-weight:600;color:#fff;margin-right:2px}
+[data-theme="green"] .chip{font-size:10.5px;color:#0c2c66}
+[data-theme="green"] .chip.규연{border-left-color:var(--g-gy)}
+/* 일정 */
+[data-theme="green"] #v-sched .page-row{display:none}
+[data-theme="green"] #s-tabs{background:none;border:0;padding:0;margin:4px 0 16px;gap:0}
+[data-theme="green"] #s-tabs button{position:relative;font-size:16px;padding:11px 4px;color:#0c2c66}
+[data-theme="green"] #s-tabs button+button::before{content:"";position:absolute;left:0;top:30%;bottom:30%;width:1px;background:rgba(12,44,102,.18)}
+[data-theme="green"] #s-tabs button.on::before,[data-theme="green"] #s-tabs button.on+button::before{display:none}
+[data-theme="green"] .seg button.on,[data-theme="green"] .nav button.on,[data-theme="green"] .strip button.on{background:linear-gradient(170deg,#2ccbbb,#0a8c84 75%);box-shadow:0 6px 14px rgba(10,120,110,.3),inset 0 1px 0 rgba(255,255,255,.45);color:#fff}
+[data-theme="green"] .sched-card{padding:12px 10px 10px}
+[data-theme="green"] .strip-wrap{margin-bottom:12px}
+[data-theme="green"] .strip-wrap .icon-btn{display:none}
+[data-theme="green"] .strip{padding:8px 6px;border-radius:22px;background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);gap:0}
+[data-theme="green"] .strip button{font-size:13px;color:#0c2c66;padding:6px 0;border-radius:14px}
+[data-theme="green"] .strip button b{font-size:19px;font-weight:500;color:#0c2c66}
+[data-theme="green"] .strip button+button:not(.on)::before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:1px;background:rgba(12,44,102,.14)}
+[data-theme="green"] .strip button.on+button::before{display:none}
+[data-theme="green"] .strip button.has::after{display:none}
+[data-theme="green"] .daycard{background:rgba(255,255,255,.3);border:1.5px solid rgba(255,255,255,.85);border-radius:22px;padding:4px 8px 6px;margin-bottom:10px}
+[data-theme="green"] .daycard h4{font-size:17px;font-weight:800;color:#0c2c66;margin:10px 4px 6px}
+[data-theme="green"] .daycard h4::before{width:5px;height:20px;background:#4cc35a}
+[data-theme="green"] .row{background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;margin:6px 0;padding:9px 10px;min-height:46px}
+[data-theme="green"] .ck{width:24px;height:24px;border:1.6px solid #7f8a99;background:transparent}
+[data-theme="green"] .tm{color:#5f6f86;font-size:15px;min-width:70px;border-color:rgba(12,44,102,.15)}
+[data-theme="green"] .tt{font-weight:600;font-size:15.5px;color:#0c2c66}
+[data-theme="green"] .row .chev{display:none}
+[data-theme="green"] .gp .dot{display:none}
+[data-theme="green"] .gp{padding:4px 15px;font-size:13px;font-weight:500}
+[data-theme="green"] .gp.Ella{background:#e2d2fb;color:#8a3fe0}
+[data-theme="green"] .gp.규연{background:#d1f6d3;color:#1d9a34}
+[data-theme="green"] .daycard .c{background:rgba(255,255,255,.6)}
+[data-theme="green"] .fab{right:14px;bottom:12px;height:40px;padding:0 18px;background:rgba(255,255,255,.55);border:1.5px solid #22b3a5;color:#0f8a80;box-shadow:none;font-weight:600}
+[data-theme="green"] .add-btn{border:1.5px solid #22b3a5;color:#0f8a80;background:rgba(255,255,255,.55);box-shadow:none}
+/* 프로젝트 목록 (시안 04) */
+[data-theme="green"] #p-filter{background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);padding:6px;gap:0;margin-bottom:14px}
+[data-theme="green"] #p-filter .dot{display:none}
+[data-theme="green"] #p-filter button{position:relative;font-size:15px;color:#0c2c66;padding:9px 2px}
+[data-theme="green"] #p-filter button+button:not(.on)::before{content:"";position:absolute;left:0;top:28%;bottom:28%;width:1px;background:rgba(12,44,102,.16)}
+[data-theme="green"] #p-filter button.on+button::before{display:none}
+[data-theme="green"] .pcard{background:rgba(255,255,255,.38);border:1.5px solid rgba(255,255,255,.9);border-radius:24px;margin-bottom:12px;box-shadow:0 8px 24px rgba(30,120,110,.1)}
+[data-theme="green"] .phead{padding:6px 14px 6px 6px;gap:6px}
+[data-theme="green"] .pimg{width:52%;height:112px;border-radius:20px;object-fit:cover;object-position:center 40%;box-shadow:none;-webkit-mask-image:linear-gradient(90deg,#000 62%,transparent);mask-image:linear-gradient(90deg,#000 62%,transparent)}
+[data-theme="green"] .pname{position:relative;padding-left:14px}
+[data-theme="green"] .pname::before{content:"";position:absolute;left:0;top:6px;width:5px;height:22px;border-radius:3px;background:#22c4b1}
+[data-theme="green"] .pname b{font-size:26px;font-weight:800;color:#0c2c66}
+[data-theme="green"] .counts{font-size:14px;font-weight:500;margin-top:6px}
+[data-theme="green"] .counts span,[data-theme="green"] .counts .on,[data-theme="green"] .counts .wait,[data-theme="green"] .counts .done{background:none;color:#5a6f8c;padding:0}
+[data-theme="green"] .fold{background:none;font-size:18px;color:#0c2c66}
+[data-theme="green"] .pbody{padding:0 8px 12px}
+[data-theme="green"] #p-list .sub{margin:0;border:0;border-bottom:1px solid rgba(255,255,255,.85);border-radius:0;background:none;padding:10px 6px 10px 22px}
+[data-theme="green"] #p-list .sub::before{left:8px;top:14px;bottom:14px;width:5px;background:#22c4b1}
+[data-theme="green"] #p-list .sub .t{display:flex;align-items:center;gap:0}
+[data-theme="green"] #p-list .sub .t b{flex:none;min-width:62px;font-size:16px;font-weight:800;color:#0c2c66;padding-right:12px;border-right:1px solid rgba(12,44,102,.15)}
+[data-theme="green"] #p-list .sub .t small{flex:1;min-width:0;margin:0 0 0 12px;font-size:13.5px;color:#0c2c66}
+[data-theme="green"] #p-list .sub .go{display:none}
+[data-theme="green"] .go-all{display:block;margin:12px auto 0;width:60%;height:40px;border-radius:999px;border:1.5px solid #22b3a5;background:rgba(255,255,255,.5);color:#0f8a80;font-weight:700;font-size:15px}
+/* 프로젝트 상세 (시안 03) */
+[data-theme="green"] .back{font-size:24px;font-weight:800;color:#0c2c66;padding:4px 4px 14px}
+[data-theme="green"] .dhead{background:rgba(255,255,255,.38);border:1.5px solid rgba(255,255,255,.9);border-radius:24px;padding:14px 12px;gap:14px}
+[data-theme="green"] .dhead .pimg{width:96px;height:96px;border-radius:0;-webkit-mask-image:none;mask-image:none;object-fit:contain;background:none;mix-blend-mode:multiply}
+[data-theme="green"] .dhead>div{border-left:1px solid rgba(12,44,102,.15);padding-left:14px}
+[data-theme="green"] .dhead b{font-size:32px;font-weight:800;color:#0c2c66}
+[data-theme="green"] .sec{background:rgba(255,255,255,.38);border:1.5px solid rgba(255,255,255,.9);border-radius:24px;padding:6px 8px 8px}
+[data-theme="green"] #d-body .sub{background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);border-radius:18px;margin:7px 0;padding:10px 10px 10px 24px}
+[data-theme="green"] #d-body .sub::before{left:10px;width:5px;background:#22c4b1}
+[data-theme="green"] #d-body .sub b{font-size:16px;font-weight:800;color:#0c2c66}
+[data-theme="green"] .sec h4{font-size:18px;font-weight:800;color:#0c2c66}
+[data-theme="green"] .sec h4::before{width:5px;height:22px;background:#13b7e0}
+[data-theme="green"] .next{background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);border-radius:16px;margin:6px 0;color:#0c2c66}
+/* 설정 (시안 12): 시작 화면·테마·새로고침 한 줄 */
+[data-theme="green"] #v-set .panel{background:rgba(255,255,255,.34);border:1.5px solid rgba(255,255,255,.9)}
+[data-theme="green"] .set-card{background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.9);border-radius:22px;align-items:center}
+[data-theme="green"] .set-card:nth-child(-n+3) .set-main{display:flex;align-items:center;gap:8px}
+[data-theme="green"] .set-card:nth-child(-n+2) .set-main>b{flex:none;font-size:17px}
+[data-theme="green"] .set-card:nth-child(-n+2) .seg.mini{flex:1;margin:0;background:rgba(255,255,255,.45)}
+[data-theme="green"] .set-card:nth-child(3) .set-main>div{display:flex;align-items:center;gap:8px;min-width:0}
+[data-theme="green"] .set-card:nth-child(3) .set-main b{flex:none;font-size:17px}
+[data-theme="green"] .set-card:nth-child(3) small{margin:0;padding-left:8px;border-left:1px solid rgba(12,44,102,.18);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+[data-theme="green"] .set-main>b,[data-theme="green"] .fold-head b{font-size:17px;color:#0c2c66}
+[data-theme="green"] .set-line{color:#0c2c66}
+[data-theme="green"] .set-line em{background:none;border:0;padding:0;color:#5a6f8c;font-size:14px}
+[data-theme="green"] .set-ico{width:44px;height:44px;border-radius:14px}
+[data-theme="green"] .pill-btn#reload{padding:8px 14px}
+[data-theme="green"] .set-card:nth-child(n+4){align-items:flex-start}
+[data-theme="green"] .set-card:nth-child(n+4) .set-main{padding-top:9px}
+[data-theme="green"] .set-card:nth-child(3) small{font-size:11.5px}
+[data-theme="green"] .pill-btn#reload{padding:7px 12px;font-size:14px}
+[data-theme="green"] body[data-view="detail"] .top{display:none}

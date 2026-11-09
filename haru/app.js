@@ -108,7 +108,7 @@ function renderCal() {
     const shown = list.slice(0, 3).map(e => `<span class="chip ${GROUP(e.group)}">${esc(e.title.replace(/^(\[[^\]]*\]\s*)+/, ''))}</span>`).join('');
     const more = list.length > 3 ? `<span class="more">+${list.length - 3}</span>` : '';
     const num = d.getMonth() !== m && d.getDate() === 1 ? `${d.getMonth() + 1}/1` : d.getDate();
-    h += `<button type="button" class="${cls}" data-day="${s}" aria-label="${label(s)} 일정 ${list.length}개"><span class="num">${num}</span>${shown}${more}</button>`;
+    h += `<button type="button" class="${cls}" data-day="${s}" aria-label="${label(s)} 일정 ${list.length}개"><span class="num">${num}${list.length ? `<span class="cnt">(${list.length})</span>` : ''}</span>${shown}${more}</button>`;
   }
   $('month').innerHTML = h;
 }
@@ -154,7 +154,7 @@ function renderProj() {
   const html = ps.map(p => {
     const items = p.items.filter(keep); if (!items.length) return '';
     const open = S.open.includes(p.name);
-    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}</div></article>`;
+    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}<button class="go-all" type="button" data-detail="${esc(p.name)}">자세히 →</button></div></article>`;
   }).join('');
   $('p-list').innerHTML = html || `<p class="empty">${ps.length ? '이 상태인 세부 일이 없어요.' : '프로젝트 현황을 불러오는 중이거나 아직 비어 있어요.'}</p>`;
 }
@@ -257,7 +257,7 @@ document.addEventListener('click', ev => {
   const b = ev.target.closest('button'); if (!b) return;
   const d = b.dataset, find = id => S.items.find(e => e.id === id);
   if (d.view) return go(d.view);
-  if (d.group) { S.group = d.group; return render(); }
+  if (d.group) { S.group = S.group === d.group && d.group !== '전체' ? '전체' : d.group; return render(); }
   if (d.day) return openDay(d.day);
   if (d.check) { const e = find(d.check); if (e) setStatus(e, '완료', e.type === 'task' ? '할 일을 끝냈어요.' : '일정을 끝냈어요.', '예정'); return; }
   if (d.edit) { const e = find(d.edit); if (e) { closeDay(); openForm(e); } return; }
@@ -276,6 +276,10 @@ $('m-prev').onclick = () => { let [y, m] = S.ym; m--; if (m < 0) { m = 11; y--; 
 $('m-next').onclick = () => { let [y, m] = S.ym; m++; if (m > 11) { m = 0; y++; } S.ym = [y, m]; renderCal(); };
 $('w-prev').onclick = () => { S.sel = iso(addDays(parse(S.sel), -7)); renderSched(); };
 $('w-next').onclick = () => { S.sel = iso(addDays(parse(S.sel), 7)); renderSched(); };
+$('cal-add').onclick = () => openForm(null, {date: S.sel});
+(() => { let x0 = null; const st = $('strip');
+  st.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive: true});
+  st.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) $(dx < 0 ? 'w-next' : 'w-prev').onclick(); }, {passive: true}); })();
 $('day-close').onclick = closeDay; $('day-back').onclick = closeDay;
 $('day-add').onclick = () => { const s = S.sel; closeDay(); openForm(null, {date: s}); };
 $('fab').onclick = () => openForm(null, {type: S.tab === 'todo' ? 'task' : 'event', date: S.tab === 'todo' ? today() : S.sel});
