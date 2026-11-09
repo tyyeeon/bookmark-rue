@@ -567,3 +567,29 @@ body[data-view="detail"] .top{display:none}
 [data-theme="green"] .set-ico{width:54px;height:54px;border-radius:15px}
 [data-theme="green"] .set-ico .set-img-g{object-fit:contain;border-radius:0}
 [data-theme="green"] .set-ico:has(.set-img-g){box-shadow:none}
+
+/* ===== 홈 화면 앱(아이폰) 11/09: 아래 빈 띠 없애기 + 달이 상태바에 가리지 않게 ===== */
+/* iOS 홈 화면 앱은 화면 높이를 상태바만큼 짧게 알려 줌 → 페이지 높이를 화면 끝까지 늘림(10/19 옛 하루에서 쓰던 방법) */
+html.haru-sa{height:auto;min-height:min(100lvh,calc(100% + env(safe-area-inset-top)))}
+html.haru-sa body{position:fixed;inset:0;height:auto}
+html.haru-sa .app{height:100%}
+/* 달빛 배경 위에 하늘 160px를 덧대 두고, 상태바 높이만큼만 아래로 내림 */
+[data-theme="moon"] .bg{background-position:center calc(env(safe-area-inset-top, 0px) - 15.625vw),0 0}
+@media (min-width:700px){[data-theme="moon"] .bg{background-position:center top,0 0}}
+/* 아이폰 글꼴은 줄 높이가 커서 칸이 모자라면 칩이 눌려 글자가 잘림 → 칩은 줄어들지 않게, 넘치는 건 칸 아래로 숨김 */
+.day .chip,.day .more,.day .num{flex:none}
+/* 달빛: 시안보다 진하던 것 맞춤(11/09 규연 "색이 좀 진해진거같고") — 칸·판을 더 희게, 글자는 덜 굵게 */
+[data-theme="moon"] .panel{background:rgba(255,255,255,.4)}
+[data-theme="moon"] .weekdays{background:rgba(255,255,255,.62);font-weight:600}
+[data-theme="moon"] .day{background:rgba(255,255,255,.74);border:1px solid rgba(190,210,228,.7)}
+[data-theme="moon"] .day.out{background:rgba(255,255,255,.5)}
+[data-theme="moon"] .day .num{font-weight:500;color:#1f3555}
+[data-theme="moon"] .day.out .num{color:#8d9db3}
+[data-theme="moon"] .chip{font-weight:500;font-size:10px}
+[data-theme="moon"] .brand{font-weight:700}
+[data-theme="moon"] .cal-head h2,[data-theme="moon"] .page-title{font-weight:700}
+[data-theme="moon"] .card{background:rgba(255,255,255,.58)}
+[data-theme="moon"] .row,[data-theme="moon"] .pbody{background:rgba(255,255,255,.68)}
+[data-theme="moon"] .nav{background:rgba(255,255,255,.62)}
+/* 아래 메뉴를 화면 끝 쪽으로 더 내림(홈 막대와 겹치지 않을 만큼만) */
+html.haru-sa .app{padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px))}
