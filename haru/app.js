@@ -139,19 +139,19 @@ const md = s => { const m = String(s || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2
 const pimg = name => { const k = name.toLowerCase(); return `img/p-${['plan', 'ai', 'app'].includes(k) ? k : 'default'}-${look()}.webp`; };
 const countHtml = items => {
   const n = k => items.filter(i => i.st === k).length;
-  return ['on', 'wait', 'done'].filter(k => n(k)).map(k => `<span class="${k}">${k === 'on' ? '진행' : k === 'wait' ? '대기' : '완료'} ${n(k)}</span>`).join('') || '<span class="done">세부 일 없음</span>';
+  return ['on', 'wait', 'done'].filter(k => n(k)).map(k => `<span class="${k}">${k === 'on' ? '진행' : k === 'wait' ? '대기' : '완료'} ${n(k)}</span>`).join('<i class="sep">·</i>') || '<span class="done">세부 일 없음</span>';
 };
-const subHtml = i => `<div class="sub"><div class="t"><b>${esc(i.name)}</b>${i.now ? `<small>${esc(i.now)}</small>` : ''}</div><span class="st ${i.st}">${stName[i.st]}</span></div>`;
+const subHtml = (i, p) => `<div class="sub"><div class="t"><b>${esc(i.name)}</b>${i.now ? `<small>${esc(i.now)}</small>` : ''}</div><span class="st ${i.st}">${stName[i.st]}</span>${p ? `<button class="go" type="button" data-detail="${esc(p)}">자세히 ›</button>` : ''}</div>`;
 function renderProj() {
   const ps = projects(), all = ps.flatMap(p => p.items);
   const n = k => k === '전체' ? all.length : all.filter(i => stName[i.st] === k).length;
-  $('p-filter').innerHTML = ['전체', '진행중', '대기', '완료'].map(k => `<button type="button" data-pf="${k}" class="${S.pfilter === k ? 'on' : ''}">${k} <span class="n">${n(k)}</span></button>`).join('');
+  $('p-filter').innerHTML = ['전체', '진행중', '대기', '완료'].map(k => `<button type="button" data-pf="${k}" class="${S.pfilter === k ? 'on' : ''}">${k === '전체' ? '' : `<i class="dot pf-${k}"></i>`}${k} <span class="n">${n(k)}</span></button>`).join('');
   if (!S.open) S.open = ps.length ? [ps[0].name] : [];
   const keep = i => S.pfilter === '전체' || stName[i.st] === S.pfilter;
   const html = ps.map(p => {
     const items = p.items.filter(keep); if (!items.length) return '';
     const open = S.open.includes(p.name);
-    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(subHtml).join('')}<button class="more-btn" type="button" data-detail="${esc(p.name)}">자세히 →</button></div></article>`;
+    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}</div></article>`;
   }).join('');
   $('p-list').innerHTML = html || `<p class="empty">${ps.length ? '이 상태인 세부 일이 없어요.' : '프로젝트 현황을 불러오는 중이거나 아직 비어 있어요.'}</p>`;
 }
@@ -162,7 +162,7 @@ function renderDetail() {
   const nexts = p.items.filter(i => i.next).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
   $('d-body').innerHTML =
     `<div class="card dhead"><img class="pimg" src="${pimg(p.name)}" alt=""><div><b>${esc(p.name)}</b> <span class="st ${main}">${stName[main]}</span><p>${esc(p.items.map(i => i.name).join(' · '))}</p></div></div>` +
-    `<section class="card sec"><h4>세부 일 <span class="c">${p.items.length}</span></h4>${p.items.map(subHtml).join('')}</section>` +
+    `<section class="card sec"><h4>세부 일 <span class="c">${p.items.length}</span></h4>${p.items.map(i => subHtml(i)).join('')}</section>` +
     `<section class="card sec"><h4>다음 할 일 <span class="c">${nexts.length}</span></h4>${nexts.length ? nexts.map(i => `<div class="next"><span class="d">${esc(md(i.date))}</span><span>${esc(i.next)} <small style="color:var(--sub)">· ${esc(i.name)}</small></span></div>`).join('') : '<p class="empty">적어 둔 다음 할 일이 없어요.</p>'}</section>`;
 }
 
