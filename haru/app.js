@@ -86,6 +86,8 @@ function render() {
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.view === (S.view === 'detail' ? 'proj' : S.view)));
   const showG = store.get('haru-groups', true);
   document.querySelectorAll('[data-groups]').forEach(el => { el.innerHTML = groupsHtml(); el.classList.toggle('hide', !showG); });
+  document.querySelector('.brand').textContent = look() === 'green' && S.view === 'sched' ? '하루 일정' : '하루';
+  document.body.dataset.view = S.view;
   if (S.view === 'cal') renderCal();
   if (S.view === 'proj') renderProj();
   if (S.view === 'detail') renderDetail();
@@ -106,7 +108,7 @@ function renderCal() {
     const shown = list.slice(0, 3).map(e => `<span class="chip ${GROUP(e.group)}">${esc(e.title.replace(/^(\[[^\]]*\]\s*)+/, ''))}</span>`).join('');
     const more = list.length > 3 ? `<span class="more">+${list.length - 3}</span>` : '';
     const num = d.getMonth() !== m && d.getDate() === 1 ? `${d.getMonth() + 1}/1` : d.getDate();
-    h += `<button type="button" class="${cls}" data-day="${s}" aria-label="${label(s)} 일정 ${list.length}개"><span class="num">${num}</span>${shown}${more}</button>`;
+    h += `<button type="button" class="${cls}" data-day="${s}" aria-label="${label(s)} 일정 ${list.length}개"><span class="num">${num}${list.length ? `<span class="cnt">(${list.length})</span>` : ''}</span>${shown}${more}</button>`;
   }
   $('month').innerHTML = h;
 }
@@ -152,7 +154,7 @@ function renderProj() {
   const html = ps.map(p => {
     const items = p.items.filter(keep); if (!items.length) return '';
     const open = S.open.includes(p.name);
-    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}</div></article>`;
+    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><img class="pimg" src="${pimg(p.name)}" alt=""><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}<button class="go-all" type="button" data-detail="${esc(p.name)}">자세히 →</button></div></article>`;
   }).join('');
   $('p-list').innerHTML = html || `<p class="empty">${ps.length ? '이 상태인 세부 일이 없어요.' : '프로젝트 현황을 불러오는 중이거나 아직 비어 있어요.'}</p>`;
 }
@@ -191,8 +193,10 @@ function renderSched() {
       .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.time || '99').localeCompare(b.time || '99'));
     const todays = evs(t).filter(e => e.type !== 'task');
     h = `<section class="card daycard todo"><h4>안 끝낸 할 일<span class="c">${tasks.length}개</span></h4>${tasks.length ? tasks.map(e => row(e, {date: true})).join('') : '<p class="empty">남은 할 일이 없어요.</p>'}</section>` +
-        `<section class="card daycard today"><h4>오늘 일정<span class="c">${todays.length}개</span></h4>${todays.length ? todays.map(e => row(e, {wide: true})).join('') : '<p class="empty">오늘 일정이 없어요.</p>'}</section>`;
+        `<section class="card daycard today"><h4>오늘 일정<span class="c">${todays.length}개</span></h4>${todays.length ? todays.map(e => row(e, {wide: true})).join('') : '<p class="empty">오늘 일정이 없어요.</p>'}</section>` +
+        `<button class="add-btn" type="button" data-add>＋ 추가</button>`;
   }
+  $('fab').hidden = S.tab === 'todo';
   $('s-list').innerHTML = h;
 }
 
@@ -253,7 +257,7 @@ document.addEventListener('click', ev => {
   const b = ev.target.closest('button'); if (!b) return;
   const d = b.dataset, find = id => S.items.find(e => e.id === id);
   if (d.view) return go(d.view);
-  if (d.group) { S.group = d.group; return render(); }
+  if (d.group) { S.group = S.group === d.group && d.group !== '전체' ? '전체' : d.group; return render(); }
   if (d.day) return openDay(d.day);
   if (d.check) { const e = find(d.check); if (e) setStatus(e, '완료', e.type === 'task' ? '할 일을 끝냈어요.' : '일정을 끝냈어요.', '예정'); return; }
   if (d.edit) { const e = find(d.edit); if (e) { closeDay(); openForm(e); } return; }
@@ -272,9 +276,15 @@ $('m-prev').onclick = () => { let [y, m] = S.ym; m--; if (m < 0) { m = 11; y--; 
 $('m-next').onclick = () => { let [y, m] = S.ym; m++; if (m > 11) { m = 0; y++; } S.ym = [y, m]; renderCal(); };
 $('w-prev').onclick = () => { S.sel = iso(addDays(parse(S.sel), -7)); renderSched(); };
 $('w-next').onclick = () => { S.sel = iso(addDays(parse(S.sel), 7)); renderSched(); };
+$('cal-add').onclick = () => openForm(null, {date: S.sel});
+[['month', 'm-next', 'm-prev'], ['strip', 'w-next', 'w-prev']].forEach(([el, nx, pv]) => { let x0 = null; const st = $(el);
+  st.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive: true});
+  st.addEventListener('touchend', e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) $(dx < 0 ? nx : pv).onclick(); }, {passive: true}); });
 $('day-close').onclick = closeDay; $('day-back').onclick = closeDay;
 $('day-add').onclick = () => { const s = S.sel; closeDay(); openForm(null, {date: s}); };
 $('fab').onclick = () => openForm(null, {type: S.tab === 'todo' ? 'task' : 'event', date: S.tab === 'todo' ? today() : S.sel});
+$('s-list').addEventListener('click', ev => { if (ev.target.closest('[data-add]')) $('fab').onclick(); });
+document.querySelectorAll('[data-sfold]').forEach(b => b.addEventListener('click', () => { const c = b.closest('.set-card'); c.classList.toggle('folded'); b.setAttribute('aria-expanded', String(!c.classList.contains('folded'))); }));
 $('d-back').onclick = () => go('proj');
 $('form').onsubmit = save; $('f-cancel').onclick = closeForm; $('form-close').onclick = closeForm;
 $('form-back').addEventListener('click', e => { if (e.target === $('form-back')) closeForm(); });
