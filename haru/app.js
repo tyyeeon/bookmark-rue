@@ -121,6 +121,7 @@ function renderDay() {
 /* ---------- 프로젝트 (보기 전용, 시트 「프로젝트」 탭) ---------- */
 const stKey = s => /완료/.test(s) ? 'done' : /대기|확인|보류/.test(s) ? 'wait' : 'on';
 const stName = {on: '진행중', wait: '대기', done: '완료'};
+const stImg = k => `<img class="st" src="img/ic/st-${k}${look() === 'green' ? '-g' : ''}.png" alt="${stName[k]}">`;
 function projects() {
   const rows = S.projects; if (!rows || rows.length < 2) return [];
   const H = rows[0].map(h => String(h).trim());
@@ -141,7 +142,7 @@ const countHtml = items => {
   const n = k => items.filter(i => i.st === k).length;
   return ['on', 'wait', 'done'].filter(k => n(k)).map(k => `<span class="${k}">${k === 'on' ? '진행' : k === 'wait' ? '대기' : '완료'} ${n(k)}</span>`).join('<i class="sep">·</i>') || '<span class="done">세부 일 없음</span>';
 };
-const subHtml = (i, p) => `<div class="sub"><div class="t"><b>${esc(i.name)}</b>${i.now ? `<small>${esc(i.now)}</small>` : ''}</div><span class="st ${i.st}">${stName[i.st]}</span>${p ? `<button class="go" type="button" data-detail="${esc(p)}">자세히 ›</button>` : ''}</div>`;
+const subHtml = (i, p) => `<div class="sub"><div class="t"><b>${esc(i.name)}</b>${i.now ? `<small>${esc(i.now)}</small>` : ''}</div>${stImg(i.st)}${p ? `<button class="go" type="button" data-detail="${esc(p)}">자세히 ›</button>` : ''}</div>`;
 function renderProj() {
   const ps = projects(), all = ps.flatMap(p => p.items);
   const n = k => k === '전체' ? all.length : all.filter(i => stName[i.st] === k).length;
@@ -161,7 +162,7 @@ function renderDetail() {
   const main = p.items.some(i => i.st === 'on') ? 'on' : p.items.some(i => i.st === 'wait') ? 'wait' : 'done';
   const nexts = p.items.filter(i => i.next).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
   $('d-body').innerHTML =
-    `<div class="card dhead"><img class="pimg" src="${pimg(p.name)}" alt=""><div><b>${esc(p.name)}</b> <span class="st ${main}">${stName[main]}</span><p>${esc(p.items.map(i => i.name).join(' · '))}</p></div></div>` +
+    `<div class="card dhead"><img class="pimg" src="${pimg(p.name)}" alt=""><div><b>${esc(p.name)}</b> ${stImg(main)}<p>${esc(p.items.map(i => i.name).join(' · '))}</p></div></div>` +
     `<section class="card sec"><h4>세부 일 <span class="c">${p.items.length}</span></h4>${p.items.map(i => subHtml(i)).join('')}</section>` +
     `<section class="card sec"><h4>다음 할 일 <span class="c">${nexts.length}</span></h4>${nexts.length ? nexts.map(i => `<div class="next"><span class="d">${esc(md(i.date))}</span><span>${esc(i.next)} <small style="color:var(--sub)">· ${esc(i.name)}</small></span></div>`).join('') : '<p class="empty">적어 둔 다음 할 일이 없어요.</p>'}</section>`;
 }
