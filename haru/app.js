@@ -39,7 +39,7 @@ function apply(state) {
 }
 function load(manual) {
   const r = run();
-  if (!r) { notice('이 기기는 아직 일정표에 연결되지 않았어요. 설정에 있는 「새 기기 링크」로 한 번 열어 주세요.'); return; }
+  if (!r) { notice('이 기기는 아직 일정표에 연결되지 않았어요.'); $('connect').hidden = false; return; }
   if (manual) toast('불러오는 중…');
   r.withSuccessHandler(s => { notice(''); apply(s); store.set('haru-synced', new Date().toISOString()); if (manual) toast('새로 불러왔어요.'); renderSet(); })
    .withFailureHandler(e => notice('일정표를 불러오지 못했어요: ' + (e && e.message || e)))
@@ -299,6 +299,20 @@ $('copy-link').onclick = async () => {
   const link = `${location.origin}${location.pathname}#api=${encodeURIComponent(c.api)}&k=${encodeURIComponent(c.k)}`;
   try { await navigator.clipboard.writeText(link); toast('새 기기 링크를 복사했어요. 남에게는 보내지 마세요.'); }
   catch (_) { prompt('이 링크를 복사해 새 기기에서 여세요.', link); }
+};
+
+/* 연결 안 된 기기: 새 기기 링크 또는 웹 앱 주소 + 키를 붙여 넣어 연결 */
+$('connect').onclick = () => {
+  const a = (prompt('새 기기 링크를 붙여 넣거나, Apps Script 웹 앱 주소(…/exec)를 붙여 넣어 주세요.') || '').trim();
+  if (!a) return;
+  let api = a, k = '';
+  const h = a.indexOf('#');
+  if (h >= 0) { const p = new URLSearchParams(a.slice(h + 1)); api = p.get('api') || ''; k = p.get('k') || ''; }
+  if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(api)) return toast('웹 앱 주소가 아니에요. script.google.com 으로 시작하고 /exec 로 끝나야 해요.');
+  if (!k) k = (prompt('Code.gs 맨 위 API_KEY 값을 붙여 넣어 주세요.') || '').trim().replace(/^['"]|['"]$/g, '');
+  if (!k) return;
+  store.set('haru-conn', {api, k});
+  location.reload();
 };
 
 /* ---------- 시작 ---------- */
