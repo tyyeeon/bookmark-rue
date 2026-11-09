@@ -31,8 +31,7 @@
       <div class="filters" id="filters" aria-label="그룹 필터">
         <button type="button" class="chip active" data-group="전체" aria-pressed="true">전체</button>
         <button type="button" class="chip" data-group="규연" aria-pressed="false"><i class="dot group-gyuyeon" aria-hidden="true"></i>규연</button>
-        <button type="button" class="chip" data-group="숲녘" aria-pressed="false"><i class="dot group-soop" aria-hidden="true"></i>숲녘</button>
-        <button type="button" class="chip" data-group="연가당" aria-pressed="false"><i class="dot group-yeon" aria-hidden="true"></i>연가당</button>
+        <button type="button" class="chip" data-group="Ella" aria-pressed="false"><i class="dot group-soop" aria-hidden="true"></i>Ella</button>
       </div>
       <section class="view active" id="monthly" aria-label="월간 달력">
         <div class="calendar">
@@ -65,7 +64,7 @@
   <div class="dialog-backdrop" id="dialog"><form class="dialog" id="event-form" aria-labelledby="dialog-title">
     <div class="dialog-head"><h2 id="dialog-title">새 일정</h2><button type="button" id="close-dialog" class="close-button" aria-label="닫기">×</button></div>
     <label class="field" for="f-title">제목<input id="f-title" name="title" required maxlength="80" placeholder="제목 입력" autocomplete="off"></label>
-    <div class="field-pair"><label class="field" for="f-type">유형<select id="f-type" name="type"><option value="event">일정</option><option value="task">할 일</option></select></label><label class="field" for="f-group">그룹<select id="f-group" name="group"><option>규연</option><option>숲녘</option><option>연가당</option></select></label></div>
+    <div class="field-pair"><label class="field" for="f-type">유형<select id="f-type" name="type"><option value="event">일정</option><option value="task">할 일</option></select></label><label class="field" for="f-group">그룹<select id="f-group" name="group"><option>규연</option><option>Ella</option></select></label></div>
     <label class="field" for="f-date">날짜<input id="f-date" name="date" type="date" required></label>
     <label class="all-day-field"><input type="checkbox" id="f-all-day"> 종일</label>
     <div class="field-pair"><label class="field" for="f-time">시작 시간<input id="f-time" name="time" type="time"></label><label class="field" for="f-end">끝 시간<input id="f-end" name="end" type="time"></label></div>
@@ -77,6 +76,6 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script src="bridge.js?v=8"></script>
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>

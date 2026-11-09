@@ -46,8 +46,7 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
 #haru-v4 .filters{margin:0 9px 11px;gap:6px}
 #haru-v4 .chip{background:#e8efedcf;border:1px solid #fafffb;font-size:12px;padding:7px 4px;border-radius:19px;color:#496257;box-shadow:inset 0 1px 2px #fff8}
 #haru-v4 .chip.active{background:linear-gradient(130deg,#9abbac,#729d85);color:#fff;border-color:#f4fff5;box-shadow:inset 0 1px 2px #fff7,0 1px 2px #799c8722}
-#haru-v4 .chip[data-group="숲녘"]:not(.active){background:#f7e9ede0;color:#866776}
-#haru-v4 .chip[data-group="연가당"]:not(.active){background:#fff4dfe0;color:#876c40}
+#haru-v4 .chip[data-group="Ella"]:not(.active){background:#e6effbe0;color:#3d6aa8}
 #haru-v4 .calendar,#haru-v4 .agenda,#haru-v4 .settings-row{background:linear-gradient(125deg,#f8fbf9f2,#f8fbf9c9);border:1px solid #fff;border-radius:23px;box-shadow:inset 0 1px 2px #fff,0 2px 9px #7e9c8712}
 #haru-v4 .cal-head{margin-bottom:10px}
 #haru-v4 .month-title{font-size:18px;font-weight:500;color:#2d4036}
@@ -112,15 +111,12 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
 #haru-v4 .cover-tagline{font-size:16px;font-weight:400;letter-spacing:-.3px;margin-top:15px;color:#71927e}
 #haru-v4 .start-hotspot{bottom:7%;height:48px;width:65%;display:flex;align-items:center;justify-content:center;gap:26px;font-size:14px;font-weight:400;color:#64816e;border:1px solid #fffffff0;background:linear-gradient(120deg,#ffffffb3,#f8fbf950);box-shadow:inset 0 1px 2px #fff,0 2px 8px #74927d15;border-radius:24px;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px)}
 #haru-v4 .start-hotspot>span:last-child{font-size:23px;line-height:1}
-#haru-v4 .dot[style*="#ff980e"]{background:#9cd8b5!important}
-#haru-v4 .dot[style*="#50c59a"]{background:#f5b2c3!important}
-#haru-v4 .dot[style*="#ad62ef"]{background:#f4d98d!important}
-#haru-v4 .badge[style*="#ff980e"]{color:#659d7b!important;background:#e0f3e8}
-#haru-v4 .badge[style*="#50c59a"]{color:#b68394!important;background:#fbe9ee}
-#haru-v4 .badge[style*="#ad62ef"]{color:#b2985f!important;background:#fff3dc}
-#haru-v4 .week-event[style*="#ff980e"]{border-left-color:#8dcaa3!important;background:#dff2e6}
-#haru-v4 .week-event[style*="#50c59a"]{border-left-color:#efacbd!important;background:#fae8ee}
-#haru-v4 .week-event[style*="#ad62ef"]{border-left-color:#e4ca89!important;background:#fcf2dd}
+#haru-v4 .dot[style*="#3fa868"]{background:#9cd8b5!important}
+#haru-v4 .dot[style*="#3d7fe0"]{background:#a9c6f2!important}
+#haru-v4 .badge[style*="#3fa868"]{color:#659d7b!important;background:#e0f3e8}
+#haru-v4 .badge[style*="#3d7fe0"]{color:#5b7fb5!important;background:#e6effb}
+#haru-v4 .week-event[style*="#3fa868"]{border-left-color:#8dcaa3!important;background:#dff2e6}
+#haru-v4 .week-event[style*="#3d7fe0"]{border-left-color:#9dbbe8!important;background:#e6effb}
 #haru-v4 .dialog-backdrop{background:#93b7a04d;border-color:#fff}
 #haru-v4 .dialog{background:linear-gradient(140deg,#fafffcfa,#eff7f1f7);box-shadow:0 15px 40px #69867526}
 #haru-v4 .field{color:#748d7b}
@@ -150,8 +146,7 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
       <div class="filters" id="filters" aria-label="그룹 필터">
         <button type="button" class="chip active" data-group="전체" aria-pressed="true">전체</button>
         <button type="button" class="chip" data-group="규연" aria-pressed="false"><i class="dot group-gyuyeon" aria-hidden="true"></i>규연</button>
-        <button type="button" class="chip" data-group="숲녘" aria-pressed="false"><i class="dot group-soop" aria-hidden="true"></i>숲녘</button>
-        <button type="button" class="chip" data-group="연가당" aria-pressed="false"><i class="dot group-yeon" aria-hidden="true"></i>연가당</button>
+        <button type="button" class="chip" data-group="Ella" aria-pressed="false"><i class="dot group-soop" aria-hidden="true"></i>Ella</button>
       </div>
       <section class="view active" id="monthly" aria-label="월간 달력">
         <div class="calendar">
@@ -184,7 +179,7 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
   <div class="dialog-backdrop" id="dialog"><form class="dialog" id="event-form" aria-labelledby="dialog-title">
     <div class="dialog-head"><h2 id="dialog-title">새 일정</h2><button type="button" id="close-dialog" class="close-button" aria-label="닫기">×</button></div>
     <label class="field" for="f-title">제목<input id="f-title" name="title" required maxlength="80" placeholder="제목 입력" autocomplete="off"></label>
-    <div class="field-pair"><label class="field" for="f-type">유형<select id="f-type" name="type"><option value="event">일정</option><option value="task">할 일</option></select></label><label class="field" for="f-group">그룹<select id="f-group" name="group"><option>규연</option><option>숲녘</option><option>연가당</option></select></label></div>
+    <div class="field-pair"><label class="field" for="f-type">유형<select id="f-type" name="type"><option value="event">일정</option><option value="task">할 일</option></select></label><label class="field" for="f-group">그룹<select id="f-group" name="group"><option>규연</option><option>Ella</option></select></label></div>
     <label class="field" for="f-date">날짜<input id="f-date" name="date" type="date" required></label>
     <label class="all-day-field"><input type="checkbox" id="f-all-day"> 종일</label>
     <div class="field-pair"><label class="field" for="f-time">시작 시간<input id="f-time" name="time" type="time"></label><label class="field" for="f-end">끝 시간<input id="f-end" name="end" type="time"></label></div>
@@ -196,6 +191,6 @@ body{background-color:#DFF3E1;background-image:url('data:image/jpeg;base64,/9j/4
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script src="../haru/bridge.js?v=8"></script>
-<script src="../haru/app.js?v=11"></script>
+<script src="../haru/app.js?v=12"></script>
 </body>
 </html>
