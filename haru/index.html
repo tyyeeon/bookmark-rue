@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="하루">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <script>try{var t=localStorage.getItem('haru-look');if(t==='green'||t==='moon')document.documentElement.dataset.theme=t;}catch(_){}</script>
-<link rel="stylesheet" href="styles.css?v=25">
+<link rel="stylesheet" href="styles.css?v=26">
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
@@ -112,7 +112,7 @@
           </div>
           <div class="card set-card">
             <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-manage.png" alt=""><svg viewBox="0 0 24 24"><path d="M3 7h7l2 2h9v10H3Z"/></svg></span>
-            <div class="set-main"><div class="fold-head"><b>관리</b><button class="fold" type="button" data-fold aria-expanded="true" aria-label="관리 접기"></button></div>
+            <div class="set-main"><div class="fold-head"><b>관리</b><button class="sfold" type="button" data-sfold aria-expanded="true" aria-label="관리 접기"></button></div>
               <div class="set-line"><span>그룹 버튼 보이기</span><button class="switch" id="sw-groups" type="button" role="switch" aria-checked="true"><i></i></button></div>
               <div class="set-line"><span>삭제된 일정 복원</span><button class="pill-btn small" id="trash-btn" type="button"><span id="trash-count">0</span> ›</button></div>
               <div id="trash-list" class="trash" hidden></div>
@@ -121,7 +121,7 @@
           </div>
           <div class="card set-card">
             <span class="set-ico" aria-hidden="true"><img class="set-img" src="img/ic/set-info.png" alt=""><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>
-            <div class="set-main"><div class="fold-head"><b>정보</b><button class="fold" type="button" data-fold aria-expanded="true" aria-label="정보 접기"></button></div>
+            <div class="set-main"><div class="fold-head"><b>정보</b><button class="sfold" type="button" data-sfold aria-expanded="true" aria-label="정보 접기"></button></div>
               <div class="set-line"><span>시간대</span><em>KST</em></div>
               <div class="set-line"><span>한 주의 시작</span><em>월요일</em></div>
               <div class="set-line"><span>저장</span><em>구글 시트 「일정표」</em></div>
@@ -176,6 +176,6 @@
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script src="bridge.js?v=20"></script>
-<script src="app.js?v=25"></script>
+<script src="app.js?v=26"></script>
 </body>
 </html>

@@ -299,9 +299,9 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 body[data-view="sched"] .top .brand{white-space:nowrap}
 [data-theme="green"] #v-sched .page-title{display:none}
 .fold-head{display:flex;align-items:center;justify-content:space-between}
-.fold{width:30px;height:30px;border:0;background:none;position:relative}
-.fold::after{content:"";position:absolute;left:11px;top:13px;width:8px;height:8px;border-left:2px solid var(--sub);border-top:2px solid var(--sub);transform:rotate(45deg)}
-.set-card.folded .fold::after{transform:rotate(225deg);top:9px}
+.sfold{width:30px;height:30px;border:0;background:none;position:relative}
+.sfold::after{content:"";position:absolute;left:11px;top:13px;width:8px;height:8px;border-left:2px solid var(--sub);border-top:2px solid var(--sub);transform:rotate(45deg)}
+.set-card.folded .sfold::after{transform:rotate(225deg);top:9px}
 .set-card.folded .set-line,.set-card.folded .trash{display:none!important}
 .set-img-g{display:none}
 [data-theme="green"] .set-ico:has(.set-img-g){background:none;border:0;padding:0;overflow:hidden}
@@ -313,3 +313,10 @@ body[data-view="sched"] .top .brand{white-space:nowrap}
 [data-theme="green"] .set-list{gap:8px}
 [data-theme="moon"] .cover-text{padding:22px 16px}
 [data-theme="moon"] .cover p{white-space:nowrap;font-size:14px}
+/* 배경: 시안처럼 가로 폭에 맞춰 그림 전체(달 포함)가 보이게, 아래는 그림 끝 색으로 이어 채움 */
+[data-theme="moon"]{--bg-fill:linear-gradient(180deg,#b4e1ff,#a6dbfd)}
+[data-theme="green"]{--bg-fill:linear-gradient(90deg,#d3f2f7 0%,#93e7ea 55%,#51d5d6 100%)}
+.bg{background:var(--bg) center top/100% auto no-repeat,var(--bg-fill,var(--page))}
+@media (min-width:700px){.bg{background-size:cover}}
+[data-theme="moon"] .bg::after{background:linear-gradient(105deg,rgba(214,236,250,.8) 0%,rgba(214,236,250,.45) 30%,rgba(214,236,250,0) 55%) top/100% 200px no-repeat}
+[data-theme="moon"] .top{padding-bottom:22px}

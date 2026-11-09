@@ -280,7 +280,7 @@ $('day-close').onclick = closeDay; $('day-back').onclick = closeDay;
 $('day-add').onclick = () => { const s = S.sel; closeDay(); openForm(null, {date: s}); };
 $('fab').onclick = () => openForm(null, {type: S.tab === 'todo' ? 'task' : 'event', date: S.tab === 'todo' ? today() : S.sel});
 $('s-list').addEventListener('click', ev => { if (ev.target.closest('[data-add]')) $('fab').onclick(); });
-document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => { const c = b.closest('.set-card'); c.classList.toggle('folded'); b.setAttribute('aria-expanded', String(!c.classList.contains('folded'))); }));
+document.querySelectorAll('[data-sfold]').forEach(b => b.addEventListener('click', () => { const c = b.closest('.set-card'); c.classList.toggle('folded'); b.setAttribute('aria-expanded', String(!c.classList.contains('folded'))); }));
 $('d-back').onclick = () => go('proj');
 $('form').onsubmit = save; $('f-cancel').onclick = closeForm; $('form-close').onclick = closeForm;
 $('form-back').addEventListener('click', e => { if (e.target === $('form-back')) closeForm(); });
