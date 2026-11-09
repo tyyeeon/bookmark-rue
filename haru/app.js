@@ -86,6 +86,8 @@ function render() {
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.view === (S.view === 'detail' ? 'proj' : S.view)));
   const showG = store.get('haru-groups', true);
   document.querySelectorAll('[data-groups]').forEach(el => { el.innerHTML = groupsHtml(); el.classList.toggle('hide', !showG); });
+  document.querySelector('.brand').textContent = look() === 'green' && S.view === 'sched' ? '하루 일정' : '하루';
+  document.body.dataset.view = S.view;
   if (S.view === 'cal') renderCal();
   if (S.view === 'proj') renderProj();
   if (S.view === 'detail') renderDetail();
@@ -191,8 +193,10 @@ function renderSched() {
       .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.time || '99').localeCompare(b.time || '99'));
     const todays = evs(t).filter(e => e.type !== 'task');
     h = `<section class="card daycard todo"><h4>안 끝낸 할 일<span class="c">${tasks.length}개</span></h4>${tasks.length ? tasks.map(e => row(e, {date: true})).join('') : '<p class="empty">남은 할 일이 없어요.</p>'}</section>` +
-        `<section class="card daycard today"><h4>오늘 일정<span class="c">${todays.length}개</span></h4>${todays.length ? todays.map(e => row(e, {wide: true})).join('') : '<p class="empty">오늘 일정이 없어요.</p>'}</section>`;
+        `<section class="card daycard today"><h4>오늘 일정<span class="c">${todays.length}개</span></h4>${todays.length ? todays.map(e => row(e, {wide: true})).join('') : '<p class="empty">오늘 일정이 없어요.</p>'}</section>` +
+        `<button class="add-btn" type="button" data-add>＋ 추가</button>`;
   }
+  $('fab').hidden = S.tab === 'todo';
   $('s-list').innerHTML = h;
 }
 
@@ -275,6 +279,8 @@ $('w-next').onclick = () => { S.sel = iso(addDays(parse(S.sel), 7)); renderSched
 $('day-close').onclick = closeDay; $('day-back').onclick = closeDay;
 $('day-add').onclick = () => { const s = S.sel; closeDay(); openForm(null, {date: s}); };
 $('fab').onclick = () => openForm(null, {type: S.tab === 'todo' ? 'task' : 'event', date: S.tab === 'todo' ? today() : S.sel});
+$('s-list').addEventListener('click', ev => { if (ev.target.closest('[data-add]')) $('fab').onclick(); });
+document.querySelectorAll('[data-fold]').forEach(b => b.addEventListener('click', () => { const c = b.closest('.set-card'); c.classList.toggle('folded'); b.setAttribute('aria-expanded', String(!c.classList.contains('folded'))); }));
 $('d-back').onclick = () => go('proj');
 $('form').onsubmit = save; $('f-cancel').onclick = closeForm; $('form-close').onclick = closeForm;
 $('form-back').addEventListener('click', e => { if (e.target === $('form-back')) closeForm(); });
