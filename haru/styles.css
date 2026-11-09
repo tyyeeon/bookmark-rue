@@ -492,3 +492,72 @@ html,body{background:var(--bg-end,var(--page))}
 [data-theme="moon"] .cover-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0;padding:0;border:0}
 [data-theme="moon"] .cover-btn{--wi:max(100cqw,calc(100cqh * .4617));--hi:calc(var(--wi) * 2.166);position:absolute;left:50%;transform:translateX(-50%);width:calc(var(--wi) * .588);height:calc(var(--hi) * .0586);bottom:calc(var(--hi) * .0604);border:0;border-image:none;background:transparent;box-shadow:none;color:transparent;font-size:0;border-radius:999px}
 [data-theme="moon"] .cover-btn:active{background:rgba(255,255,255,.14)}
+
+/* ===== 달빛 유리 시안 맞춤 3 (11/09, 루에 테마2 새판 02·03·12·13, 상세는 05) ===== */
+[data-theme="moon"]{--bg-end:#aae5f5;--glass:rgba(255,255,255,.3);--glass-2:rgba(255,255,255,.5);--glass-3:rgba(255,255,255,.75)}
+[data-theme="moon"] .bg::after{display:none}
+[data-theme="moon"] .top{padding:14px 12px 20px}
+[data-theme="moon"] .brand{font-size:34px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .page-title{font-size:25px;font-weight:800;color:#0e2a5c;margin:6px 8px 12px}
+[data-theme="moon"] .panel{background:rgba(255,255,255,.26);border:1.5px solid rgba(255,255,255,.85);border-radius:30px}
+[data-theme="moon"] .card{background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.92);box-shadow:0 6px 18px rgba(40,110,170,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+/* 칸 버튼 사이 가는 줄 */
+[data-theme="moon"] .seg{gap:0}
+[data-theme="moon"] .seg button{position:relative}
+[data-theme="moon"] .seg button+button:not(.on)::before,[data-theme="moon"] .strip button+button:not(.on)::before{content:"";position:absolute;left:0;top:26%;bottom:26%;width:1px;background:rgba(14,42,92,.14)}
+[data-theme="moon"] .seg button.on+button::before,[data-theme="moon"] .strip button.on+button::before{display:none}
+[data-theme="moon"] #s-tabs button,[data-theme="moon"] #p-filter button{font-size:15px;color:#0e2a5c}
+/* 달력 */
+[data-theme="moon"] .cal-head h2{font-size:24px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .weekdays{background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.9);border-radius:16px;padding:8px 0;margin-bottom:6px;font-size:14px;color:#0e2a5c}
+[data-theme="moon"] .weekdays .sun{color:#0e2a5c}
+[data-theme="moon"] .day{background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.95);border-radius:12px}
+[data-theme="moon"] .day .num{font-size:15px;color:#0e2a5c}
+[data-theme="moon"] .day.sun .num{color:#0e2a5c}
+[data-theme="moon"] .day.out .num{color:#7f93ae}
+[data-theme="moon"] .day.today .num{color:#fff}
+[data-theme="moon"] .chip{font-size:10.5px;padding:2px 3px;border-radius:6px;color:#0e2a5c!important;font-weight:600}
+[data-theme="moon"] .chip.규연{background:#d3f3dc}[data-theme="moon"] .chip.Ella{background:#e6dafb}
+/* 일정: 날짜마다 유리 카드 */
+[data-theme="moon"] .strip{gap:0;padding:6px}
+[data-theme="moon"] .strip button b{font-size:18px;color:#0e2a5c}
+[data-theme="moon"] .strip button.on b{color:#fff}
+[data-theme="moon"] .strip button.has::after{display:none}
+[data-theme="moon"] .daycard{background:rgba(255,255,255,.34);border:1.5px solid rgba(255,255,255,.9);border-radius:20px;padding:4px 8px 6px;margin-bottom:10px}
+[data-theme="moon"] .daycard h4{font-size:16px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .row{background:rgba(255,255,255,.52);border:1.5px solid rgba(255,255,255,.95)}
+[data-theme="moon"] .tt{color:#0e2a5c}
+/* 프로젝트 */
+[data-theme="moon"] .phead{padding:12px 14px 10px 12px;gap:14px}
+[data-theme="moon"] .pimg{width:78px;height:64px;border-radius:16px;box-shadow:0 4px 12px rgba(60,90,180,.18);object-fit:cover}
+[data-theme="moon"] .pname b{font-size:22px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .pbody{margin:0 10px 12px;padding:2px 10px;background:rgba(255,255,255,.42);border:1.5px solid rgba(255,255,255,.92);border-radius:18px}
+[data-theme="moon"] #p-list .sub{border-top:0;border-bottom:1px solid rgba(14,42,92,.09);padding:9px 2px}
+[data-theme="moon"] #p-list .sub:last-child{border-bottom:0}
+[data-theme="moon"] .sub b{color:#0e2a5c}
+[data-theme="moon"] #p-list .sub .go{position:relative;margin-left:14px}
+[data-theme="moon"] #p-list .sub .go::before{content:"";position:absolute;left:-9px;top:15%;bottom:15%;width:1px;background:rgba(14,42,92,.15)}
+/* 설정 */
+[data-theme="moon"] .set-ico{width:58px;height:58px;border-radius:16px}
+[data-theme="moon"] .set-main>b,[data-theme="moon"] .fold-head b{font-size:18px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .set-line{border-bottom:1px solid rgba(14,42,92,.08);color:#0e2a5c}
+[data-theme="moon"] .set-line em{background:rgba(255,255,255,.72);min-width:118px;justify-content:space-between;color:#0e2a5c}
+/* 프로젝트 상세 (시안 05): 큰 판 없이 유리 카드만, 머리는 「← 프로젝트 상세」 */
+body[data-view="detail"] .top{display:none}
+[data-theme="moon"] #v-detail .panel{background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0}
+[data-theme="moon"] .back{font-size:22px;font-weight:800;color:#0e2a5c;padding:12px 6px 14px}
+[data-theme="moon"] .dhead{border-radius:24px;padding:12px 14px;gap:12px}
+[data-theme="moon"] .dhead .pimg{width:84px;height:70px}
+[data-theme="moon"] .dhead>div{border-left:1px solid rgba(14,42,92,.15);padding-left:12px}
+[data-theme="moon"] .dhead b{font-size:28px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .dhead p{color:#2c4670}
+[data-theme="moon"] .sec{border-radius:24px;padding:6px 10px 8px}
+[data-theme="moon"] .sec h4{font-size:18px;font-weight:800;color:#0e2a5c}
+[data-theme="moon"] .sec h4 .c{font-size:13px;padding:2px 10px;border-radius:999px;background:#e3dafb;color:#4b3a9a}
+[data-theme="moon"] #d-body .sub{border-top:0;border-bottom:1px solid rgba(14,42,92,.09);padding:9px 4px}
+[data-theme="moon"] #d-body .sub:last-child{border-bottom:0}
+[data-theme="moon"] .next{border-top:0;margin:6px 0;border-radius:14px;background:rgba(255,255,255,.5);border:1.5px solid rgba(255,255,255,.9);color:#0e2a5c}
+[data-theme="moon"] #d-body .sub::after{content:"›";flex:none;width:24px;height:24px;margin-left:8px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.95);color:#0e2a5c;font-size:17px;line-height:1}
+[data-theme="moon"] #d-body .next{display:flex;align-items:center;gap:10px}
+[data-theme="moon"] #d-body .next::before{content:"";flex:none;width:18px;height:18px;border-radius:50%;border:1.5px solid #6d82a3;background:rgba(255,255,255,.6)}
+[data-theme="moon"] .chip{text-align:center}
