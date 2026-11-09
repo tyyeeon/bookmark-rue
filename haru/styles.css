@@ -481,3 +481,9 @@ body[data-view="sched"] .top .brand{white-space:nowrap}
 [data-theme="moon"] .fab{width:58px;height:58px;padding:0;border:0;border-radius:50%;background:url(img/ui/m-fab.png) center/100% 100% no-repeat;color:#fff;font-size:12px;line-height:1.1;flex-direction:column;justify-content:center;gap:0;box-shadow:0 8px 18px rgba(10,60,110,.3)}
 [data-theme="moon"] .fab .fab-p{font-size:22px;line-height:1}
 .fab .fab-p{font-weight:400}
+/* 아래 잘림 고침 (11/09): 배경을 폰 비율 그림으로, 화면 아래(사파리 도구막대·홈 막대 밑)까지 덮기 */
+[data-theme="moon"]{--bg:url(img/bg-moon-ui.webp);--bg-end:#9edcfc}
+[data-theme="green"]{--bg-end:#bff6f3}
+html,body{background:var(--bg-end,var(--page))}
+.bg,[data-theme="green"] .bg{top:0;left:0;right:0;bottom:auto;height:calc(100lvh + 140px);background:var(--bg) center top/100% auto no-repeat,var(--bg-end)}
+@media (min-width:700px){.bg,[data-theme="green"] .bg{background-size:cover}}
