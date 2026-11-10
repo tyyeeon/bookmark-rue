@@ -41,8 +41,8 @@ function load(manual) {
   const r = run();
   if (!r) { notice('이 기기는 아직 일정표에 연결되지 않았어요.'); $('connect').hidden = false; return; }
   if (manual) toast('불러오는 중…');
-  r.withSuccessHandler(s => { notice(''); apply(s); store.set('haru-synced', new Date().toISOString()); if (manual) toast('새로 불러왔어요.'); renderSet(); })
-   .withFailureHandler(e => notice('일정표를 불러오지 못했어요: ' + (e && e.message || e)))
+  r.withSuccessHandler(s => { notice(''); $('connect').hidden = true; apply(s); store.set('haru-synced', new Date().toISOString()); if (manual) toast('새로 불러왔어요.'); renderSet(); })
+   .withFailureHandler(e => { notice('일정표를 불러오지 못했어요: ' + (e && e.message || e)); $('connect').hidden = false; })
    .getHaruState();
 }
 function notice(t) { const n = $('notice'); n.textContent = t; n.hidden = !t; }
@@ -309,6 +309,7 @@ $('connect').onclick = () => {
   const h = a.indexOf('#');
   if (h >= 0) { const p = new URLSearchParams(a.slice(h + 1)); api = p.get('api') || ''; k = p.get('k') || ''; }
   if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(api)) return toast('웹 앱 주소가 아니에요. script.google.com 으로 시작하고 /exec 로 끝나야 해요.');
+  if (!k) { const old = store.get('haru-conn', null); if (old && old.k && confirm('지금 저장된 키를 그대로 쓸까요? (서버만 새로 만들고 키는 같을 때)')) k = old.k; }
   if (!k) k = (prompt('Code.gs 맨 위 API_KEY 값을 붙여 넣어 주세요.') || '').trim().replace(/^['"]|['"]$/g, '');
   if (!k) return;
   store.set('haru-conn', {api, k});
