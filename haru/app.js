@@ -56,11 +56,15 @@ function toast(t, undo) {
 }
 function setStatus(e, status, msg, undoStatus) {
   const r = run(); if (!r) return toast('연결 전이라 바꿀 수 없어요.');
+  /* 누르자마자 화면에 반영하고, 서버가 실패하면 되돌린다(서버 응답이 몇 초 걸려 「체크가 안 된다」로 보이던 것) */
+  const prev = {status: e.status, done: e.done, deleted: e.deleted};
+  e.status = status; e.done = status === '완료'; e.deleted = status === '삭제';
+  render(); toast('저장 중…');
   r.withSuccessHandler(s => {
     apply(s);
     if (undoStatus) toast(msg, () => { const x = S.items.find(i => i.id === e.id); if (x) setStatus(x, undoStatus, '되돌렸어요.'); });
     else toast(msg);
-  }).withFailureHandler(err => toast(String(err && err.message || err)))
+  }).withFailureHandler(err => { Object.assign(e, prev); render(); toast('저장하지 못했어요: ' + String(err && err.message || err)); })
     .setHaruStatus({id: e.id, version: e.version, status});
 }
 
