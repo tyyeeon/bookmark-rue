@@ -11,6 +11,8 @@ const pad = n => String(n).padStart(2, '0');
 const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const parse = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
 const today = () => iso(new Date());
+/* 할 일의 날짜: 날짜 칸이 비면 제목 끝 「(11/16)」에서 읽음(관제탑이 날짜를 제목에 적는 줄) */
+const due = e => { if (e.date) return e.date; const m = /\((\d{1,2})\/(\d{1,2})\)\s*$/.exec(e.title || ''); if (!m) return ''; const n = new Date(), mo = +m[1]; let y = n.getFullYear(); if (mo < n.getMonth() + 1 - 6) y++; return `${y}-${pad(mo)}-${pad(+m[2])}`; };
 const WD = ['일', '월', '화', '수', '목', '금', '토'];
 const monday = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d; };
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
@@ -77,9 +79,10 @@ function timeText(e, wide) {
 }
 function row(e, opt = {}) {
   const g = GROUP(e.group);
-  const lead = opt.date ? `<span class="dchip">${e.date ? (() => { const d = parse(e.date); return `${d.getMonth() + 1}/${d.getDate()} ${WD[d.getDay()]}`; })() : '날짜 미정'}</span>`
+  const dd = opt.date ? due(e) : '';
+  const lead = opt.date ? `<span class="dchip">${dd ? (() => { const d = parse(dd); return `${d.getMonth() + 1}/${d.getDate()} ${WD[d.getDay()]}`; })() : '날짜 미정'}</span>`
                         : `<span class="tm">${timeText(e, opt.wide)}</span>`;
-  return `<div class="row"><button class="ck" type="button" data-check="${esc(e.id)}" aria-label="${esc(e.title)} 끝냄"></button>${lead}<button class="tt" type="button" data-edit="${esc(e.id)}">${esc(e.title)}</button><span class="gp ${g}"><i class="dot g-${g}"></i>${g}</span><button class="chev" type="button" data-edit="${esc(e.id)}" aria-label="고치기">›</button></div>`;
+  return `<div class="row"><button class="ck" type="button" data-check="${esc(e.id)}" aria-label="${esc(e.title)} 끝냄"></button>${lead}<button class="tt" type="button" data-edit="${esc(e.id)}">${esc(opt.date ? e.title.replace(/\s*\(\d{1,2}\/\d{1,2}\)\s*$/, '') : e.title)}</button><span class="gp ${g}"><i class="dot g-${g}"></i>${g}</span><button class="chev" type="button" data-edit="${esc(e.id)}" aria-label="고치기">›</button></div>`;
 }
 function groupsHtml() {
   return ['전체', '규연', 'Ella'].map(g => `<button type="button" class="gchip${S.group === g ? ' on' : ''}" data-group="${g}">${g === '전체' ? '' : `<i class="dot g-${g}"></i>`}${g}</button>`).join('');
@@ -194,9 +197,12 @@ function renderSched() {
     h = `<section class="card daycard"><h4>${label(S.sel)}<span class="c">${list.length}개</span></h4>${list.length ? list.map(e => row(e, {wide: true})).join('') : '<p class="empty">이날 일정이 없어요.</p>'}</section>`;
   } else {
     const tasks = S.items.filter(e => live(e) && e.type === 'task' && (S.group === '전체' || GROUP(e.group) === S.group))
-      .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999') || (a.time || '99').localeCompare(b.time || '99'));
+      .sort((a, b) => (due(a) || '0000').localeCompare(due(b) || '0000') || (a.time || '99').localeCompare(b.time || '99'));
+    /* 일주일 안(지난 것·날짜 미정 포함)만 펼치고, 그 뒤는 「나중에」로 접음 */
+    const wk = iso(addDays(parse(t), 6)), soon = tasks.filter(e => !due(e) || due(e) <= wk), later = tasks.filter(e => due(e) && due(e) > wk);
     const todays = evs(t).filter(e => e.type !== 'task');
-    h = `<section class="card daycard todo"><h4>안 끝낸 할 일<span class="c">${tasks.length}개</span></h4>${tasks.length ? tasks.map(e => row(e, {date: true})).join('') : '<p class="empty">남은 할 일이 없어요.</p>'}</section>` +
+    h = `<section class="card daycard todo"><h4>이번 주 할 일<span class="c">${soon.length}개</span></h4>${soon.length ? soon.map(e => row(e, {date: true})).join('') : '<p class="empty">이번 주 남은 할 일이 없어요.</p>'}` +
+        (later.length ? `<button class="later-btn" type="button" data-later>나중에 할 일 ${later.length}개 ${S.later ? '접기 ▴' : '보기 ▾'}</button>${S.later ? later.map(e => row(e, {date: true})).join('') : ''}` : '') + `</section>` +
         `<section class="card daycard today"><h4>오늘 일정<span class="c">${todays.length}개</span></h4>${todays.length ? todays.map(e => row(e, {wide: true})).join('') : '<p class="empty">오늘 일정이 없어요.</p>'}</section>` +
         `<button class="add-btn" type="button" data-add>＋ 추가</button>`;
   }
@@ -267,6 +273,7 @@ document.addEventListener('click', ev => {
   if (d.edit) { const e = find(d.edit); if (e) { closeDay(); openForm(e); } return; }
   if (d.restore) { const e = find(d.restore); if (e) setStatus(e, '예정', '복원했어요.'); return; }
   if (d.pf) { S.pfilter = d.pf; return renderProj(); }
+  if ('later' in d) { S.later = !S.later; return render(); }
   if (d.fold) { const n = d.fold; S.open = S.open.includes(n) ? S.open.filter(x => x !== n) : [...S.open, n]; store.set('haru-open', S.open); return renderProj(); }
   if (d.detail) { S.proj = d.detail; return go('detail'); }
   if (d.tab) { S.tab = d.tab; store.set('haru-tab', S.tab); return renderSched(); }
