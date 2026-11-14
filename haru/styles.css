@@ -605,3 +605,13 @@ html.haru-sa .app{padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px
 [data-theme] .pcard .counts{font-size:13px;margin-top:2px}
 [data-theme] .dhead>div{border-left:0;padding-left:0}
 [data-theme] .dhead b{font-size:24px}
+/* 11/14 상세 = 진행상황 */
+.dhead p .counts,.dhead p span{font-size:13px}
+.prog{padding:12px 4px;border-top:1px solid rgba(12,44,102,.1)}
+.prog:first-of-type{border-top:0}
+.prog .ph{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.prog .ph b{font-size:17px}
+.prog .now{margin:6px 0 0;font-size:14px;line-height:1.55;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.prog .now.none{color:var(--sub)}
+.prog .nx{margin:6px 0 0;font-size:13px;color:var(--sub);display:flex;gap:8px}
+.prog .nx .d{font-weight:700;flex:none}

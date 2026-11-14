@@ -168,11 +168,16 @@ function renderProj() {
 function renderDetail() {
   const p = projects().find(x => x.name === S.proj);
   if (!p) { S.view = 'proj'; return render(); }
+  const order = {on: 0, wait: 1, done: 2};
+  const items = [...p.items].sort((a, b) => order[a.st] - order[b.st]);
   const main = p.items.some(i => i.st === 'on') ? 'on' : p.items.some(i => i.st === 'wait') ? 'wait' : 'done';
   const nexts = p.items.filter(i => i.next).sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+  const prog = i => `<div class="prog st-${i.st}"><div class="ph"><b>${esc(i.name)}</b>${stImg(i.st)}</div>` +
+    (i.now ? `<p class="now">${esc(i.now)}</p>` : '<p class="now none">지금 하는 일이 적혀 있지 않아요.</p>') +
+    (i.next ? `<p class="nx"><span class="d">${esc(md(i.date))}</span>${esc(i.next)}</p>` : '') + `</div>`;
   $('d-body').innerHTML =
-    `<div class="card dhead"><div><b>${esc(p.name)}</b> ${stImg(main)}<p>${esc(p.items.map(i => i.name).join(' · '))}</p></div></div>` +
-    `<section class="card sec"><h4>진행 목록 <span class="c">${p.items.length}</span></h4>${p.items.map(i => subHtml(i)).join('')}</section>` +
+    `<div class="card dhead"><div><b>${esc(p.name)}</b> ${stImg(main)}<p>${countHtml(p.items)}</p></div></div>` +
+    `<section class="card sec"><h4>진행상황 <span class="c">${items.length}</span></h4>${items.map(prog).join('')}</section>` +
     `<section class="card sec"><h4>다음 할 일 <span class="c">${nexts.length}</span></h4>${nexts.length ? nexts.map(i => `<div class="next"><span class="d">${esc(md(i.date))}</span><span>${esc(i.next)} <small style="color:var(--sub)">· ${esc(i.name)}</small></span></div>`).join('') : '<p class="empty">적어 둔 다음 할 일이 없어요.</p>'}</section>`;
 }
 
