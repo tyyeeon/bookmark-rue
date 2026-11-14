@@ -147,7 +147,9 @@ function projects() {
   return [...map.values()].sort((x, y) => x.name.localeCompare(y.name, 'ko', {numeric: true}));
 }
 const md = s => { const m = String(s || '').match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/); return m ? `${+m[2]}/${+m[3]}` : (s || '—'); };
-const pimg = name => { const k0 = name.toLowerCase(), k = ['plan', 'ai', 'app'].includes(k0) ? k0 : 'default'; return `img/p-${k}-${look()}.${look() === 'moon' && k !== 'default' ? 'png' : 'webp'}`; };
+/* 프로젝트 아이콘: 이름 앞 번호(01~09)로 img/p/p-NN-테마.webp를 찾음 (11/14 루에 그림). 번호 없으면 그림 없음 */
+const pnum = name => (/^(\d{2})_/.exec(name) || [])[1];
+const picon = (name, cls) => { const n = pnum(name); return n ? `<img class="${cls}" src="img/p/p-${n}-${look()}.webp" alt="" onerror="this.remove()">` : ''; };
 const countHtml = items => {
   const n = k => items.filter(i => i.st === k).length;
   return ['on', 'wait', 'done'].filter(k => n(k)).map(k => `<span class="${k}">${k === 'on' ? '진행' : k === 'wait' ? '대기' : '완료'} ${n(k)}</span>`).join('<i class="sep">·</i>') || '<span class="done">세부 일 없음</span>';
@@ -162,7 +164,7 @@ function renderProj() {
   const html = ps.map(p => {
     const items = p.items.filter(keep); if (!items.length) return '';
     const open = S.open.includes(p.name);
-    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}"><span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}<button class="go-all" type="button" data-detail="${esc(p.name)}">자세히 →</button></div></article>`;
+    return `<article class="card pcard${open ? ' open' : ''}"><button class="phead" type="button" data-fold="${esc(p.name)}" aria-expanded="${open}">${picon(p.name, 'picon')}<span class="pname"><b>${esc(p.name)}</b><span class="counts">${countHtml(p.items)}</span></span><span class="fold" aria-hidden="true">⌄</span></button><div class="pbody">${items.map(i => subHtml(i, p.name)).join('')}<button class="go-all" type="button" data-detail="${esc(p.name)}">자세히 →</button></div></article>`;
   }).join('');
   $('p-list').innerHTML = html || `<p class="empty">${ps.length ? '이 상태인 세부 일이 없어요.' : '프로젝트 현황을 불러오는 중이거나 아직 비어 있어요.'}</p>`;
 }
@@ -177,7 +179,7 @@ function renderDetail() {
     (i.now ? `<p class="now">${esc(i.now)}</p>` : '<p class="now none">지금 하는 일이 적혀 있지 않아요.</p>') +
     (i.next ? `<p class="nx"><span class="d">${esc(md(i.date))}</span>${esc(i.next)}</p>` : '') + `</div>`;
   $('d-body').innerHTML =
-    `<div class="card dhead"><div><b>${esc(p.name)}</b> ${stImg(main)}<p>${countHtml(p.items)}</p></div></div>` +
+    `<div class="card dhead">${picon(p.name, 'picon big')}<div><b>${esc(p.name)}</b> ${stImg(main)}<p>${countHtml(p.items)}</p></div></div>` +
     `<section class="card sec"><h4>진행상황 <span class="c">${items.length}</span></h4>${items.map(prog).join('')}</section>` +
     `<section class="card sec"><h4>다음 할 일 <span class="c">${nexts.length}</span></h4>${nexts.length ? nexts.map(i => `<div class="next"><span class="d">${esc(md(i.date))}</span><span>${esc(i.next)} <small style="color:var(--sub)">· ${esc(i.name)}</small></span></div>`).join('') : '<p class="empty">적어 둔 다음 할 일이 없어요.</p>'}</section>`;
 }

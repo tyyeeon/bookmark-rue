@@ -615,3 +615,7 @@ html.haru-sa .app{padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px
 .prog .now.none{color:var(--sub)}
 .prog .nx{margin:6px 0 0;font-size:13px;color:var(--sub);display:flex;gap:8px}
 .prog .nx .d{font-weight:700;flex:none}
+/* 11/14 프로젝트 아이콘 (루에) */
+.picon{width:48px;height:48px;flex:none;border-radius:14px;object-fit:cover;box-shadow:0 2px 8px rgba(20,60,110,.12)}
+.picon.big{width:64px;height:64px;border-radius:18px}
+[data-theme] .dhead{display:flex;align-items:center;gap:12px}
