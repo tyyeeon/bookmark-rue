@@ -71,7 +71,8 @@ function setStatus(e, status, msg, undoStatus) {
 }
 
 /* ---------- 공통 그리기 ---------- */
-const evs = (date) => S.items.filter(e => live(e) && e.date === date && (S.group === '전체' || GROUP(e.group) === S.group))
+/* 할 일은 날짜 칸이 비어도 제목 끝 (M/D) 날짜로 달력·주간·일간에 띄움 (11/14) */
+const evs = (date) => S.items.filter(e => live(e) && (e.type === 'task' ? due(e) : e.date) === date && (S.group === '전체' || GROUP(e.group) === S.group))
   .sort((a, b) => (a.allDay || !a.time ? '' : a.time).localeCompare(b.allDay || !b.time ? '' : b.time));
 function timeText(e, wide) {
   if (e.allDay || !e.time) return '종일';
