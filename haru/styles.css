@@ -597,3 +597,21 @@ html.haru-sa .app{padding-bottom:max(8px,calc(env(safe-area-inset-bottom) - 12px
 [data-theme="green"] .bg{background-position:center calc(env(safe-area-inset-top, 0px) - 15.625vw),0 0}
 @media (min-width:700px){[data-theme="green"] .bg{background-position:center top,0 0}}
 .later-btn{display:block;width:100%;margin:8px 0 4px;padding:9px;border-radius:14px;border:1px dashed rgba(14,42,92,.25);background:rgba(255,255,255,.45);color:#2c4670;font:inherit;font-size:14px;font-weight:600}
+
+/* 11/14 프로젝트 9개: 그림 빼고 작은 카드 */
+[data-theme] .phead{padding:12px 14px;gap:10px;min-height:0}
+[data-theme] .pcard{margin-bottom:8px}
+[data-theme] .pcard .pname b{font-size:18px}
+[data-theme] .pcard .counts{font-size:13px;margin-top:2px}
+[data-theme] .dhead>div{border-left:0;padding-left:0}
+[data-theme] .dhead b{font-size:24px}
+/* 11/14 상세 = 진행상황 */
+.dhead p .counts,.dhead p span{font-size:13px}
+.prog{padding:12px 4px;border-top:1px solid rgba(12,44,102,.1)}
+.prog:first-of-type{border-top:0}
+.prog .ph{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.prog .ph b{font-size:17px}
+.prog .now{margin:6px 0 0;font-size:14px;line-height:1.55;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
+.prog .now.none{color:var(--sub)}
+.prog .nx{margin:6px 0 0;font-size:13px;color:var(--sub);display:flex;gap:8px}
+.prog .nx .d{font-weight:700;flex:none}
